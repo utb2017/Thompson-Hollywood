@@ -1,0 +1,2 @@
+const TOKEN = `pk.eyJ1IjoidGFsbGd1eWh5ZHJvIiwiYSI6ImNrZTExNGIzejJ5NjQydG51M3duZmRkMTkifQ.-iT4qHj-fRqA8aFLHrSUTg`
+export default TOKEN
