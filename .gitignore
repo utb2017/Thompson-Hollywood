@@ -9,6 +9,8 @@
 # testing
 /coverage
 
+/pages/VOID
+
 # next.js
 /.next/
 /out/

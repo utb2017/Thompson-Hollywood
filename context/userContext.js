@@ -246,26 +246,28 @@ useEffect(() => {
 
 
       {/* LOADING */}
-      {(Boolean(fireTotals?.status === "loading") ||
+      {/* {(Boolean(fireTotals?.status === "loading") ||
         Boolean(fireBrands?.status === "loading") ||
         Boolean(fireCollections?.status === "loading") ||
         Boolean(fireSettings?.status === "loading")) && (
         <div className='center-spinner'>
           <Spinner />
         </div>
-      )}
+      )} */}
 
 
       {/* OUTLET */}
-      { Boolean(fireTotals?.status === "success" && fireTotals?.data) &&
+      {/* { Boolean(fireTotals?.status === "success" && fireTotals?.data) &&
         Boolean(fireBrands?.status === "success" && fireBrands?.data) &&
         Boolean(fireCollections?.status === "success" && fireCollections?.data) &&
         Boolean(fireSettings?.status === "success" && fireSettings?.data) 
-            && (<>{children}</>)}
+            && (<>{children}</>)} */}
+
+      <>{children}</>
 
 
       {/* NO DATA */}
-      { Boolean(fireTotals?.status === "success") &&
+      {/* { Boolean(fireTotals?.status === "success") &&
         Boolean(fireSettings?.status === "success") &&
         Boolean(fireBrands?.status === "success") &&
         Boolean(fireCollections?.status === "success") &&
@@ -280,11 +282,11 @@ useEffect(() => {
             {!Boolean(fireBrands?.data) && <><p>{`Fire Brands.`}</p><br/></>}
             {!Boolean(fireCollections?.data) && <><p>{`Fire Collections.`}</p><br/></>}
           </div>
-        )}
+        )} */}
 
 
       {/* ERROR */}
-      { (Boolean(fireTotals?.status === "error") ||
+      {/* { (Boolean(fireTotals?.status === "error") ||
         Boolean(fireBrands?.status === "error") ||
         Boolean(fireCollections?.status === "error") ||
         Boolean(fireSettings?.status === "error")) && (
@@ -295,7 +297,7 @@ useEffect(() => {
             {fireBrands?.error && <><p>{`Fire Brands. ${fireBrands?.error?.message || "An error occurred."}`}</p><br/></>}
             {fireCollections?.error && <><p>{`Fire Collections. ${fireCollections?.error?.message || "An error occurred."}`}</p><br/></>}
           </div>
-        )}
+        )} */}
      </>
     </UserContext.Provider>
   )

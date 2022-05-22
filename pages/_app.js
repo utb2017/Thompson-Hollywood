@@ -40,7 +40,6 @@ import { Provider as StyletronProvider } from "styletron-react";
 import { styletron } from "../styletron";
 
 import "../styles/globals.css";
-import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 //import 'react-notifications/lib/notifications.css';
 import "../styles/styles.scss";
 import "../components/Console/console.scss";
