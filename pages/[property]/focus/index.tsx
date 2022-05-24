@@ -15,7 +15,7 @@ const Background = styled("div", ({ $theme }) => {
     backgroundColor: $theme.colors.backgroundOverlayLight,
   };
 });
-const OverviewPage = dynamic(() => import("../../../components/Pages/focus"), {
+const OverviewPage = dynamic(() => import("../../../components/Pages/Focus"), {
   loading: () => (
     <Background className='nav-loader'>
       <Spinner />
@@ -37,52 +37,7 @@ const index = () => {
   return (
     <Console id='orders-page' title={"Daily Focus"} noNav={true} >
       {/* LOADING */}
-      {Boolean(fireUser?.status === "loading") && (
-        <div className='nav-loader'>
-          <Spinner />
-        </div>
-      )}
-
-      {/* DENIED */}
-      {Boolean(fireUser?.data?.role && blackList.includes(fireUser?.data?.role || "")) && (
-        <div className='nav-denied'>
-          <h2>Permision Denied</h2>
-        </div>
-      )}
-
-      {/* OUTLET */}
-      {Boolean(fireUser?.data) &&
-        Boolean(fireUser?.data?.role && !blackList.includes(fireUser?.data?.role || "")) && (
-          <OverviewPage />
-        )}
-
-      {/* NO DATA */}
-      {Boolean(fireUser?.status === "success") && !Boolean(fireUser?.data) && (
-        <div className='nav-denied'>
-          <h2>User data not found.</h2>
-        </div>
-      )}
-
-      {/* ERROR */}
-      {Boolean(fireUser?.status === "error") && (
-        <div
-          className='nav-denied'
-          style={{
-            flexDirection: "column",
-            padding: "64px",
-            margin: "auto",
-            overflowWrap: "anywhere",
-          }}>
-          <h2>An error occurred.</h2>
-          <br />
-          {fireUser?.error && (
-            <>
-              <p>{`Fire User. ${fireUser?.error?.message || "An error occurred."}`}</p>
-              <br />
-            </>
-          )}
-        </div>
-      )}
+      <OverviewPage />
     </Console>
   )
 }
