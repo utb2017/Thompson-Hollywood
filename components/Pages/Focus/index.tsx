@@ -12,27 +12,27 @@ import { useUser } from "../../../context/userContext";
 import { useRouting } from "../../../context/routingContext";
 import { styled } from "baseui";
 
-import {ChevronDown} from 'baseui/icon';
-import {StatefulPopover, PLACEMENT} from 'baseui/popover';
-import {StatefulMenu} from 'baseui/menu'
-import {FlexGrid, FlexGridItem} from 'baseui/flex-grid';
-import {BlockProps} from 'baseui/block';
+import { ChevronDown } from "baseui/icon";
+import { StatefulPopover, PLACEMENT } from "baseui/popover";
+import { StatefulMenu } from "baseui/menu";
+import { FlexGrid, FlexGridItem } from "baseui/flex-grid";
+import { BlockProps } from "baseui/block";
 import { Img } from "react-image";
 import { H5, Label1 } from "baseui/typography";
 
 const ITEMS = [
-  {label: 'Item One'},
-  {label: 'Item Two'},
-  {label: 'Item Three'},
-  {label: 'Item Four'},
-  {label: 'Item Five'},
-  {label: 'Item Six'},
-  {label: 'Item Seven'},
-  {label: 'Item Eight'},
-  {label: 'Item Nine'},
-  {label: 'Item Ten'},
-  {label: 'Item Eleven'},
-  {label: 'Item Twelve'},
+  { label: "Item One" },
+  { label: "Item Two" },
+  { label: "Item Three" },
+  { label: "Item Four" },
+  { label: "Item Five" },
+  { label: "Item Six" },
+  { label: "Item Seven" },
+  { label: "Item Eight" },
+  { label: "Item Nine" },
+  { label: "Item Ten" },
+  { label: "Item Eleven" },
+  { label: "Item Twelve" },
 ];
 type Selected = {
   label: string | number;
@@ -162,39 +162,53 @@ interface QueryValidation {
   setMaxPage(data: number): void;
 }
 const orderProgressObject = {
-  'settled': ['settled'],
-  'received': ['received'],
-  'cancel': ['cancel'],
-  'complete': ['complete'],
-  'paid': ['paid'],
-  'active': ['received', 'pending', 'assigned', 'pickup', 'warning','arrived'],
-  'none': [],
-  'undefined':[],
-  'null':[],
-  'false':[],
-  '':[],
-}
+  settled: ["settled"],
+  received: ["received"],
+  cancel: ["cancel"],
+  complete: ["complete"],
+  paid: ["paid"],
+  active: ["received", "pending", "assigned", "pickup", "warning", "arrived"],
+  none: [],
+  undefined: [],
+  null: [],
+  false: [],
+  "": [],
+};
 
 const itemProps: BlockProps = {
-  backgroundColor: 'mono300',
-  height: 'scale1000',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  backgroundColor: "mono300",
+  height: "scale1000",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 const titleProps: BlockProps = {
   //backgroundColor: 'mono300',
-  height: 'scale3200',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "scale3200",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 const quoteProps: BlockProps = {
   //backgroundColor: 'mono300',
-  height: 'scale3200',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'start',
+  height: "scale3200",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "start",
+};
+const outlookProps: BlockProps = {
+  backgroundColor: `rgb(23,55,94)`,
+  //height: "scale3200",
+  //display: "flex",
+  //alignItems: "center",
+  width:`100%`,
+  //justifyContent: "start",
+};
+const outlookTitleProps: BlockProps = {
+  //height: "scale600",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 const Orders: FC = (): ReactElement => {
   const {
@@ -206,29 +220,29 @@ const Orders: FC = (): ReactElement => {
     setTotalsDoc,
     setWhere,
     setQueryGroupCollection,
-
   } = useQuery();
 
   const { themeState } = useScreen();
   const [loading, setLoading] = useState<boolean>(false);
   const { modalBaseDispatch } = useDispatchModalBase();
   const [css, theme] = useStyletron();
-  const router = useRouter()
-  const { user } = useUser()
-  const {  setNavLoading } = useRouting()
-
-
+  const router = useRouter();
+  const { user } = useUser();
+  const { setNavLoading } = useRouting();
 
   /* add shit to the query questions*/
   useEffect(() => {
     setTotalsField(`${router?.query?.filter}`);
     setTotalsDoc("unsettled");
-    setTotalsCollection("totals")
-    
+    setTotalsCollection("totals");
+
     setQueryGroupCollection("Orders");
     setOrderBy("start");
-    if(router?.query?.filter){
-      setWhere([["progress", "in", orderProgressObject[`${router?.query?.filter}`] ], ["settled", "==", false]])
+    if (router?.query?.filter) {
+      setWhere([
+        ["progress", "in", orderProgressObject[`${router?.query?.filter}`]],
+        ["settled", "==", false],
+      ]);
     }
     setLimit(5);
     // return () => {
@@ -243,21 +257,23 @@ const Orders: FC = (): ReactElement => {
     // };
   }, [router]);
 
-
   useEffect(() => {
     return () => {
       setTotalsField(null);
       setTotalsDoc(null);
-      setTotalsCollection(null)
+      setTotalsCollection(null);
       setQueryGroupCollection(null);
       setQueryCollection(null);
       setLimit(5);
       setOrderBy(null);
-      setWhere(null)
+      setWhere(null);
     };
   }, []);
 
-  const openModalBase = (component: () => ReactElement, hasSquareBottom: boolean) => {
+  const openModalBase = (
+    component: () => ReactElement,
+    hasSquareBottom: boolean
+  ) => {
     modalBaseDispatch({
       type: "MODAL_UPDATE",
       payload: {
@@ -297,28 +313,31 @@ const Orders: FC = (): ReactElement => {
         >
           <div>{""}</div>
           <StatefulPopover
-      focusLock
-      placement={PLACEMENT.bottomLeft}
-      content={({close}) => (
-        <StatefulMenu
-          items={ITEMS}
-          onItemSelect={() => close()}
-          overrides={{
-            List: {style: {height: '150px', width: '138px'}},
-          }}
-        />
-      )}
-    >
-      <Button endEnhancer={() => <ChevronDown size={24} />}>
-        Import
-      </Button>
-    </StatefulPopover>
-          <Spacer/>
+            focusLock
+            placement={PLACEMENT.bottomLeft}
+            content={({ close }) => (
+              <StatefulMenu
+                items={ITEMS}
+                onItemSelect={() => close()}
+                overrides={{
+                  List: { style: { height: "150px", width: "138px" } },
+                }}
+              />
+            )}
+          >
+            <Button endEnhancer={() => <ChevronDown size={24} />}>
+              Import
+            </Button>
+          </StatefulPopover>
+          <Spacer />
           <Button
             kind={themeState?.dark ? KIND.secondary : undefined}
-            onClick={()=>{
-              router.push(`${"/[adminID]/orders/create"}`,`/${user?.uid}/orders/create`)
-              setNavLoading(true)
+            onClick={() => {
+              router.push(
+                `${"/[adminID]/orders/create"}`,
+                `/${user?.uid}/orders/create`
+              );
+              setNavLoading(true);
             }}
             isLoading={Boolean(loading)}
             disabled={Boolean(loading)}
@@ -334,83 +353,146 @@ const Orders: FC = (): ReactElement => {
           </Button>
         </div>
         {/* OUTLET */}
-        <FlexGrid
-      flexGridColumnCount={[1, 1, 2]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem flexDirection={"column"} {...titleProps}>
-              <Img src={`https://www.relevantgroup.com/wp-content/uploads/2017/03/TH_Hollywood-crop.jpg`} width={`160px`}></Img>
-              <div style={{...theme.typography.HeadingXSmall,  ...{backgroundColor:`rgb(23,55,94)`, display:`flex`, justifyContent:`center`, borderRadius:theme.borders.radius200,color:theme.colors.white, padding:`${theme.sizing.scale400} ${theme.sizing.scale1200}`}}}>Mon 11 Apr</div>
-      </FlexGridItem>
-      <FlexGridItem flexDirection={"column"} {...quoteProps}>
-        <div style={{...theme.typography.HeadingXSmall,  ...{backgroundColor:`rgb(198,217,241)`, display:`flex`, width:`100%`, justifyContent:`center`, borderRadius:theme.borders.radius200, padding:theme.sizing.scale400}}}>Quote of the Day:</div>
-        <div style={{...theme.typography.MonoLabelMedium, ...{padding:theme.sizing.scale400}}}>Life's tough, get a helment.</div>
-        </FlexGridItem>
-    </FlexGrid>
-    <SpacerH/>
-        <FlexGrid
-      flexGridColumnCount={[1, 1, 2]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem {...itemProps}> OUTLOOK 3C </FlexGridItem>
-      <FlexGridItem {...itemProps}> WEATHER 2C </FlexGridItem>
-      <FlexGridItem {...itemProps}> FORECAST 4C </FlexGridItem>
-      <FlexGridItem {...itemProps}> SCHEDULE </FlexGridItem>
-    </FlexGrid>
-    <SpacerH/>
-        <FlexGrid
-      flexGridColumnCount={[1, 1, 1]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem {...itemProps}> VIP 1C </FlexGridItem>
-    </FlexGrid>
-    <SpacerH/>
-        <FlexGrid
-      flexGridColumnCount={[1, 1, 1]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem {...itemProps}> GROUPS 1C </FlexGridItem>
+        <div          style={{
+            ...{
+              border:`solid 16px rgb(23,55,94)`,
+              borderRadius: theme.borders.radius400,
+              padding: `${theme.sizing.scale400} ${theme.sizing.scale400}`,
 
-    </FlexGrid>
-    <SpacerH/>
+            },
+          }}>
         <FlexGrid
-      flexGridColumnCount={[1, 1, 1]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem {...itemProps}> EVENTS 1C</FlexGridItem>
-      
-    </FlexGrid>
-    <SpacerH/>
+          flexGridColumnCount={[1, 1, 2]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem flexDirection={"column"} {...titleProps}>
+            <Img
+              src={`https://www.relevantgroup.com/wp-content/uploads/2017/03/TH_Hollywood-crop.jpg`}
+              width={`180px`}
+            ></Img>
+            <div
+              style={{
+                ...theme.typography.HeadingXSmall,
+                ...{
+                  backgroundColor: `rgb(23,55,94)`,
+                  display: `flex`,
+                  justifyContent: `center`,
+                  borderRadius: theme.borders.radius200,
+                  color: theme.colors.white,
+                  padding: `${theme.sizing.scale400} ${theme.sizing.scale1200}`,
+                },
+              }}
+            >
+              Mon 11 Apr
+            </div>
+          </FlexGridItem>
+          <FlexGridItem flexDirection={"column"} {...quoteProps}>
+            <div
+              style={{
+                ...theme.typography.HeadingXSmall,
+                ...{
+                  backgroundColor: `rgb(198,217,241)`,
+                  display: `flex`,
+                  width: `100%`,
+                  justifyContent: `center`,
+                  borderRadius: theme.borders.radius200,
+                  padding: theme.sizing.scale400,
+                },
+              }}
+            >
+              Quote of the Day:
+            </div>
+            <div
+              style={{
+                ...theme.typography.MonoLabelMedium,
+                ...{ padding: theme.sizing.scale400 },
+              }}
+            >
+              Life's tough, get a helment.
+            </div>
+          </FlexGridItem>
+        </FlexGrid>
+        <SpacerH />
         <FlexGrid
-      flexGridColumnCount={[1, 1, 1]}
-      flexGridColumnGap="scale800"
-      flexGridRowGap="scale800"
-    >
-      <FlexGridItem {...itemProps}> METRICS 1C</FlexGridItem>
-      
-    </FlexGrid>
+          flexGridColumnCount={[1, 1, 2]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem {...outlookProps}>
+            <FlexGrid
+              flexGridColumnCount={[3, 3, 3]}
+
+            >
+              <FlexGridItem {...outlookTitleProps} flex={`4`}> {``} </FlexGridItem>
+              <FlexGridItem {...outlookTitleProps} color={theme.colors.white} flex={`2`}> Today </FlexGridItem>
+              <FlexGridItem {...outlookTitleProps} color={theme.colors.white} flex={`2`}> Yesterday </FlexGridItem>
+            </FlexGrid>  
+          </FlexGridItem>
+          <FlexGridItem {...itemProps}>
+            <FlexGrid
+            flexGridColumnCount={[3, 3, 3]}
+          >
+            <FlexGridItem {...itemProps}> OUTLOOK 3C </FlexGridItem>
+            <FlexGridItem {...itemProps}> WEATHER 2C </FlexGridItem>
+            <FlexGridItem {...itemProps}> FORECAST 4C </FlexGridItem>
+          </FlexGrid>  
+          </FlexGridItem>
+          <FlexGridItem {...itemProps}> WEATHER 2C </FlexGridItem>
+          <FlexGridItem {...itemProps}> FORECAST 4C </FlexGridItem>
+          <FlexGridItem {...itemProps}> SCHEDULE </FlexGridItem>
+        </FlexGrid>
+        <SpacerH />
+        <FlexGrid
+          flexGridColumnCount={[1, 1, 1]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem {...itemProps}> VIP 1C </FlexGridItem>
+        </FlexGrid>
+        <SpacerH />
+        <FlexGrid
+          flexGridColumnCount={[1, 1, 1]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem {...itemProps}> GROUPS 1C </FlexGridItem>
+        </FlexGrid>
+        <SpacerH />
+        <FlexGrid
+          flexGridColumnCount={[1, 1, 1]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem {...itemProps}> EVENTS 1C</FlexGridItem>
+        </FlexGrid>
+        <SpacerH />
+        <FlexGrid
+          flexGridColumnCount={[1, 1, 1]}
+          flexGridColumnGap="scale800"
+          flexGridRowGap="scale800"
+        >
+          <FlexGridItem {...itemProps}> METRICS 1C</FlexGridItem>
+        </FlexGrid>
+     </div>
+     
       </div>
     </>
   );
 };
 const Spacer = styled("div", ({ $theme }) => {
   return {
-    display:`flex`,
-    width:`20px`,
-    height:'100%'
+    display: `flex`,
+    width: `20px`,
+    height: "100%",
   };
 });
 
 const SpacerH = styled("div", ({ $theme }) => {
   return {
-    display:`flex`,
-    width:`100%`,
-    height:'24px'
+    display: `flex`,
+    width: `100%`,
+    height: "24px",
   };
 });
 export default Orders;
