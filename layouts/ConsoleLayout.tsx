@@ -163,6 +163,12 @@ export default function ConsoleLayout({ children }) {
                           House
                         </ActiveConsoleLink> */}
                         {/**/}
+                        <ActiveConsoleLink blackList={[]} name="personAddFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          Groups
+                        </ActiveConsoleLink>
+                        <ActiveConsoleLink blackList={[]} name="ticketFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          Events
+                        </ActiveConsoleLink>
                         <ActiveConsoleLink blackList={[]} name="warningFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
                           Incidents
                         </ActiveConsoleLink>

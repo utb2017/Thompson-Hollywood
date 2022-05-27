@@ -1,12 +1,13 @@
 import { useState, useEffect, FC, ReactElement } from "react";
 import { useDispatchModalBase } from "../../../context/Modal";
-import { Button } from "baseui/button";
+import { Button, SHAPE, KIND } from "baseui/button";
 import { useStyletron } from "baseui";
 import { Card } from "baseui/card";
 import { useQuery } from "../../../context/Query";
 import { useScreen } from "../../../context/screenContext";
 import * as React from "react";
-import { KIND } from "baseui/button";
+
+import Plus from "baseui/icon/plus";
 import { useRouter } from "next/router";
 import { useUser } from "../../../context/userContext";
 import { useRouting } from "../../../context/routingContext";
@@ -241,8 +242,13 @@ const weatherCellProps: BlockProps = {
   //backgroundColor: `rgb(198,217,241)`,
   height: `100%`,
 };
+const  FakeVipData = [{"id":1,"firstName":"Viola","lastName":"Lutton","arrival":"8/17/2021","notes":"etiam faucibus cursus urna ut","roomNumber":8,"status":null,"departure":"8/24/2021"},
+{"id":2,"firstName":"Ashlie","lastName":"Battle","arrival":"4/27/2022","notes":"mauris vulputate elementum nullam varius","roomNumber":77,"status":null,"departure":"12/22/2021"},
+{"id":3,"firstName":"Nanny","lastName":"Widdecombe","arrival":"6/22/2021","notes":null,"roomNumber":82,"status":null,"departure":"1/31/2022"},
+{"id":4,"firstName":"Claudine","lastName":"Kettel","arrival":"8/20/2021","notes":"suspendisse ornare","roomNumber":80,"status":null,"departure":"6/3/2021"},
+{"id":5,"firstName":"Petronia","lastName":"Gabriel","arrival":"5/9/2022","notes":"erat eros viverra eget congue","roomNumber":96,"status":null,"departure":"1/12/2022"}]
 
-const Orders: FC = (): ReactElement => {
+const DailyFocus: FC = (): ReactElement => {
   const {
     setTotalsField,
     setQueryCollection,
@@ -261,6 +267,7 @@ const Orders: FC = (): ReactElement => {
   const router = useRouter();
   const { user } = useUser();
   const { setNavLoading } = useRouting();
+  const [vips, setVips] = useState(FakeVipData);
 
   /* add shit to the query questions*/
   useEffect(() => {
@@ -1341,7 +1348,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1358,7 +1365,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1375,7 +1382,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1405,7 +1412,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1422,7 +1429,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1439,7 +1446,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1456,7 +1463,7 @@ const Orders: FC = (): ReactElement => {
                     flex={`3`}
                   >
                     <OutlookCell>
-                      <InputCell></InputCell>
+                      <InputCell textAlign="left"></InputCell>
                     </OutlookCell>
                   </FlexGridItem>
                 </FlexGrid>
@@ -1464,13 +1471,13 @@ const Orders: FC = (): ReactElement => {
             </FlexGridItem>
           </FlexGrid>
           <SpacerH />
-
+  {/*   VIP ARRIVALS  */}
           <FlexGrid
             flexGridColumnCount={[1, 1, 1]}
             flexGridColumnGap="scale800"
             flexGridRowGap="scale800"
           >
-                        {/*   VIP ARRIVALS  */}
+                      
                         <FlexGridItem height={`100%`} {...outlookProps}>
               <div
                 style={{
@@ -1495,7 +1502,7 @@ const Orders: FC = (): ReactElement => {
                 </FlexGrid>
 
                 <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`2`}>
                     <OutlookCellTitle>{` Last Name & First  `}</OutlookCellTitle>
                   </FlexGridItem>
                   <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
@@ -1510,7 +1517,7 @@ const Orders: FC = (): ReactElement => {
                   <FlexGridItem
                     {...outlookSubTitleProps}
                     //color={theme.colors.white}
-                    flex={`1`}
+                    flex={`3`}
                   >
                     <OutlookCellTitle>{` Notes `}</OutlookCellTitle>
                   </FlexGridItem>
@@ -1530,313 +1537,493 @@ const Orders: FC = (): ReactElement => {
                   </FlexGridItem>
                 </FlexGrid>
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`Departures`}
-                    </OutlookCell>
+                {
+                  vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`2`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.firstName} ${vip.lastName}`}
+                    </VIPCell>
                   </FlexGridItem>
                   <FlexGridItem
                     {...outlookCellProps}
                     //color={theme.colors.white}
                     flex={`1`}
+                    height={`100%`}
                   >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
+                    <VIPCell>
+                      {`${vip.roomNumber}`}
+                    </VIPCell>
                   </FlexGridItem>
                   <FlexGridItem
                     {...outlookCellProps}
                     //color={theme.colors.white}
                     flex={`1`}
+                    height={`100%`}
                   >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
+                    <VIPCell>
+                      {`${vip.arrival}`}
+                    </VIPCell>
                   </FlexGridItem>
                   <FlexGridItem
                     {...outlookCellProps}
                     //color={theme.colors.white}
                     flex={`1`}
+                    height={`100%`}
                   >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
+                    <VIPCell>
+                      {`${vip.departure}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`3`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.notes||`No Notes`}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`MGCM`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.status}`}
+                    </VIPCell>
                   </FlexGridItem>
                 </FlexGrid>
+})
+                }
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`Total Guests`}
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
+                
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`Occ Rooms`}
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`Occupancy % `}
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
 
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`Forecasted Occ. %`}
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
-
-                <FlexGrid height={`100%`} flexGridColumnCount={[4, 4, 4]}>
-                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
-                    <OutlookCell style={{ paddingLeft: `4px` }}>
-                      {`ADR`}
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                  >
-                    <OutlookCell>
-                      <InputCell></InputCell>
-                    </OutlookCell>
-                  </FlexGridItem>
-                </FlexGrid>
               </div>
             </FlexGridItem>
           </FlexGrid>
+
+          <CenterLineBox>
+            <CenterLine/>
+            <Button
+              onClick={() => alert("click")}
+              shape={SHAPE.circle}
+              kind={KIND.tertiary}
+              overrides={{
+                BaseButton: {
+                  style: ({ $theme }) => ({
+                    border: `solid 4px rgb(23,55,94)`
+                  })
+                }
+              }}
+            >
+             
+               <Plus color="rgb(23,55,94)" size={56} />
+            </Button>
+          </CenterLineBox>
+
+
+
           <SpacerH />
+
+
+
+
+
+
+
+
+
+
+  {/*   GROUP ARRIVALS  */}
           <FlexGrid
             flexGridColumnCount={[1, 1, 1]}
             flexGridColumnGap="scale800"
             flexGridRowGap="scale800"
           >
-            <FlexGridItem {...itemProps}> GROUPS 1C </FlexGridItem>
+                      
+                        <FlexGridItem height={`100%`} {...outlookProps}>
+              <div
+                style={{
+                  ...{
+                    border: `solid 10px rgb(23,55,94)`,
+                    borderRadius: theme.borders.radius400,
+                    //padding: `${theme.sizing.scale400} ${theme.sizing.scale400}`,
+                    overflow: `hidden`,
+                  },
+                }}
+              >
+                <FlexGrid height={`100%`} flexGridColumnCount={[1, 1, 1]}>
+                  <FlexGridItem
+                    height={`30px`}
+                    {...outlookTitleProps}
+                    color={theme.colors.white}
+                    flex={`2`}
+                  >
+                    {" "}
+                    Group Arrivals{" "}
+                  </FlexGridItem>
+                </FlexGrid>
+
+                <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`2`}>
+                    <OutlookCellTitle>{` Last Name & First  `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Room `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Arrival `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Departure `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`3`}
+                  >
+                    <OutlookCellTitle>{` Notes `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                  >
+                    <OutlookCellTitle>{` Rate/Code `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                  >
+                    <OutlookCellTitle>{` Type of VIP `}</OutlookCellTitle>
+                  </FlexGridItem>
+                </FlexGrid>
+
+
+                {
+                  vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`2`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.firstName} ${vip.lastName}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.roomNumber}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.arrival}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.departure}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`3`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.notes||`No Notes`}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`MGCM`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.status}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                </FlexGrid>
+})
+                }
+
+                
+
+
+
+              </div>
+            </FlexGridItem>
           </FlexGrid>
+
+<CenterLineBox>
+  <CenterLine/>
+  <Button
+    onClick={() => alert("click")}
+    shape={SHAPE.circle}
+    kind={KIND.tertiary}
+    overrides={{
+      BaseButton: {
+        style: ({ $theme }) => ({
+          border: `solid 4px rgb(23,55,94)`
+        })
+      }
+    }}
+  >
+   
+     <Plus color="rgb(23,55,94)" size={56} />
+  </Button>
+</CenterLineBox>
           <SpacerH />
+  {/*   EVENT ARRIVALS  */}
           <FlexGrid
             flexGridColumnCount={[1, 1, 1]}
             flexGridColumnGap="scale800"
             flexGridRowGap="scale800"
           >
-            <FlexGridItem {...itemProps}> EVENTS 1C</FlexGridItem>
+                      
+                        <FlexGridItem height={`100%`} {...outlookProps}>
+              <div
+                style={{
+                  ...{
+                    border: `solid 10px rgb(23,55,94)`,
+                    borderRadius: theme.borders.radius400,
+                    //padding: `${theme.sizing.scale400} ${theme.sizing.scale400}`,
+                    overflow: `hidden`,
+                  },
+                }}
+              >
+                <FlexGrid height={`100%`} flexGridColumnCount={[1, 1, 1]}>
+                  <FlexGridItem
+                    height={`30px`}
+                    {...outlookTitleProps}
+                    color={theme.colors.white}
+                    flex={`2`}
+                  >
+                    {" "}
+                    Event Outlook{" "}
+                  </FlexGridItem>
+                </FlexGrid>
+
+                <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`2`}>
+                    <OutlookCellTitle>{` Last Name & First  `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Room `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Arrival `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem {...outlookSubTitleProps} flex={`1`}>
+                    <OutlookCellTitle>{` Departure `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`3`}
+                  >
+                    <OutlookCellTitle>{` Notes `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                  >
+                    <OutlookCellTitle>{` Rate/Code `}</OutlookCellTitle>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookSubTitleProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                  >
+                    <OutlookCellTitle>{` Type of VIP `}</OutlookCellTitle>
+                  </FlexGridItem>
+                </FlexGrid>
+
+
+                {
+                   vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`2`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.firstName} ${vip.lastName}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.roomNumber}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.arrival}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.departure}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`3`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.notes||`No Notes`}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`MGCM`}
+                    </VIPCell>
+                  </FlexGridItem>
+                  <FlexGridItem
+                    {...outlookCellProps}
+                    //color={theme.colors.white}
+                    flex={`1`}
+                    height={`100%`}
+                  >
+                    <VIPCell>
+                      {`${vip.status}`}
+                    </VIPCell>
+                  </FlexGridItem>
+                </FlexGrid>
+})
+                }
+
+                
+
+
+
+              </div>
+            </FlexGridItem>
           </FlexGrid>
+
+<CenterLineBox>
+  <CenterLine/>
+  <Button
+    onClick={() => alert("click")}
+    shape={SHAPE.circle}
+    kind={KIND.tertiary}
+    overrides={{
+      BaseButton: {
+        style: ({ $theme }) => ({
+          border: `solid 4px rgb(23,55,94)`
+        })
+      }
+    }}
+  >
+   
+     <Plus color="rgb(23,55,94)" size={56} />
+  </Button>
+</CenterLineBox>
           <SpacerH />
-          <FlexGrid
-            flexGridColumnCount={[1, 1, 1]}
-            flexGridColumnGap="scale800"
-            flexGridRowGap="scale800"
-          >
-            <FlexGridItem {...itemProps}> METRICS 1C</FlexGridItem>
-          </FlexGrid>
+         
+         
+
         </div>
       </div>
     </>
   );
 };
+const CenterLine = styled("div", ({ $theme }) => {
+  return {
+    display: `flex`,
+    width: `3px`,
+    height: "40px",
+    backgroundColor: "rgb(23,55,94)",
+    //justifyContent: "center",
+    //alignContent: "center",
+    //alignItems: "center",
+  };
+});
+const CenterLineBox = styled("div", ({ $theme }) => {
+  return {
+    display: `flex`,
+    width: `100%`,
+    height: "88px",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    flexDirection:'column'
+  };
+});
 const Spacer = styled("div", ({ $theme }) => {
   return {
     display: `flex`,
@@ -1878,6 +2065,25 @@ const QuoteOutput = styled("div", ({ $theme }) => {
       //backgroundColor: "rgb(198,217,241)",
       padding: $theme.sizing.scale400,
     },
+  };
+});
+
+const VIPCell = styled("div", ({ $theme }) => {
+  return {
+    borderRight: `solid 1px rgb(23,55,94)`,
+    borderBottom: `solid 1px rgb(23,55,94)`,
+    overflow: `hidden`,
+    width: `100%`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: $theme.sizing.scale500,
+    fontWeight: "500",
+    lineHeight: $theme.sizing.scale600,
+    height: $theme.sizing.scale1200,
+    alignText:'center'
+    //backgroundColor:'red'
+    //paddingLeft: $theme.sizing.scale100,
   };
 });
 
@@ -1930,8 +2136,11 @@ const OutlookCellTitle = styled("div", ({ $theme }) => {
     lineHeight: $theme.sizing.scale600,
   };
 });
-
-const InputCell = () => {
+interface TestProps {
+  textAlign?: 'center' | 'left';
+  id?: string;
+}
+const InputCell = ({textAlign = 'center', id = 'McGee'}: TestProps) => {
   const [value, setValue] = React.useState("");
 
   const [isActive, setIsActive] = useState(false);
@@ -1950,12 +2159,12 @@ const InputCell = () => {
             borderColor: isActive
               ? `rgb(23,55,94)`
               : $theme.colors.contentInversePrimary,
-            height: $theme.sizing.scale800,
+            height: `23px`,
           }),
         },
         Input: {
           style: ({ $theme }) => ({
-            textAlign: "center",
+            textAlign: textAlign,
           }),
         },
         InputContainer: {
@@ -1967,4 +2176,4 @@ const InputCell = () => {
     />
   );
 };
-export default Orders;
+export default DailyFocus;
