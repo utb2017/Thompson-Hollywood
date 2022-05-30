@@ -153,25 +153,38 @@ export default function ConsoleLayout({ children }) {
                         <Label1>{"LAXTH"}</Label1>
                       </NavHeader>
                       <div>
-                        <ActiveConsoleLink blackList={[]} name="graphFilled" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>
+                        <ActiveConsoleLink blackList={[]} name="graph" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>
                           Focus
                         </ActiveConsoleLink>
-                        <ActiveConsoleLink blackList={[]} name="shieldFilled" href={"/[property]/vip/[filter]"} as={`/${'LAXTH'}/vip/arriving`}>
+
+                        <ActiveConsoleLink blackList={[]} name="shield" href={"/[property]/vip/[filter]"} as={`/${'LAXTH'}/vip/arriving`}>
                           VIP's
                         </ActiveConsoleLink>
+
+                        <ActiveConsoleLink blackList={[]} name="personAdd" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          Groups
+                        </ActiveConsoleLink>
+
+                        <ActiveConsoleLink blackList={[]} name="ticket" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          Events
+                        </ActiveConsoleLink>
+
+                        <ActiveConsoleLink blackList={[]} name="warning" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          Incidents
+                        </ActiveConsoleLink>    
+
+                        <ActiveConsoleLink blackList={[]} name="calendar" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                          14-day forecast
+                        </ActiveConsoleLink>    
+                        
+
+  
+                                                                
                         {/* <ActiveConsoleLink blackList={[]} name="homeFilled" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>
                           House
                         </ActiveConsoleLink> */}
                         {/**/}
-                        <ActiveConsoleLink blackList={[]} name="personAddFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
-                          Groups
-                        </ActiveConsoleLink>
-                        <ActiveConsoleLink blackList={[]} name="ticketFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
-                          Events
-                        </ActiveConsoleLink>
-                        <ActiveConsoleLink blackList={[]} name="warningFilled" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
-                          Incidents
-                        </ActiveConsoleLink>
+
                       </div>
                     </div>
                   </NavList>

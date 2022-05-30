@@ -23,6 +23,8 @@ import { BlockProps } from "baseui/block";
 import { Img } from "react-image";
 import { H5, Label1 } from "baseui/typography";
 
+
+
 const ITEMS = [
   { label: "Item One" },
   { label: "Item Two" },
@@ -1472,6 +1474,7 @@ const DailyFocus: FC = (): ReactElement => {
           </FlexGrid>
           <SpacerH />
   {/*   VIP ARRIVALS  */}
+          
           <FlexGrid
             flexGridColumnCount={[1, 1, 1]}
             flexGridColumnGap="scale800"
@@ -2039,7 +2042,7 @@ const SpacerH = styled("div", ({ $theme }) => {
     height: "24px",
   };
 });
-
+ 
 const LightBlue = styled("div", ({ $theme }) => {
   return {
     display: `flex`,
