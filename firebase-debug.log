@@ -1,0 +1,61 @@
+[debug] [2022-05-30T16:07:38.068Z] ----------------------------------------------------------------------
+[debug] [2022-05-30T16:07:38.071Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\westg\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2022-05-30T16:07:38.071Z] CLI Version:   11.0.1
+[debug] [2022-05-30T16:07:38.071Z] Platform:      win32
+[debug] [2022-05-30T16:07:38.072Z] Node Version:  v16.15.0
+[debug] [2022-05-30T16:07:38.073Z] Time:          Mon May 30 2022 09:07:38 GMT-0700 (Pacific Daylight Time)
+[debug] [2022-05-30T16:07:38.073Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-05-30T16:07:38.175Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-05-30T16:07:38.175Z] > authorizing via signed-in user (utb2017@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Thompson-Hollywood
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2022-05-30T16:08:22.239Z] Using project from CLI flag: thompson-hollywood
+[debug] [2022-05-30T16:08:22.241Z] > refreshing access token with scopes: []
+[debug] [2022-05-30T16:08:22.241Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-05-30T16:08:22.390Z] <<< HTTP RESPONSE 200 {"date":"Mon, 30 May 2022 16:08:23 GMT","expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-05-30T16:08:22.438Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/thompson-hollywood [none]
+[debug] [2022-05-30T16:08:22.859Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/thompson-hollywood 200
+[debug] [2022-05-30T16:08:22.859Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/thompson-hollywood {"projectId":"thompson-hollywood","projectNumber":"721374836916","displayName":"Thompson Hollywood","name":"projects/thompson-hollywood","resources":{"hostingSite":"thompson-hollywood","storageBucket":"thompson-hollywood.appspot.com","locationId":"us-central"},"state":"ACTIVE"}
+[info] i  Using project thompson-hollywood (Thompson Hollywood) 
+[info] 
+=== Functions Setup
+[info] 
+[info] A functions directory will be created in your project with sample code
+[info] pre-configured. Functions can be deployed with firebase deploy.
+[info] 
+[debug] [2022-05-30T16:08:22.882Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-05-30T16:08:22.882Z] > authorizing via signed-in user (utb2017@gmail.com)
+[debug] [2022-05-30T16:08:22.882Z] [iam] checking project thompson-hollywood for permissions ["firebase.projects.get"]
+[debug] [2022-05-30T16:08:22.882Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/thompson-hollywood:testIamPermissions [none]
+[debug] [2022-05-30T16:08:22.883Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/thompson-hollywood:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2022-05-30T16:08:23.150Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/thompson-hollywood:testIamPermissions 200
+[debug] [2022-05-30T16:08:23.150Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/thompson-hollywood:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2022-05-30T16:08:23.150Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/cloudfunctions.googleapis.com [none]
+[debug] [2022-05-30T16:08:23.151Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/runtimeconfig.googleapis.com [none]
+[debug] [2022-05-30T16:08:23.576Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/runtimeconfig.googleapis.com 200
+[debug] [2022-05-30T16:08:23.576Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2022-05-30T16:08:23.583Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/cloudfunctions.googleapis.com 200
+[debug] [2022-05-30T16:08:23.583Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/thompson-hollywood/services/cloudfunctions.googleapis.com [omitted]

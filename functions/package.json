@@ -30,6 +30,7 @@
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.1",
     "pdfjs": "^2.4.5",
+    "playwright": "^0.13.0",
     "twilio": "^3.32.0",
     "typesaurus": "^7.1.0",
     "weeknumber": "^1.2.1"

@@ -5,6 +5,7 @@ import { useStyletron } from "baseui";
 import { Card } from "baseui/card";
 import { useQuery } from "../../../context/Query";
 import { useScreen } from "../../../context/screenContext";
+import VIPcreate from "../../Modals/VIPcreate";
 import * as React from "react";
 
 import Plus from "baseui/icon/plus";
@@ -326,6 +327,10 @@ const DailyFocus: FC = (): ReactElement => {
         },
       },
     });
+  };
+  const _VIPcreate = () => {
+    const component: () => ReactElement = () => <VIPcreate />;
+    openModalBase(component, true);
   };
   const { text, author } = Quote.getQuote();
   const { data, isLoading, errorMessage } = useOpenWeather({
@@ -1628,7 +1633,7 @@ const DailyFocus: FC = (): ReactElement => {
           <CenterLineBox>
             <CenterLine/>
             <Button
-              onClick={() => alert("click")}
+              onClick={() => _VIPcreate()}
               shape={SHAPE.circle}
               kind={KIND.tertiary}
               overrides={{
@@ -1981,7 +1986,7 @@ const DailyFocus: FC = (): ReactElement => {
 <CenterLineBox>
   <CenterLine/>
   <Button
-    onClick={() => alert("click")}
+    onClick={() => _VIPcreate()}
     shape={SHAPE.circle}
     kind={KIND.tertiary}
     overrides={{
