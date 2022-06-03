@@ -9,8 +9,8 @@ import firebase, {
   fireCloud,
   addCredit,
   findAddCustomer,
-  createAuthUser 
-} from "../../firebase/clientApp"
+  createAuthUser,
+} from "../../firebase/clientApp";
 import { useUser } from "../../context/userContext";
 import { useFirestoreQuery } from "../../hooks/useFirestoreQuery";
 import { useRouting } from "../../context/routingContext";
@@ -34,15 +34,21 @@ import { FormControl } from "baseui/form-control";
 import { Select, TYPE } from "baseui/select";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { useDispatchModalBase } from "../../context/Modal";
-import { Toast, KIND, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
+import {
+  Toast,
+  KIND,
+  ToasterContainer,
+  toaster,
+  PLACEMENT,
+} from "baseui/toast";
 import { Tag, VARIANT } from "baseui/tag";
 import SVGIcon from "../SVGIcon";
 import { useQuery } from "../../context/Query";
-import { Accordion, Panel } from 'baseui/accordion';
+import { Accordion, Panel } from "baseui/accordion";
 import { Textarea } from "baseui/textarea";
-
-import { Card, StyledBody, StyledAction } from 'baseui/card';
-//import { ProductClass } from "./types";
+import dateFormat from "dateformat";
+import { Card, StyledBody, StyledAction } from "baseui/card";
+//import { VIPClass } from "./types";
 
 import { FileUploader } from "baseui/file-uploader";
 const options = { timeZone: "America/Los_Angeles" };
@@ -52,163 +58,15 @@ const end = new Date(d);
 start.setUTCHours(0, 0, 0, 0);
 end.setUTCHours(1, 0, 0, 0);
 
-
 interface Params {
-  value: any[],
-  option: any,
-  type: "clear" | 'select' | 'remove'
-}
-interface Collection {
-  active: boolean | null;
-  cartLimit: number | null;
-  description: string | null;
-  featured: boolean | null;
-  flower: boolean | null;
-  genome: boolean | null;
-  id?: string | null;
-  img: string | null;
-  filePath: string | null;
-  key: string | null;
-  menuOrder?: number | null;
-  onSale: boolean | null;
-  saleCode: string | null;
-  saleTitle: string | null;
-  saleRate: number | null;
-  sales?: number | null;
-  sold?: number | null;
-  title: string | null;
-  total?: number | null;
-  weight: boolean | null;
-}
-interface Brand {
-  //key?:string,
-  active: boolean | null;
-  title: string | null;
-  description: string | null;
-  total?: number | null;
-  cartLimit: number | null;
-  onSale: boolean | null;
-  saleRate: number | null;
-  menuOrder?: number | null;
-  featured: boolean | null;
-  sold?: number | null;
-  sales?: number | null;
-  id?: string | null;
-  img: string | null;
-  filePath: string | null;
+  value: any[];
+  option: any;
+  type: "clear" | "select" | "remove";
 }
 type Selected = {
   label: string | number | Date;
   value: string | number | Date;
 };
-class ProductClass {
-  id: string | null;
-  genome: Selected;
-  brandID: string;
-  collectionIDs: string[];
-  sold: number;
-  genomeID: string;
-  wholesale: number;
-  active: boolean;
-  price: number;
-  comparePrice: number;
-  //effects: object;
-  //collection: string;
-  thc: number;
-  onSale: boolean;
-  inventory: number;
-  saleTitle: string;
-  weight: string;
-  queryIDs: string[];
-  saleRate: null | number | string;
-  //brandID: string;
-  type: Selected;
-  typeID: string;
-  filePath: string;
-  cbd: number | string;
-  img: string;
-  collections: Selected[];
-  key: string;
-  description: string;
-  brand: Selected;
-  saleCode: string;
-  size: string;
-  name: string;
-  qty?: number;
-  uid?: string;
-
-  constructor(
-    id: string | null,
-    genome: Selected,
-    //brandID: string,
-    collectionIDs: string[],
-    sold: number,
-    genomeID: string,
-    wholesale: number,
-    active: boolean,
-    price: number,
-    comparePrice: number,
-    //effects: object,
-    //collection: string,
-    thc: number,
-    onSale: boolean,
-    inventory: number,
-    saleTitle: string,
-    weight: string,
-    queryIDs: string[],
-    saleRate: null | number | string,
-    brandID: string,
-    type: Selected,
-    typeID: string,
-    filePath: string,
-    cbd: number | string,
-    img: string,
-    collections: Selected[],
-    key: string,
-    description: string,
-    brand: Selected,
-    saleCode: string,
-    size: string,
-    name: string,
-    qty?: number,
-    uid?: string,
-  ) {
-    this.id = id;
-    this.genome = genome;
-    //this.brandID = brandID;
-    this.collectionIDs = collectionIDs;
-    this.sold = sold;
-    this.genomeID = genomeID;
-    this.wholesale = wholesale;
-    this.active = active;
-    this.price = price;
-    this.comparePrice = comparePrice;
-    //this.effects = effects;
-    //this.collection = collection;
-    this.thc = thc;
-    this.onSale = onSale;
-    this.inventory = inventory;
-    this.saleTitle = saleTitle;
-    this.weight = weight;
-    this.queryIDs = queryIDs;
-    this.saleRate = saleRate;
-    this.brandID = brandID;
-    this.type = type;
-    this.typeID = typeID;
-    this.filePath = filePath;
-    this.cbd = cbd;
-    this.img = img;
-    this.collections = collections;
-    this.key = key;
-    this.description = description;
-    this.brand = brand;
-    this.saleCode = saleCode;
-    this.size = size;
-    this.name = name;
-    this.qty = qty;
-    this.uid = uid;
-  }
-}
 interface Errors {
   name?: string;
   code?: string;
@@ -222,44 +80,86 @@ interface Errors {
   recurringDays?: string;
   server?: string;
 }
-interface ProductProps {
-  fireProduct: ProductClass;
+class VIPClass {
+  arrival?: string;
+  departure?: string;
+  details?: string;
+  fileName?: string;
+  firstName?: string;
+  id?: string;
+  image?: string;
+  lastName?: string;
+  notes?: string;
+  rateCode?: string;
+  reservationStatus?:
+    | "DUEIN"
+    | "DUEOUT"
+    | "CHECKEDIN"
+    | "CHECKEDOUT"
+    | "RESERVED"
+    | "NOSHOW"
+    | "CANCEL";
+  roomNumber?: string;
+  roomStatus?: [];
+  vipStatus?: [];
+  stays?: number;
+  constructor(
+    arrival?: string,
+    departure?: string,
+    details?: string,
+    fileName?: string,
+    firstName?: string,
+    id?: string,
+    image?: string,
+    lastName?: string,
+    notes?: string,
+    rateCode?: string,
+    reservationStatus?:
+      | "DUEIN"
+      | "DUEOUT"
+      | "CHECKEDIN"
+      | "CHECKEDOUT"
+      | "RESERVED"
+      | "NOSHOW"
+      | "CANCEL",
+    roomNumber?: string,
+    roomStatus?: [],
+    vipStatus?: [],
+    stays?: number
+  ) {
+    this.arrival = arrival;
+    this.departure = departure;
+    this.details = details;
+    this.firstName = firstName;
+    this.fileName = fileName;
+    this.id = id;
+    this.image = image;
+    this.lastName = lastName;
+    this.notes = notes;
+    this.rateCode = rateCode;
+    this.reservationStatus = reservationStatus;
+    this.roomNumber = roomNumber;
+    this.roomStatus = roomStatus;
+    this.vipStatus = vipStatus;
+    this.stays = stays;
+  }
 }
-const defaultForm = new ProductClass(
-  null, // id: string,
-  null, // genome: Selected,
-  //null, // brandID: string,
-  [], // collectionIDs: string[],
-  0, // sold: number,
-  null, // genomeID: string,
-  null, // wholesale: number,
-  false, // active: boolean,
-  null, // price: number,
-  null, // comparePrice: number,
-  //{}, // effects: object,
-  //null, // collection: string,
-  null, // thc: number,
-  false, // onSale: boolean,
-  null, // inventory: number,
-  null, // saleTitle: string,
-  null, // weight: string,
-  [], // queryIDs: string[],
-  null, // saleRate: null|number|string,
-  null, // brandID: string,
-  null, // type: string,
-  null, // typeID: string,
-  null, // filePath: string,
-  null, // cbd: number|string,
-  null, // img: string,
-  null, // collections: Selected[],
-  null, // key:string,
-  null, // description: string,
-  null, // brand: Selected,
-  null, // saleCode: string,
-  null, // size: string,
-  null, // name: string,
-  0,
-  null,
+const defaultForm = new VIPClass(
+  null, // arrival?: string,
+  null, // departure?: string,
+  null, // details?: string,
+  null, // fileName?: string
+  null, // firstName?: string,
+  null, // id?: string,
+  null, // image?: string,
+  null, // lastName?: string,
+  null, // notes?: string,
+  null, // rateCode?: string,
+  null, // reservationStatus?:'DUEIN'|'DUEOUT'|'CHECKEDIN'|'CHECKEDOUT'|'RESERVED'|'NOSHOW'|'CANCEL',
+  null, // roomNumber?: string,
+  null, // roomStatus?: [],
+  null, // vipStatus?: [],
+  null, // stays?:number,
 );
 const methods: Selected[] = [
   { value: "flatRate", label: "Flat" },
@@ -304,63 +204,55 @@ const HappyHourSpacer = styled("div", {
   height: "60px",
 });
 
-
-
-
-
 type INullableReactText = React.ReactText | null;
 
 interface TimeStamp {
-  seconds: number,
-  nanoSeconds: number
+  seconds: number;
+  nanoSeconds: number;
 }
 
-
+const isValidString = (x: any) => {
+  return Boolean(x && typeof x === "string" && x.length > 0);
+};
 const isValidObject = (x: any) => {
   return Boolean(
     x &&
-    (typeof x === "object" || typeof x === "function") &&
-    x.hasOwnProperty("value") &&
-    x.hasOwnProperty("label") &&
-    (typeof x.value === "string" || typeof x.value === "number") && (typeof x.label === "string" || typeof x.value === "number")
+      (typeof x === "object" || typeof x === "function") &&
+      x.hasOwnProperty("value") &&
+      x.hasOwnProperty("label") &&
+      (typeof x.value === "string" || typeof x.value === "number") &&
+      (typeof x.label === "string" || typeof x.value === "number")
   );
 };
-const convertTimestamp = (timeStamp: TimeStamp | Date): Date | null | Date[] => {
-
+const convertTimestamp = (
+  timeStamp: TimeStamp | Date
+): Date | null | Date[] => {
   if (timeStamp && Array.isArray(timeStamp)) {
-    return timeStamp
+    return timeStamp;
   }
   if (timeStamp && timeStamp instanceof Date) {
-    return timeStamp
+    return timeStamp;
   }
-  if (timeStamp && typeof timeStamp === 'string' && Date.parse(timeStamp)) {
-    return new Date(timeStamp)
+  if (timeStamp && typeof timeStamp === "string" && Date.parse(timeStamp)) {
+    return new Date(timeStamp);
   }
-  if (!(timeStamp instanceof Date) && typeof timeStamp === "object" && timeStamp?.seconds && (typeof timeStamp.seconds === 'number' || typeof timeStamp.seconds === 'string')) {
+  if (
+    !(timeStamp instanceof Date) &&
+    typeof timeStamp === "object" &&
+    timeStamp?.seconds &&
+    (typeof timeStamp.seconds === "number" ||
+      typeof timeStamp.seconds === "string")
+  ) {
     let dateStart = new Date(1970, 0, 1); // Epoch
     dateStart.setSeconds(Number(timeStamp.seconds));
-    return dateStart
+    return dateStart;
   }
-  return null
-}
-const defaultDays: Selected[] = [
-  { label: "Sundays", value: 0 },
-  { label: "Mondays", value: 1 },
-  { label: "Tuesdays", value: 2 },
-  { label: "Wednesdays", value: 3 },
-  { label: "Thursdays", value: 4 },
-  { label: "Fridays", value: 5 },
-  { label: "Saturdays", value: 6 },
-]
-const defaultGenome: Selected[] = [
-  { label: "Sativa", value: 'sativa' },
-  { label: "Hybrid", value: 'hybrid' },
-  { label: "Indica", value: 'indica' },
-  { label: "CBD", value: 'cbd' },
-];
+  return null;
+};
+
 const FlexSpacer = styled("div", ({ $theme, $width = `16px` }) => {
   return {
-    height: '100%',
+    height: "100%",
     width: $width,
   };
 });
@@ -403,7 +295,7 @@ const CreateProduct = () => {
     prevPage,
     dataList,
     queryLoader,
-    setDataList
+    setDataList,
   } = useQuery();
 
   const nameRef = useRef<HTMLDivElement>(null);
@@ -413,7 +305,6 @@ const CreateProduct = () => {
   const priceRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
-  const [availableDays, setAvailableDays] = useState(defaultDays);
   const executeScroll = (ref: { current: HTMLDivElement | null }) => {
     width < 450 && ref && ref.current.scrollIntoView();
   };
@@ -425,8 +316,9 @@ const CreateProduct = () => {
   const { setNavLoading, navLoading } = useRouting();
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
   const { enqueue, dequeue } = useSnackbar();
-  const fireCollections = useFirestoreQuery(user?.uid && firebase.firestore().collection("collections"));
-  const fireBrands = useFirestoreQuery(user?.uid && firebase.firestore().collection("brands"));
+  const VIPCollection = useFirestoreQuery(
+    firebase.firestore().collection("VIPS")
+  );
 
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
@@ -450,109 +342,152 @@ const CreateProduct = () => {
     }
   };
 
-  /* collection setup */
-  useEffect(() => {
-    console.log("collection setup");
-    let _collections: Selected[] = [];
-    console.log(fireCollections.data);
-    const collections = fireCollections.data as Collection;
-    console.log(collections);
-
-    if (collections) {
-      for (const key in collections) {
-        _collections.push({ value:`${collections[key].id}`, label:`${collections[key].title}` });
-      }
-    }
-
-    setCollectionList(_collections);
-    return () => {
-      setCollectionList([]);
-    };
-  }, [fireCollections]);
-
-  /* brand setup */
-  useEffect(() => {
-    let _brands: Selected[] = [];
-    const brands = fireBrands.data as Brand;
-    if (brands) {
-      for (const key in brands) {
-        _brands.push({ value: brands[key].id, label: brands[key].title });
-      }
-    }
-    setBrandList(_brands);
-    return () => {
-      setBrandList([]);
-    };
-  }, [fireBrands.data]);
-
-
-
-
   /* form setup */
   useEffect(() => {
     console.log("form setup");
-    setForm({ ...defaultForm } as ProductClass);
+    setForm({ ...defaultForm } as VIPClass);
     return () => {
       setForm({});
       setError({});
     };
   }, [defaultForm]);
 
-
-
-
-
   const createProduct = async () => {
-    const _form: ProductClass = { ...form };
+    const _form: VIPClass = { ...form };
     // ** NAME **
-    if (isEmpty(_form?.name)) {
-      nameRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ name: "Name Required" } }));
+    if (isEmpty(_form?.firstName)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ firstName: "First Name Required" },
+      }));
       return;
     }
-    // ** COLLECTION **
-    if (!(_form.collections && _form.collections.length)) {
-      collectionRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ collections: "Collection Required" } }));
+    // ** NAME **
+    if (isEmpty(_form?.lastName)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ lastName: "Last Name Required" },
+      }));
       return;
     }
-    // ** BRAND **
-    //alert(JSON.stringify(_form.brand))
-    if (!(_form.brand instanceof Array && isValidObject(_form.brand[0]))) {
+    // ** Arrival **
+    if (isEmpty(_form?.arrival)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ arrival: "Arrival Required" },
+      }));
+      return;
+    }
+    // ** Departure **
+    if (isEmpty(_form?.departure)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ departure: "Departure Required" },
+      }));
+      return;
+    }
+    // ** Rate **
+    if (isEmpty(_form?.rateCode)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ rateCode: "Rate Code Required" },
+      }));
+      return;
+    }
+    // ** Vip STatus **
+    if (isEmpty(_form?.vipStatus)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ vipStatus: "Rate Code Required" },
+      }));
+      return;
+    }
 
-      brandRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ brand: "Brand Required" } }));
-      return;
+    
+
+
+
+    const clientData = { ..._form }
+
+    // FirstName
+    if (!isValidString(clientData.firstName)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ firstName: "First Name Required" },
+      }));
     }
-    _form.brand = _form.brand[0]
-    // ** PRICE **
-    if (isEmpty(_form?.price)) {
-      priceRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ price: "Price Required" } }));
-      return;
+    // LastName
+    if (!isValidString(clientData.lastName)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ lastName: "Last Name Required" },
+      }));
+     }
+    // Rate
+    if (!isValidString(clientData.rateCode)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ rateCode: "Rate Code Required" },
+      }));
     }
-    // ** WHOLESALE **
-    if (isEmpty(_form?.wholesale)) {
-      priceRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ wholesale: "Wholesale Required" } }));
-      return;
+    // Arrival
+    if (!Array.isArray(clientData.arrival)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ arrival: "Arrival Date Required" },
+      }));
     }
-    // ** WHOLESALE **
-    if (isEmpty(_form?.inventory)) {
-      priceRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
-      setError((oldError: Errors) => ({ ...oldError, ...{ inventory: "Inventory Required" } }));
-      return;
+    
+    clientData.arrival = dateFormat((Array.isArray(clientData.arrival) ? clientData.arrival[0] : clientData.arrival), 'ddd dd mmm');
+
+    // Departure
+    if (!Array.isArray(clientData.departure)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ departure: "Departure Date Required" },
+      }));
     }
+    clientData.departure = dateFormat((Array.isArray(clientData.departure) ? clientData.departure[0] : clientData.departure), 'ddd dd mmm');
+   
+    // Image
+    if (!isValidString(clientData.image)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ image: "Image Required" },
+      }));
+    }
+    // FileName
+    if (!isValidString(clientData.fileName)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ fileName: "File Name Required" },
+      }));
+    }
+    // VIPStatus
+    if (!Array.isArray(clientData.vipStatus)) {
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ vipStatus: "Status Required" },
+      }));
+    }
+
+    //alert(JSON.stringify(clientData))
 
 
     setLoading(true);
-    enqueue({ message: "Creating Product", progress: true }, DURATION.infinite);
+    enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
     try {
-      const updateProduct = firebase.functions().httpsCallable("createProduct");
-      const response = await updateProduct(_form);
+      const createVIP = firebase.functions().httpsCallable("createVIP");
+      const response = await createVIP(clientData);
       dequeue();
-      enqueue({ message: "Product Created", startEnhancer: ({ size }) => <Check size={size} /> }, DURATION.short);
-      closeModal()
+      enqueue(
+        {
+          message: "VIP Created",
+          startEnhancer: ({ size }) => <Check size={size} />,
+        },
+        DURATION.short
+      );
+      closeModal();
       if (response?.data?.success === true) {
         //alert(`${response?.data?.form}`)
         //console.log(response?.data?.form);
@@ -561,51 +496,56 @@ const CreateProduct = () => {
       }
     } catch (e) {
       //setError(`${e?.message || e}`);
-      setError((oldError: Errors) => ({ ...oldError, ...{ server: `Product not created.` } }));
+      setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ server: `VIP not created.` },
+      }));
       dequeue();
       showToast(`${e?.message || e}`);
-      enqueue({ message: `Your product wasn't created`, startEnhancer: ({ size }) => <DeleteAlt size={size} /> }, DURATION.short);
+      enqueue(
+        {
+          message: `Your VIP wasn't created`,
+          startEnhancer: ({ size }) => <DeleteAlt size={size} />,
+        },
+        DURATION.short
+      );
     } finally {
       setLoading(false);
     }
   };
 
-
-
-  const [data, setData] = useState(null)
-  const [progress, setProgress] = useState(null)
-  const [file, setFile] = useState(null)
-  const { fireCustomer } = useUser()
-  const taskRef = useRef(null)
-  const [photoURL, setPhotoURL] = useState(null)
-
+  const [data, setData] = useState(null);
+  const [progress, setProgress] = useState(null);
+  const [file, setFile] = useState(null);
+  const { fireCustomer } = useUser();
+  const taskRef = useRef(null);
+  const [photoURL, setPhotoURL] = useState(null);
 
   // useEffect(() => {
   //   alert(JSON.stringify(collectionList))
   // }, [collectionList]);
 
-
   const handleChange = (acceptedFiles) => {
     //e.stopPropagation()
     //alert(JSON.stringify(acceptedFiles))
-    setData(acceptedFiles[0])
-    setFile(acceptedFiles[0].name)
-    setError(false)
-    setPhotoURL(URL.createObjectURL(acceptedFiles[0]))
-  }
+    setData(acceptedFiles[0]);
+    setFile(acceptedFiles[0].name);
+    setError(false);
+    setPhotoURL(URL.createObjectURL(acceptedFiles[0]));
+  };
   const updateProfile = async (photoURL) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const fieldUpdate = { photoURL }
-      await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate)
-      NotificationManager.success("License Updated")
-      closeModal()
+      const fieldUpdate = { photoURL };
+      await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
+      NotificationManager.success("License Updated");
+      closeModal();
     } catch (e) {
-      setLoading(false)
-      setError(`${e?.message || e || 'ERROR'}`)
-      NotificationManager.error(e.message)
+      setLoading(false);
+      setError(`${e?.message || e || "ERROR"}`);
+      NotificationManager.error(e.message);
     }
-  }
+  };
   // const uploadImgComplete = async (filePath) => {
   //   (`${storage}/${file.name}`)
   //   try {
@@ -620,111 +560,152 @@ const CreateProduct = () => {
   //     return
   //   }
   // }
-  const uploadImgError = (e) => (setError(`${e?.message || e || 'ERROR'}`), setLoading(false))
+  const uploadImgError = (e) => (
+    setError(`${e?.message || e || "ERROR"}`), setLoading(false)
+  );
   const uploadImgNext = (snap) => {
-    return setProgress(~~((snap.bytesTransferred / snap.totalBytes) * 100))
-  }
-  const uploadImgToFireStorage = useCallback((acceptedFiles) => {
-    setLoading(true)
-    const file = acceptedFiles[0]
-    const filePath = `${"Products"}/${file.name}_${new Date().getTime()}`
-    taskRef.current = firebase
-      .storage()
-      .ref()
-      .child(filePath)
-      .put(file, { contentType: file.type })
+    return setProgress(~~((snap.bytesTransferred / snap.totalBytes) * 100));
+  };
+  const uploadImgToFireStorage = useCallback(
+    (acceptedFiles) => {
+      setLoading(true);
+      const file = acceptedFiles[0];
+      const filePath = `${"VIPs"}/${file.name}_${new Date().getTime()}`;
+      taskRef.current = firebase
+        .storage()
+        .ref()
+        .child(filePath)
+        .put(file, { contentType: file.type });
 
-    taskRef.current.on(
-      firebase.storage.TaskEvent.STATE_CHANGED,
-      uploadImgNext,
-      uploadImgError,
-      async () => {
-        try {
-          const photoURL = await taskRef.current.snapshot.ref.getDownloadURL()
-          setForm((oldForm:ProductClass) => ({ ...oldForm, ...{ photoURL: photoURL, filePath } }))
-          Boolean(fireCustomer?.data?.uid) && updateProfile(photoURL)
-          setProgress(0)
-          setLoading(false)
-          //closeModal()
-          return
-        } catch (e) {
-          setError(`${e?.message || e || 'ERROR'}`)
-          setLoading(false)
-          return
+      taskRef.current.on(
+        firebase.storage.TaskEvent.STATE_CHANGED,
+        uploadImgNext,
+        uploadImgError,
+        async () => {
+          try {
+            const photoURL =
+              await taskRef.current.snapshot.ref.getDownloadURL();
+            setForm((oldForm: VIPClass) => ({
+              ...oldForm,
+              ...{ image: photoURL, filePath },
+            }));
+            //Boolean(fireCustomer?.data?.uid) && updateProfile(photoURL)
+            setProgress(0);
+            setLoading(false);
+            //closeModal()
+            return;
+          } catch (e) {
+            setError(`${e?.message || e || "ERROR"}`);
+            setLoading(false);
+            return;
+          }
         }
-      }
-    )
-  }, [taskRef, user, data])
+      );
+    },
+    [taskRef, user, data]
+  );
 
-
-
-
-  const [imgURL, setImgURL] = useState(null)
-  const [arrivalState, setArrivalState] = useState([new Date()])
-
-
+  const [imgURL, setImgURL] = useState(null);
 
   const getImgURL = async () => {
-    const filePath = `placeholders/placeholder-images-image_license.png`
-    if (user?.uid) {
-      const storage = user.uid && firebase.storage()
-      const storageRef = storage && storage.ref()
-      let url = null
+    const filePath = `810-8105444_male-placeholder.png`;
+    if (true) {
+      const storage = firebase.storage();
+      const storageRef = storage && storage.ref();
+      let url = null;
       // "https://firebasestorage.googleapis.com/v0/b/bronto-eff70.appspot.com/o/placeholders%2Fstock-placeholder.png?alt=media&token=57d6b3da-4408-4867-beb7-7957669937dd"
-      if (
-        typeof filePath === "string" &&
-        filePath.length > 0 &&
-        storage
-      ) {
+      if (typeof filePath === "string" && filePath.length > 0 && storage) {
         try {
           url = await storageRef
             .child(`${typeof filePath === "string" ? filePath : ""}`)
-            .getDownloadURL()
+            .getDownloadURL();
         } catch (e) {
-          console.log("error")
-          console.log(e)
+          console.log("error");
+          console.log(e);
+          alert(JSON.stringify(e));
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       } else {
-        setLoading(false)
+        setLoading(false);
       }
-      return setImgURL(url)
+      
+      setForm((oldForm: VIPClass) => ({
+        ...oldForm,
+        ...{ image:url, fileName:filePath },
+      }));
+      return setImgURL(url);
     }
-  }
+  };
 
   useEffect(() => {
-    getImgURL()
-  }, [])
-
+    getImgURL();
+  }, []);
 
   return (
     <>
       <ModalHeader>Create VIP</ModalHeader>
       <ModalBody>
-
         {/** Name */}
         <FormSection ref={nameRef}>
-          <FormInput style={formStyle} label={<Label2>{"Name"}</Label2>} stack={true}>
-            <FormControl error={error?.name}>
+          <FormInput
+            style={formStyle}
+            label={<Label2>{"Name"}</Label2>}
+            stack={true}
+          >
+            <FormControl error={error?.firstName}>
               <Input
                 required
                 disabled={loading}
                 onChange={(e) => {
                   const str = e?.currentTarget?.value;
-                  setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ name: str } }));
+                  setForm((oldForm: VIPClass) => ({
+                    ...oldForm,
+                    ...{ firstName: str },
+                  }));
                 }}
-                value={form?.name}
+                value={form?.firstName}
                 onFocus={() =>
-                  //executeScroll(nameRef),
+                  //executeScroll(firstNameRef),
                   setError({})
                 }
-                key="name"
-                id="name"
-                name="name"
-                error={Boolean(error?.name)}
+                key="firstName"
+                id="firstName"
+                name="firstName"
+                error={Boolean(error?.firstName)}
                 type="text"
-                placeholder="ex. Jack Herrer"
+                placeholder="First Name"
+                overrides={{
+                  Root: {
+                    style: ({ $theme }) => ({
+                      marginBottom: "16px",
+                    }),
+                  },
+                }}
+              />
+            </FormControl>
+            <FormControl error={error?.lastName}>
+              <Input
+                required
+                disabled={loading}
+                onChange={(e) => {
+                  const str = e?.currentTarget?.value;
+                  setForm((oldForm: VIPClass) => ({
+                    ...oldForm,
+                    ...{ lastName: str },
+                  }));
+                }}
+                value={form?.lastName}
+                onFocus={() =>
+                  //executeScroll(lastNameRef),
+                  setError({})
+                }
+                key="lastName"
+                id="lastName"
+                name="lastName"
+                error={Boolean(error?.lastName)}
+                type="text"
+                placeholder="Last Name"
                 overrides={{
                   Root: {
                     style: ({ $theme }) => ({
@@ -738,73 +719,53 @@ const CreateProduct = () => {
         </FormSection>
         {/** Collection **/}
         <FormSection ref={collectionRef}>
-          <FormInput style={formStyle} label={<Label2>{"Dates"}</Label2>} stack={true}>
+          <FormInput
+            style={formStyle}
+            label={<Label2>{"Dates"}</Label2>}
+            stack={true}
+          >
             Arrival
-            <FormControl error={error?.collections}>
-  
-            <DatePicker
-              value={arrivalState}
-              onChange={({ date }) =>
-                setArrivalState(Array.isArray(date) ? date : [date])
-              }
-            />
-
+            <FormControl error={error?.arrival}>
+              <DatePicker
+                value={form?.arrival||[]}
+                onChange={({ date }) => {
+                  const arrival = Array.isArray(date) ? date : [date];
+                  setForm((oldForm: VIPClass) => ({
+                    ...oldForm,
+                    ...{ arrival },
+                  }));
+                }}
+                //quickSelect
+                overrides={{
+                  Popover: {
+                    props: {
+                      overrides: {
+                        Body: {
+                          style: ({ $theme }) => ({ zIndex: 1000 }),
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
             </FormControl>
-            Arrival
-            <FormControl error={error?.collections}>
-  
-            <DatePicker
-              value={arrivalState}
-              onChange={({ date }) =>
-                setArrivalState(Array.isArray(date) ? date : [date])
-              }
-            />
-
-            </FormControl>
-          </FormInput>
-        </FormSection>
-        {/** Brand **/}
-        <FormSection ref={brandRef}>
-          <FormInput style={formStyle} label={<Label2>{"Brand"}</Label2>} stack={true}>
-            <FormControl error={error?.brand}>
-              <Select
-                //size={(width < 375) ? SIZE.compact : SIZE.default}
-                options={brandList}
-                //multi
-                clearable={false}
-                value={form?.brand || []}
-                labelKey="label"
-                valueKey="value"
-                placeholder="Select brand"
-                maxDropdownHeight={`240px`}
-                onChange={(props: Params) => {
-                  const filteredString = [];
-                  const filteredSelected = []
-                  const { option, value, type } = props
-                  let filteredValue = value
-                  if (type === 'remove') {
-                    //filteredValue = ((value||[]).filter((x: Selected) => Number(x.value) !== Number(option.value))) 
-                  } else if (type === 'select') {
-                    //filteredValue = value
-                  } else if (type === 'clear') {
-                    //filteredValue = []
-                  }
-                  // for (const key in filteredValue) {
-                  //   const filteredSelect: Selected = { value: '', label: '' }
-                  //   filteredSelect.value = `${value[key].value}`
-                  //   filteredSelect.label = `${value[key].label}`
-                  //   filteredString.push(`${value[key].value}`);
-                  //   filteredSelected.push(filteredSelect);
-                  // }
-                  setForm((oldForm: ProductClass) => ({ ...oldForm, brand: value }));
-
+            Departure
+            <FormControl error={error?.departure}>
+              <DatePicker
+                value={form?.departure}
+                onChange={({ date }) => {
+                  const departure = Array.isArray(date) ? date : [date];
+                  setForm((oldForm: VIPClass) => ({
+                    ...oldForm,
+                    ...{ departure },
+                  }));
                 }}
                 overrides={{
                   Popover: {
                     props: {
                       overrides: {
                         Body: {
-                          style: ({ $theme }) => ({ zIndex: 100 }),
+                          style: ({ $theme }) => ({ zIndex: 1000 }),
                         },
                       },
                     },
@@ -814,159 +775,36 @@ const CreateProduct = () => {
             </FormControl>
           </FormInput>
         </FormSection>
-        {/** Image **/}
-        <FormSection ref={imageRef}>
-          <FormInput style={formStyle} label={<Label2>{"Image"}</Label2>} stack={true}>
-          {
-              <Card
-              overrides={{
-                Root: { style: { width: '100%' } },
-                HeaderImage: {
-                  style: ({ $theme }) => ({ minHeight: "193px" })
-                }
-              }}
-                headerImage={
-                  (photoURL && photoURL.length) ? photoURL : imgURL
-                }
-              // phoneNumber="Example card"
-              >
-                <StyledBody>
-                  <FileUploader
-
-                    // progressAmount is a number from 0 - 100 which indicates the percent of file transfer completed
-                    accept={["image/jpeg", "image/jpg", 'image/png']}
-                    onCancel={()=>{
-                      taskRef.current.cancel()
-                      setProgress(0)
-                      getImgURL()
-                      setPhotoURL(null)
-                    }}
-                    progressAmount={progress}
-                    progressMessage={
-                      progress
-                        ? `Uploading... ${progress}% of 100%`
-                        : ''
-                    }
-                    onDrop={(acceptedFiles, rejectedFiles) => {
-                      // handle file upload...
-                      console.log(acceptedFiles, rejectedFiles)
-                      if (acceptedFiles.length) {
-                        handleChange(acceptedFiles)
-                        uploadImgToFireStorage(acceptedFiles)
-                      }
-                      if(rejectedFiles.length){
-                        setError((oldError)=>({
-                          ...oldError,
-                          ...{phoneNumber:'Invalid type'}
-                        }))
-                      }
-                      
-
-                    }}
-                    errorMessage={error?.photoURL}
-                  />
-                </StyledBody>
-
-              </Card>}
-     
-          </FormInput>
-        </FormSection>
-        {/** PRICE */}
-        <FormSection ref={priceRef}>
-          <FormInput style={formStyle} label={<Label2>{"Pricing"}</Label2>} stack={true}>
+        {/** Details */}
+        <FormSection ref={detailsRef}>
+          <FormInput
+            style={formStyle}
+            label={<Label2>{"Details"}</Label2>}
+            stack={true}
+          >
             <FlexContainer>
-              <FormControl
-                error={error?.price}
-                caption={() => "Price"}
-                overrides={{
-                  Caption: {
-                    style: ({ $theme }) => ({
-
-                    })
-                  }
-                }}
-              >
-                <Input
-                  required
-                  startEnhancer='$'
-                  disabled={loading}
-                  onChange={(e) => {
-                    const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ price: Number(str) || '' } }));
-                  }}
-                  value={form?.price}
-                  onFocus={() =>
-                    //executeScroll(priceRef),
-                    setError({})
-                  }
-                  key="price"
-                  id="price"
-                  name="price"
-                  error={Boolean(error?.price)}
-                  type="number"
-                  placeholder="0.00"
-                  overrides={{
-                    Root: {
-                      style: ({ $theme }) => ({
-                        //marginBottom: "16px",
-                      }),
-                    },
-                  }}
-                />
-              </FormControl>
-              <FlexSpacer />
-              <FormControl caption={() => 'Compare price'} error={error?.comparePrice}>
+              <FormControl caption={() => "Room"} error={error?.roomNumber}>
                 <Input
                   //required
-                  startEnhancer='$'
                   disabled={loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ comparePrice: Number(str) || '' } }));
+                    setForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ roomNumber: str },
+                    }));
                   }}
-                  value={form?.comparePrice}
+                  value={form?.roomNumber}
                   onFocus={() =>
-                    //executeScroll(comparePriceRef),
+                    //executeScroll(thcRef),
                     setError({})
                   }
-                  key="comparePrice"
-                  id="comparePrice"
-                  name="comparePrice"
-                  error={Boolean(error?.comparePrice)}
-                  type="number"
-                  placeholder="0.00"
-                  overrides={{
-                    Root: {
-                      style: ({ $theme }) => ({
-                        //marginBottom: "16px",
-                      }),
-                    },
-                  }}
-                />
-              </FormControl>
-            </FlexContainer>
-            <FlexContainer>
-
-              <FormControl caption={() => 'Wholesale'} error={error?.wholesale}>
-                <Input
-                  required
-                  disabled={loading}
-                  startEnhancer='$'
-                  onChange={(e) => {
-                    const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ wholesale: Number(str) || '' } }));
-                  }}
-                  value={form?.wholesale}
-                  onFocus={() =>
-                    //executeScroll(wholesaleRef),
-                    setError({})
-                  }
-                  key="wholesale"
-                  id="wholesale"
-                  name="wholesale"
-                  error={Boolean(error?.wholesale)}
-                  type="number"
-                  placeholder="0.00"
+                  key="room"
+                  id="room"
+                  name="room"
+                  error={Boolean(error?.roomNumber)}
+                  type="text"
+                  placeholder="0402"
                   overrides={{
                     Root: {
                       style: ({ $theme }) => ({
@@ -976,94 +814,35 @@ const CreateProduct = () => {
                   }}
                 />
               </FormControl>
-
-
               <FlexSpacer />
+
               <FormControl
-                error={error?.inventory}
-                caption={() => "Inventory"}
-                overrides={{
-                  Caption: {
-                    style: ({ $theme }) => ({
-
-                    })
-                  }
-                }}
+                caption={() => "Room Status"}
+                error={error?.roomStatus}
               >
-                <Input
-                  required
-                  //startEnhancer='$'
-                  disabled={loading}
-                  onChange={(e) => {
-                    const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ inventory: Number(str) || '' } }));
-                  }}
-                  value={form?.inventory}
-                  onFocus={() =>
-                    //executeScroll(inventoryRef),
-                    setError({})
-                  }
-                  key="inventory"
-                  id="inventory"
-                  name="inventory"
-                  error={Boolean(error?.inventory)}
-                  type="number"
-                  placeholder="0"
-                  overrides={{
-                    Root: {
-                      style: ({ $theme }) => ({
-                        //marginBottom: "16px",
-                      }),
-                    },
-                  }}
-                />
-              </FormControl>
-            </FlexContainer>
-          </FormInput>
-        </FormSection>
-        {/** Details */}
-        <FormSection ref={detailsRef}>
-          <FormInput style={formStyle} label={<Label2>{"Details"}</Label2>} stack={true}>
-            <FlexContainer>
-              <FormControl caption={() => 'Type'} error={error?.type}>
                 <Select
-                  //size={(width < 375) ? SIZE.compact : SIZE.default}
-                  options={defaultGenome}
-                  //multi
-                  //clearable={false}
-                  value={form?.genome || []}
-                  labelKey="label"
-                  valueKey="value"
-                  placeholder="Select type"
-                  maxDropdownHeight={`240px`}
-                  onChange={(props: Params) => {
-                    const filteredString = [];
-                    const filteredSelected = []
-                    const { option, value, type } = props
-                    let filteredValue = value
-                    if (type === 'remove') {
-                      //filteredValue = ((value||[]).filter((x: Selected) => Number(x.value) !== Number(option.value))) 
-                    } else if (type === 'select') {
-                      //filteredValue = value
-                    } else if (type === 'clear') {
-                      //filteredValue = []
-                    }
-                    // for (const key in filteredValue) {
-                    //   const filteredSelect: Selected = { value: '', label: '' }
-                    //   filteredSelect.value = `${value[key].value}`
-                    //   filteredSelect.label = `${value[key].label}`
-                    //   filteredString.push(`${value[key].value}`);
-                    //   filteredSelected.push(filteredSelect);
-                    // }
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, genome: value}));
-
+                  options={[
+                    { label: "INSPECTED", id: "INSPECTED" },
+                    { label: "DIRTY", id: "DIRTY" },
+                    { label: "CLEAN", id: "CLEAN" },
+                    { label: "PICKUP", id: "PICKUP" },
+                    { label: "OO", id: "OO" },
+                  ]}
+                  value={form?.roomStatus}
+                  placeholder="INSPECTED"
+                  onChange={(params) => {
+                    const roomStatus = params.value;
+                    setForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ roomStatus },
+                    }));
                   }}
                   overrides={{
                     Popover: {
                       props: {
                         overrides: {
                           Body: {
-                            style: ({ $theme }) => ({ zIndex: 100 }),
+                            style: ({ $theme }) => ({ zIndex: 10000 }),
                           },
                         },
                       },
@@ -1071,85 +850,30 @@ const CreateProduct = () => {
                   }}
                 />
               </FormControl>
-              <FlexSpacer />
-              <FormControl caption={() => 'Weight'} error={error?.weight}>
-                <Input
-                  required
-                  disabled={loading}
-                  onChange={(e) => {
-                    const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ weight: str } }));
-                  }}
-                  value={form?.weight}
-                  onFocus={() =>
-                    //executeScroll(weightRef),
-                    setError({})
-                  }
-                  key="weight"
-                  id="weight"
-                  name="weight"
-                  error={Boolean(error?.weight)}
-                  type="text"
-                  placeholder="1g"
-                  overrides={{
-                    Root: {
-                      style: ({ $theme }) => ({
-                        //marginBottom: "16px",
-                      }),
-                    },
-                  }}
-                />
-              </FormControl>
             </FlexContainer>
             <FlexContainer>
-              <FormControl caption={() => 'THC'} error={error?.thc}>
-                <Input
-                  //required
-                  disabled={loading}
-                  onChange={(e) => {
-                    const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ thc: str } }));
-                  }}
-                  value={form?.thc}
-                  onFocus={() =>
-                    //executeScroll(thcRef),
-                    setError({})
-                  }
-                  key="thc"
-                  id="thc"
-                  name="thc"
-                  error={Boolean(error?.thc)}
-                  type="text"
-                  placeholder="00.0"
-                  overrides={{
-                    Root: {
-                      style: ({ $theme }) => ({
-                        // marginBottom: "16px",
-                      }),
-                    },
-                  }}
-                />
-              </FormControl>
-              <FlexSpacer />
-              <FormControl caption={() => 'CBD'} error={error?.cbd}>
+              <FormControl caption={() => "Rate Code"} error={error?.rateCode}>
                 <Input
                   required
                   disabled={loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ cbd: str } }));
+                    setForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ rateCode: str },
+                    }));
                   }}
-                  value={form?.cbd}
+                  value={form?.rateCode}
                   onFocus={() =>
                     //executeScroll(cbdRef),
                     setError({})
                   }
-                  key="cbd"
-                  id="cbd"
-                  name="cbd"
-                  error={Boolean(error?.cbd)}
+                  key="rateCode"
+                  id="rateCode"
+                  name="rateCode"
+                  error={Boolean(error?.rateCode)}
                   type="text"
-                  placeholder="00.0"
+                  placeholder="WZRCK"
                   overrides={{
                     Root: {
                       style: ({ $theme }) => ({
@@ -1159,33 +883,139 @@ const CreateProduct = () => {
                   }}
                 />
               </FormControl>
+
+              <FlexSpacer />
+
+              <FormControl
+                caption={() => "VIP Status"}
+                error={error?.vipStatus}
+              >
+                <Select
+                  options={[
+                    { label: "GLOB", id: "GLOB" },
+                    { label: "LGLO", id: "LGLO" },
+                    { label: "MP", id: "MP" },
+                    { label: "V1", id: "V1" },
+                    { label: "V2", id: "V2" },
+                    { label: "V3", id: "V3" },
+                    { label: "V4", id: "V4" },
+                    { label: "V5", id: "V5" },
+                    { label: "V6", id: "V6" },
+                    { label: "V7", id: "V7" },
+                    { label: "V8", id: "V8" },
+                  ]}
+                  value={form?.vipStatus}
+                  placeholder="V6"
+                  onChange={(params) => {
+                    const vipStatus = params.value;
+                    setForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ vipStatus },
+                    }));
+                  }}
+                  overrides={{
+                    Popover: {
+                      props: {
+                        overrides: {
+                          Body: {
+                            style: ({ $theme }) => ({ zIndex: 10000 }),
+                          },
+                        },
+                      },
+                    },
+                  }}
+                />
+              </FormControl>
             </FlexContainer>
+
             <Textarea
-              value={form?.description}
+              value={form?.notes}
               onChange={(e) => {
                 const str = e?.currentTarget?.value;
-                setForm((oldForm: ProductClass) => ({ ...oldForm, ...{ description: str } }));
+                setForm((oldForm: VIPClass) => ({
+                  ...oldForm,
+                  ...{ notes: str },
+                }));
               }}
-              placeholder="Product description"
+              placeholder="Notes"
               clearOnEscape
             />
           </FormInput>
         </FormSection>
 
+        {/** Image **/}
+        <FormSection ref={imageRef}>
+          <FormInput
+            style={formStyle}
+            label={<Label2>{"Image"}</Label2>}
+            stack={true}
+          >
+            {
+              <Card
+                overrides={{
+                  Root: { style: { width: "100%" } },
+                  HeaderImage: {
+                    style: ({ $theme }) => ({
+                      width: "100%",
+                      minHeight: "120px",
+                      padding: "20px 20px 12px 20px",
+                    }),
+                  },
+                }}
+                headerImage={
+                  form?.image && (form?.image).length ? form.image : imgURL
+                }
+                // phoneNumber="Example card"
+              >
+                <StyledBody>
+                  <FileUploader
+                    // progressAmount is a number from 0 - 100 which indicates the percent of file transfer completed
+                    accept={["image/jpeg", "image/jpg", "image/png"]}
+                    onCancel={() => {
+                      taskRef.current.cancel();
+                      setProgress(0);
+                      getImgURL();
+                      setPhotoURL(null);
+                    }}
+                    progressAmount={progress}
+                    progressMessage={
+                      progress ? `Uploading... ${progress}% of 100%` : ""
+                    }
+                    onDrop={(acceptedFiles, rejectedFiles) => {
+                      // handle file upload...
+                      console.log(acceptedFiles, rejectedFiles);
+                      if (acceptedFiles.length) {
+                        handleChange(acceptedFiles);
+                        uploadImgToFireStorage(acceptedFiles);
+                      }
+                      if (rejectedFiles.length) {
+                        setError((oldError) => ({
+                          ...oldError,
+                          ...{ phoneNumber: "Invalid type" },
+                        }));
+                      }
+                    }}
+                    errorMessage={error?.photoURL}
+                  />
+                </StyledBody>
+              </Card>
+            }
+          </FormInput>
+        </FormSection>
 
         {/* <div style={{ width: "100%", height: 65 }}></div> */}
         <Accordion>
-          <Panel title="Form Dev">{
-            <>
-              {
-                form &&
-                Object.keys(form).map(function (key, index) {
-                  //alert(fireProductDefault[key])
-                  return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
-                })
-              }
-            </>
-          }</Panel>
+          <Panel title="Form Dev">
+            {
+              <>
+                {form &&
+                  Object.keys(form).map(function (key, index) {
+                    //alert(fireProductDefault[key])
+                    return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
+                  })}
+              </>
+            }
+          </Panel>
         </Accordion>
         {/* {form && JSON.stringify(form)} */}
         {/* {fireProductDefault && JSON.stringify(fireProductDefault)} */}
@@ -1233,7 +1063,9 @@ const CreateProduct = () => {
         </>
       </ModalBody>
       <ModalFooter>
-        <ModalButton onClick={closeModal} kind={ButtonKind.tertiary}>Cancel</ModalButton>
+        <ModalButton onClick={closeModal} kind={ButtonKind.tertiary}>
+          Cancel
+        </ModalButton>
         <ModalButton isLoading={loading} onClick={createProduct}>
           Create
         </ModalButton>

@@ -11,11 +11,13 @@
   "dependencies": {
     "@google-analytics/data": "^1.1.0",
     "@react-hook/throttle": "^2.2.0",
+    "@types/dateformat": "^5.0.0",
     "@uhl7792/react-use-quote-of-the-day": "^1.0.0",
     "baseui": "^10.1.0",
     "body-scroll-lock": "^3.1.5",
     "copy-to-clipboard": "^3.3.1",
     "d3-ease": "^2.0.0",
+    "dateformat": "^5.0.3",
     "faker": "^5.5.3",
     "firebase": "^7.19.0",
     "firebase-admin": "^10.2.0",
