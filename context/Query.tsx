@@ -87,16 +87,15 @@ export default function QueryContextComp({ children }) {
   const [totalsSubCollection, setTotalsSubCollection] = useState<[string, string, string] | null>(null);
   const [where, setWhere] = useState<[string, WhereFilterOp, string | boolean | number][] | []>([]);
   const [dataList, setDataList] = useState<object[]>([]);
-
+  const [ref, setRef] = useState(null);
 
   const [query, setQuery] = useState(null);
   const [totalQuery, setTotalQuery] = useState(null);
-  const [ref, setRef] = useState(null);
-
-  const fireStoreQuery: Query = useFirestoreQuery(query);
+  
   // const fireStoreQueryTotals = useFirestoreQuery(
   //   user?.uid && totalsDoc && totalsCollection && firebase.firestore().collection(totalsCollection).doc(totalsDoc)
   // );
+  const fireStoreQuery: Query = useFirestoreQuery(query);
   const fireStoreQueryTotals = useFirestoreQuery(totalQuery);
 
   useEffect(() => {

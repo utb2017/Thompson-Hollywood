@@ -5,9 +5,9 @@ import { useStyletron } from "baseui";
 import { Card } from "baseui/card";
 import { useQuery } from "../../../context/Query";
 import { useScreen } from "../../../context/screenContext";
-import VIPcreate from "../../Modals/VIPcreate";
+import VIPcreate from "../../Modals/ArrivalVIPcreate";
 import * as React from "react";
-
+import { useFirestoreQuery } from "../../../hooks/useFirestoreQuery";
 import Plus from "baseui/icon/plus";
 import { useRouter } from "next/router";
 import { useUser } from "../../../context/userContext";
@@ -23,6 +23,11 @@ import { FlexGrid, FlexGridItem } from "baseui/flex-grid";
 import { BlockProps } from "baseui/block";
 import { Img } from "react-image";
 import { H5, Label1 } from "baseui/typography";
+import firebase from "../../../firebase/clientApp";
+import { VIPClass } from "../../../classes";
+import QueryVIPArrivals from "./QueryVIPArrivals";
+import QueryGroupArrivals from "./QueryGroupArrivals";
+import QueryUpcomingEvents from "./QueryUpcomingEvents";
 
 
 
@@ -45,128 +50,14 @@ type Selected = {
   value: string | Date;
 };
 
-class DiscountClass {
-  active: boolean;
-  alert: boolean;
-  alertSent: boolean;
-  bogoQty?: number;
-  code: string;
-  collectionIDs: string[];
-  collections: Selected[];
-  dateEnd?: any;
-  dateStart: any;
-  days: string[];
-  featured: boolean;
-  filters: string[] | null;
-  id: string;
-  method: Selected;
-  methodID: "flatRate" | "percent" | "taxFree" | "bogo";
-  rate: number;
-  recurring: boolean;
-  recurringDays: Selected[] | undefined;
-  sort: "coupon";
-  stackable: boolean;
-  title: string | null;
-  type: { [k: string]: any } | undefined;
-  uid: string | null;
-  used: boolean;
-  happyHour: boolean;
-  startHour: Selected;
-  endHour: Selected;
-  //queryIDs: string[];
 
-  constructor(
-    active: boolean,
-    alert: boolean,
-    bogoQty: number,
-    code: string | null,
-    collectionIDs: string[],
-    collections: Selected[],
-    dateEnd: any | null,
-    dateStart: any,
-    days: string[],
-    featured: boolean,
-    id: string | null,
-    method: Selected,
-    methodID: "flatRate" | "percent" | "taxFree" | "bogo",
-    rate: number,
-    recurring: boolean,
-    recurringDays: Selected[] | undefined,
-    //sort: "coupon",
-    stackable: boolean,
-    title: string | null,
-    //type: { [k: string]: any } | undefined,
-    uid: string | null,
-    used: boolean,
-    happyHour: boolean,
-    startHour: Selected,
-    endHour: Selected
-  ) {
-    this.active = active || false;
-    this.alert = alert || false;
-    this.alertSent = false;
-    this.bogoQty = bogoQty || 2;
-    this.code = code || null;
-    this.collectionIDs = collectionIDs || [];
-    this.collections = collections || [];
-    this.dateEnd = dateEnd || null;
-    this.dateStart = dateStart || null;
-    this.days = days || [];
-    this.featured = featured || false;
-    this.filters = [];
-    this.id = id || null;
-    this.method = method || { label: `Flat rate`, value: "flatRate" };
-    this.methodID = methodID || `flatRate`;
-    this.rate = rate || null;
-    this.recurring = recurring || false;
-    this.recurringDays = recurringDays || [];
-    this.sort = "coupon";
-    this.stackable = stackable || false;
-    this.title = title || null;
-    this.type = { label: "Coupon", value: "coupon" };
-    this.uid = uid || null;
-    this.used = used || false;
-    this.happyHour = happyHour || false;
-    this.startHour = startHour || null;
-    this.endHour = endHour || null;
-  }
-}
-interface DiscountClassMod extends DiscountClass {
-  fireDiscount: DiscountClass;
-}
-type Query = {
-  data: any;
+type QueryVIP = {
+  data:[VIPClass];
   status: string;
   error: any;
 };
 
-interface QueryValidation {
-  firstID: string | null;
-  setFirstID(data: string | null): void;
-  lastID: string | null;
-  setLastID(data: string | null): void;
-  reverse: boolean;
-  setReverse(data: boolean): void;
-  page: number;
-  setPage(data: number): void;
-  orderBy: string;
-  setOrderBy(data: string): void;
-  prevPage: () => void;
-  nextPage: () => void;
-  fireStoreQuery: Query;
-  fireStoreQueryTotals: Query;
-  fireStoreQueryTotal: number | null;
-  disableNext: boolean;
-  setDisableNext(data: boolean): void;
-  disablePrev: boolean;
-  setDisablePrev(data: boolean): void;
-  totalsField: string | null;
-  setTotalsField(data: string | null): void;
-  queryCollection: string | null;
-  setQueryCollection(data: string | null): void;
-  maxPage: number;
-  setMaxPage(data: number): void;
-}
+
 const orderProgressObject = {
   settled: ["settled"],
   received: ["received"],
@@ -251,6 +142,12 @@ const  FakeVipData = [{"id":1,"firstName":"Viola","lastName":"Lutton","arrival":
 {"id":4,"firstName":"Claudine","lastName":"Kettel","arrival":"8/20/2021","notes":"suspendisse ornare","roomNumber":80,"status":null,"departure":"6/3/2021"},
 {"id":5,"firstName":"Petronia","lastName":"Gabriel","arrival":"5/9/2022","notes":"erat eros viverra eget congue","roomNumber":96,"status":null,"departure":"1/12/2022"}]
 
+
+
+
+
+
+
 const DailyFocus: FC = (): ReactElement => {
   const {
     setTotalsField,
@@ -270,48 +167,40 @@ const DailyFocus: FC = (): ReactElement => {
   const router = useRouter();
   const { user } = useUser();
   const { setNavLoading } = useRouting();
-  const [vips, setVips] = useState(FakeVipData);
 
-  /* add shit to the query questions*/
+
+  const [vips, setVips] = useState<[VIPClass]>(null);
+
+
+
+  const [queryVIP, setQueryVIP] = useState(null);
+  const [queryTotalVIP, setQueryTotalVIP] = useState(null);
+  const fireStoreQueryVIP: QueryVIP = useFirestoreQuery(queryVIP);
+  //const fireStoreQueryVIPTotals: QueryTotal = useFirestoreQuery(queryTotalVIP);
+
+
   useEffect(() => {
-    setTotalsField(`${router?.query?.filter}`);
-    setTotalsDoc("unsettled");
-    setTotalsCollection("totals");
-
-    setQueryGroupCollection("Orders");
-    setOrderBy("start");
-    if (router?.query?.filter) {
-      setWhere([
-        ["progress", "in", orderProgressObject[`${router?.query?.filter}`]],
-        ["settled", "==", false],
-      ]);
+    if(firebase){
+      setQueryVIP(firebase.firestore().collection('VIPS'))
+      //setQueryTotalVIP(firebase.firestore().collection('Totals').doc('vips'))
     }
-    setLimit(5);
-    // return () => {
-    //   setTotalsField(null);
-    //   setTotalsDoc(null);
-    //   setTotalsCollection(null)
-    //   setQueryGroupCollection(null);
-    //   setQueryCollection(null);
-    //   setLimit(5);
-    //   setOrderBy(null);
-    //   setWhere(null)
-    // };
-  }, [router]);
+    return () => {
+      setQueryVIP(null)
+    };
+  }, [firebase]);
 
   useEffect(() => {
-    return () => {
-      setTotalsField(null);
-      setTotalsDoc(null);
-      setTotalsCollection(null);
-      setQueryGroupCollection(null);
-      setQueryCollection(null);
-      setLimit(5);
-      setOrderBy(null);
-      setWhere(null);
-    };
-  }, []);
+   console.log('fireStoreQueryVIP')
+   console.log(fireStoreQueryVIP)
+   if(fireStoreQueryVIP?.data && fireStoreQueryVIP?.data.length){
+    setVips(fireStoreQueryVIP.data)
+   }else{
+    setVips(null)
+   }
+  }, [fireStoreQueryVIP]);
 
+
+  
   const openModalBase = (
     component: () => ReactElement,
     hasSquareBottom: boolean
@@ -1546,81 +1435,7 @@ const DailyFocus: FC = (): ReactElement => {
                 </FlexGrid>
 
 
-                {
-                  vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`2`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.firstName} ${vip.lastName}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.roomNumber}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.arrival}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.departure}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`3`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.notes||`No Notes`}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`MGCM`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.status}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                </FlexGrid>
-})
-                }
+                <QueryVIPArrivals/>
 
                 
 
@@ -1636,6 +1451,7 @@ const DailyFocus: FC = (): ReactElement => {
               onClick={() => _VIPcreate()}
               shape={SHAPE.circle}
               kind={KIND.tertiary}
+              size={SIZE.compact}
               overrides={{
                 BaseButton: {
                   style: ({ $theme }) => ({
@@ -1729,81 +1545,7 @@ const DailyFocus: FC = (): ReactElement => {
                 </FlexGrid>
 
 
-                {
-                  vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`2`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.firstName} ${vip.lastName}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.roomNumber}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.arrival}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.departure}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`3`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.notes||`No Notes`}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`MGCM`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.status}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                </FlexGrid>
-})
-                }
+                <QueryGroupArrivals/>
 
                 
 
@@ -1819,6 +1561,7 @@ const DailyFocus: FC = (): ReactElement => {
     onClick={() => alert("click")}
     shape={SHAPE.circle}
     kind={KIND.tertiary}
+    size={SIZE.compact}
     overrides={{
       BaseButton: {
         style: ({ $theme }) => ({
@@ -1899,83 +1642,7 @@ const DailyFocus: FC = (): ReactElement => {
                 </FlexGrid>
 
 
-                {
-                   vips.map((vip)=>{return <FlexGrid height={`100%`} flexGridColumnCount={[7, 7, 7]}>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`2`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.firstName} ${vip.lastName}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.roomNumber}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.arrival}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.departure}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`3`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.notes||`No Notes`}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`MGCM`}
-                    </VIPCell>
-                  </FlexGridItem>
-                  <FlexGridItem
-                    {...outlookCellProps}
-                    //color={theme.colors.white}
-                    flex={`1`}
-                    height={`100%`}
-                  >
-                    <VIPCell>
-                      {`${vip.status}`}
-                    </VIPCell>
-                  </FlexGridItem>
-                </FlexGrid>
-})
-                }
-
-                
+               <QueryUpcomingEvents/>
 
 
 
@@ -1989,6 +1656,7 @@ const DailyFocus: FC = (): ReactElement => {
     onClick={() => _VIPcreate()}
     shape={SHAPE.circle}
     kind={KIND.tertiary}
+    size={SIZE.compact}
     overrides={{
       BaseButton: {
         style: ({ $theme }) => ({
@@ -2025,7 +1693,7 @@ const CenterLineBox = styled("div", ({ $theme }) => {
   return {
     display: `flex`,
     width: `100%`,
-    height: "88px",
+    height: "56px",
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment, useCallback } from "react";
+import { useState, useEffect, useRef, Fragment, useCallback, ReactElement } from "react";
 import { isEmpty } from "../../helpers";
 import firebase, {
   updateFirestore,
@@ -19,7 +19,6 @@ import { FormInput } from "../Console";
 import { NotificationManager } from "react-notifications";
 import { useForm } from "../../context/formContext";
 import { Label2, Paragraph4 } from "baseui/typography";
-import { Checkbox, LABEL_PLACEMENT } from "baseui/checkbox";
 import { styled } from "baseui";
 import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
@@ -29,7 +28,6 @@ import { Input } from "baseui/input";
 import { Check, Delete, DeleteAlt } from "baseui/icon";
 import { DatePicker } from "baseui/datepicker";
 import { TimePicker } from "baseui/timepicker";
-import { ThemeProvider, createTheme, lightThemePrimitives } from "baseui";
 import { FormControl } from "baseui/form-control";
 import { Select, TYPE } from "baseui/select";
 import { useSnackbar, DURATION } from "baseui/snackbar";
@@ -43,30 +41,18 @@ import {
 } from "baseui/toast";
 import { Tag, VARIANT } from "baseui/tag";
 import SVGIcon from "../SVGIcon";
-import { useQuery } from "../../context/Query";
 import { Accordion, Panel } from "baseui/accordion";
 import { Textarea } from "baseui/textarea";
-import dateFormat from "dateformat";
+//import dateFormat from "dateformat";
 import { Card, StyledBody, StyledAction } from "baseui/card";
 //import { VIPClass } from "./types";
 
 import { FileUploader } from "baseui/file-uploader";
-const options = { timeZone: "America/Los_Angeles" };
-let d: any = new Date().toLocaleString("en-US", options);
-const start = new Date(d);
-const end = new Date(d);
-start.setUTCHours(0, 0, 0, 0);
-end.setUTCHours(1, 0, 0, 0);
+import { formatDate } from "../../helpers/formatDate";
+import { VIPClass } from "../../classes";
+import { Spinner } from "baseui/spinner";
+import ArrivalVIPdelete from "./ArrivalVIPdelete";
 
-interface Params {
-  value: any[];
-  option: any;
-  type: "clear" | "select" | "remove";
-}
-type Selected = {
-  label: string | number | Date;
-  value: string | number | Date;
-};
 interface Errors {
   name?: string;
   code?: string;
@@ -80,70 +66,7 @@ interface Errors {
   recurringDays?: string;
   server?: string;
 }
-class VIPClass {
-  arrival?: string;
-  departure?: string;
-  details?: string;
-  fileName?: string;
-  firstName?: string;
-  id?: string;
-  image?: string;
-  lastName?: string;
-  notes?: string;
-  rateCode?: string;
-  reservationStatus?:
-    | "DUEIN"
-    | "DUEOUT"
-    | "CHECKEDIN"
-    | "CHECKEDOUT"
-    | "RESERVED"
-    | "NOSHOW"
-    | "CANCEL";
-  roomNumber?: string;
-  roomStatus?: [];
-  vipStatus?: [];
-  stays?: number;
-  constructor(
-    arrival?: string,
-    departure?: string,
-    details?: string,
-    fileName?: string,
-    firstName?: string,
-    id?: string,
-    image?: string,
-    lastName?: string,
-    notes?: string,
-    rateCode?: string,
-    reservationStatus?:
-      | "DUEIN"
-      | "DUEOUT"
-      | "CHECKEDIN"
-      | "CHECKEDOUT"
-      | "RESERVED"
-      | "NOSHOW"
-      | "CANCEL",
-    roomNumber?: string,
-    roomStatus?: [],
-    vipStatus?: [],
-    stays?: number
-  ) {
-    this.arrival = arrival;
-    this.departure = departure;
-    this.details = details;
-    this.firstName = firstName;
-    this.fileName = fileName;
-    this.id = id;
-    this.image = image;
-    this.lastName = lastName;
-    this.notes = notes;
-    this.rateCode = rateCode;
-    this.reservationStatus = reservationStatus;
-    this.roomNumber = roomNumber;
-    this.roomStatus = roomStatus;
-    this.vipStatus = vipStatus;
-    this.stays = stays;
-  }
-}
+
 const defaultForm = new VIPClass(
   null, // arrival?: string,
   null, // departure?: string,
@@ -159,14 +82,9 @@ const defaultForm = new VIPClass(
   null, // roomNumber?: string,
   null, // roomStatus?: [],
   null, // vipStatus?: [],
-  null, // stays?:number,
+  null // stays?:number,
 );
-const methods: Selected[] = [
-  { value: "flatRate", label: "Flat" },
-  { value: "percent", label: "Percent" },
-  { value: "taxFree", label: "No Tax" },
-  { value: "bogo", label: "Bogo" },
-];
+
 const formStyle = {
   width: `424px`,
   maxWidth: "100%",
@@ -186,68 +104,45 @@ const FormSection = styled("div", ({ $theme }) => {
     },
   };
 });
-const Flex1 = styled("div", {
-  flex: 1,
-  width: `100%`,
-  textAlign: "center",
-  display: "flex",
-  alignContent: "center",
-  alignItems: "center",
-  justifyContent: "center",
+const LoadHeader = styled(ModalHeader, ({ $theme }) => {
+  return {
+    display: "flex",
+  };
 });
-const TaxFreeSpacer = styled("div", {
-  width: `100%`,
-  height: "47px",
+const LoadBlock = styled("div", ({ $theme }) => {
+  return {
+    position: "relative",
+    height: "28px",
+    width: "auto",
+  };
 });
-const HappyHourSpacer = styled("div", {
-  width: `100%`,
-  height: "60px",
+const LoadBox = styled("div", ({ $theme }) => {
+  return {
+    //position:'absolute',
+    height: "30px",
+    width: "35px",
+    //textAlign: "center",
+    display: "flex",
+    alignContent: "space-between",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: "2001",
+  };
+});
+const ModalButtonRed = styled(ModalButton, ({ $theme }) => {
+  return {
+    border:"solid 1px #C8102E",
+    color:"#C8102E"
+  };
 });
 
 type INullableReactText = React.ReactText | null;
 
-interface TimeStamp {
-  seconds: number;
-  nanoSeconds: number;
-}
-
 const isValidString = (x: any) => {
   return Boolean(x && typeof x === "string" && x.length > 0);
 };
-const isValidObject = (x: any) => {
-  return Boolean(
-    x &&
-      (typeof x === "object" || typeof x === "function") &&
-      x.hasOwnProperty("value") &&
-      x.hasOwnProperty("label") &&
-      (typeof x.value === "string" || typeof x.value === "number") &&
-      (typeof x.label === "string" || typeof x.value === "number")
-  );
-};
-const convertTimestamp = (
-  timeStamp: TimeStamp | Date
-): Date | null | Date[] => {
-  if (timeStamp && Array.isArray(timeStamp)) {
-    return timeStamp;
-  }
-  if (timeStamp && timeStamp instanceof Date) {
-    return timeStamp;
-  }
-  if (timeStamp && typeof timeStamp === "string" && Date.parse(timeStamp)) {
-    return new Date(timeStamp);
-  }
-  if (
-    !(timeStamp instanceof Date) &&
-    typeof timeStamp === "object" &&
-    timeStamp?.seconds &&
-    (typeof timeStamp.seconds === "number" ||
-      typeof timeStamp.seconds === "string")
-  ) {
-    let dateStart = new Date(1970, 0, 1); // Epoch
-    dateStart.setSeconds(Number(timeStamp.seconds));
-    return dateStart;
-  }
-  return null;
+const isValidNumber = (x: any): boolean => {
+  return Boolean(typeof x === "number" && x > -1);
 };
 
 const FlexSpacer = styled("div", ({ $theme, $width = `16px` }) => {
@@ -267,60 +162,30 @@ const FlexContainer = styled("div", ({ $theme }) => {
   };
 });
 
-const CreateProduct = () => {
-  const {
-    lastID,
-    setLastID,
-    firstID,
-    setFirstID,
-    setReverse,
-    setTotalsField,
-    setQueryCollection,
-    maxPage,
-    setMaxPage,
-    disableNext,
-    setDisableNext,
-    disablePrev,
-    setDisablePrev,
-    fireStoreQuery,
-    fireStoreQueryTotals,
-    fireStoreQueryTotal,
-    page,
-    setPage,
-    limit,
-    setLimit,
-    orderBy,
-    setOrderBy,
-    nextPage,
-    prevPage,
-    dataList,
-    queryLoader,
-    setDataList,
-  } = useQuery();
-
+type Query = {
+  data: VIPClass;
+  status: string;
+  error: any;
+};
+const unformatDate = (formattedDate: string | Date): Date => {
+  const thisYear: number = new Date().getFullYear(),
+    numericDate: number = new Date(formattedDate).setFullYear(thisYear),
+    unformattedDate: Date = new Date(numericDate);
+  return unformattedDate;
+};
+const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const nameRef = useRef<HTMLDivElement>(null);
   const collectionRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const priceRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
-  const executeScroll = (ref: { current: HTMLDivElement | null }) => {
-    width < 450 && ref && ref.current.scrollIntoView();
-  };
   const { user } = useUser();
   //const [loading, setLoading] = useState(false);
   const { form, setForm, error, setError, loading, setLoading } = useForm();
-  const [collectionList, setCollectionList] = useState([]);
-  const [brandList, setBrandList] = useState([]);
-  const { setNavLoading, navLoading } = useRouting();
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
   const { enqueue, dequeue } = useSnackbar();
-  const VIPCollection = useFirestoreQuery(
-    firebase.firestore().collection("VIPS")
-  );
-
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
+  const [changeForm, setChangeForm] = useState<any>({});
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
   const closeModal = () => {
     modalBaseDispatch({
@@ -335,6 +200,26 @@ const CreateProduct = () => {
       },
     });
   };
+  const openModalBase = (
+    component: () => ReactElement,
+    hasSquareBottom: boolean
+  ) => {
+    modalBaseDispatch({
+      type: "MODAL_UPDATE",
+      payload: {
+        modalBase: {
+          isOpen: true,
+          key: [],
+          component,
+          hasSquareBottom,
+        },
+      },
+    });
+  };
+  const _VIPdelete = () => {
+    const component: () => ReactElement = () => <ArrivalVIPdelete clientData={form} />;
+    openModalBase(component, true);
+  };
   const closeToast = () => {
     if (toastKey) {
       toaster.clear(toastKey);
@@ -342,147 +227,189 @@ const CreateProduct = () => {
     }
   };
 
-  /* form setup */
-  useEffect(() => {
-    console.log("form setup");
-    setForm({ ...defaultForm } as VIPClass);
-    return () => {
-      setForm({});
-      setError({});
-    };
-  }, [defaultForm]);
-
-  const createProduct = async () => {
-    const _form: VIPClass = { ...form };
-    // ** NAME **
-    if (isEmpty(_form?.firstName)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ firstName: "First Name Required" },
-      }));
-      return;
-    }
-    // ** NAME **
-    if (isEmpty(_form?.lastName)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ lastName: "Last Name Required" },
-      }));
-      return;
-    }
-    // ** Arrival **
-    if (isEmpty(_form?.arrival)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ arrival: "Arrival Required" },
-      }));
-      return;
-    }
-    // ** Departure **
-    if (isEmpty(_form?.departure)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ departure: "Departure Required" },
-      }));
-      return;
-    }
-    // ** Rate **
-    if (isEmpty(_form?.rateCode)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ rateCode: "Rate Code Required" },
-      }));
-      return;
-    }
-    // ** Vip STatus **
-    if (isEmpty(_form?.vipStatus)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ vipStatus: "Rate Code Required" },
-      }));
-      return;
-    }
-
-    
 
 
+  
+  const updateVIP = async () => {
 
-    const clientData = { ..._form }
+    //const clientData: VIPClass = { ...form };
 
-    // FirstName
-    if (!isValidString(clientData.firstName)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ firstName: "First Name Required" },
-      }));
+
+    const clientData = { ...changeForm };
+    clientData.id = form.id
+    const updateData: VIPClass = {};
+
+    let x:
+      | `firstName`
+      | `lastName`
+      | `rateCode`
+      | `arrival`
+      | `departure`
+      | `image`
+      | `fileName`
+      | `vipStatus`
+      | `roomStatus`
+      | "roomNumber"
+      | `notes`
+      | `details`
+      | `stays`
+      | `reservationStatus`
+      | `id`;
+    //const y: string = `VIP`;
+    alert(JSON.stringify(clientData))
+
+    // firstName
+    x = `firstName`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "First Name Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
     }
-    // LastName
-    if (!isValidString(clientData.lastName)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ lastName: "Last Name Required" },
-      }));
-     }
-    // Rate
-    if (!isValidString(clientData.rateCode)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ rateCode: "Rate Code Required" },
-      }));
-    }
-    // Arrival
-    if (!Array.isArray(clientData.arrival)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ arrival: "Arrival Date Required" },
-      }));
+    // lastName
+    x = `lastName`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Last Name Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
     }
     
-    clientData.arrival = dateFormat((Array.isArray(clientData.arrival) ? clientData.arrival[0] : clientData.arrival), 'ddd dd mmm');
+ 
+    // rateCode
+    x = `rateCode`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Rate Code Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // arrival
+    x = `arrival`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Arrival Date Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // departure
+    x = `departure`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Departure Date Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // image
+    x = `image`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        updateData[
+          x
+        ] = `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`;
+        
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // fileName
+    x = `fileName`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        updateData[x] = `810-8105444_male-placeholder.png`;
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // vipStatus
+    x = `vipStatus`;
+    if (clientData[x] != undefined) {
+      if (!Array.isArray(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "VIP Status Required" },
+        })); 
+      } else {
+        updateData[x] = clientData[x];
+      }
+    }
+    // roomStatus
+    x = `roomStatus`;
+    if (clientData[x] != undefined) {
+      if (Array.isArray(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    }
+    // roomNumber
+    x = `roomNumber`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    }
+    // notes
+    x = `notes`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    }
+    // details
+    x = `details`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    }
+    // stays
+    x = `stays`;
+    if (clientData[x] != undefined) {
+      if (isValidNumber(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    }
+    // id
+    x = `id`;
+    if (!isValidString(clientData[x])) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "ID Required" },
+      }));
+    }else{
+      updateData[x] = clientData[x];
+    }
 
-    // Departure
-    if (!Array.isArray(clientData.departure)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ departure: "Departure Date Required" },
-      }));
-    }
-    clientData.departure = dateFormat((Array.isArray(clientData.departure) ? clientData.departure[0] : clientData.departure), 'ddd dd mmm');
-   
-    // Image
-    if (!isValidString(clientData.image)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ image: "Image Required" },
-      }));
-    }
-    // FileName
-    if (!isValidString(clientData.fileName)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ fileName: "File Name Required" },
-      }));
-    }
-    // VIPStatus
-    if (!Array.isArray(clientData.vipStatus)) {
-      setError((oldError: Errors) => ({
-        ...oldError,
-        ...{ vipStatus: "Status Required" },
-      }));
-    }
-
-    //alert(JSON.stringify(clientData))
-
+    alert(JSON.stringify(updateData))
 
     setLoading(true);
-    enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
+    enqueue({ message: "Updating VIP", progress: true }, DURATION.infinite);
     try {
-      const createVIP = firebase.functions().httpsCallable("createVIP");
-      const response = await createVIP(clientData);
+      const updateVIP = firebase.functions().httpsCallable("updateArrivalVIP");
+      const response = await updateVIP(updateData);
       dequeue();
       enqueue(
         {
-          message: "VIP Created",
+          message: "VIP Updated",
           startEnhancer: ({ size }) => <Check size={size} />,
         },
         DURATION.short
@@ -498,13 +425,14 @@ const CreateProduct = () => {
       //setError(`${e?.message || e}`);
       setError((oldError: Errors) => ({
         ...oldError,
-        ...{ server: `VIP not created.` },
+        ...{ server: `VIP not updated.` },
       }));
       dequeue();
+      alert(`${e?.message || e}`)
       showToast(`${e?.message || e}`);
       enqueue(
         {
-          message: `Your VIP wasn't created`,
+          message: `Your VIP wasn't updated`,
           startEnhancer: ({ size }) => <DeleteAlt size={size} />,
         },
         DURATION.short
@@ -513,18 +441,70 @@ const CreateProduct = () => {
       setLoading(false);
     }
   };
-
+  //STATE
   const [data, setData] = useState(null);
   const [progress, setProgress] = useState(null);
   const [file, setFile] = useState(null);
   const { fireCustomer } = useUser();
   const taskRef = useRef(null);
   const [photoURL, setPhotoURL] = useState(null);
+  const [query, setQuery] = useState(null);
+  //HOOKS
+  const fireStoreQuery: Query = useFirestoreQuery(query);
+  useEffect(() => {
+    if (firebase) {
+      setQuery(firebase.firestore().collection(collection).doc(id));
+    }
+    return () => {
+      setQuery(null);
+    };
+  }, [firebase]);
+  useEffect(() => {
+    if (fireStoreQuery.data) {
+      const {
+        arrival,
+        departure,
+        details,
+        fileName,
+        firstName,
+        image,
+        lastName,
+        notes,
+        rateCode,
+        reservationStatus,
+        roomNumber,
+        roomStatus,
+        vipStatus,
+        stays,
+      }: VIPClass = { ...fireStoreQuery.data };
+      const defaultForm = new VIPClass(
+        unformatDate(arrival),
+        unformatDate(departure),
+        details,
+        fileName,
+        firstName,
+        id,
+        image,
+        lastName,
+        notes,
+        rateCode,
+        reservationStatus,
+        roomNumber,
+        roomStatus,
+        vipStatus,
+        stays
+      );
 
-  // useEffect(() => {
-  //   alert(JSON.stringify(collectionList))
-  // }, [collectionList]);
+      setForm({ ...defaultForm } as VIPClass);
+    }
 
+    return () => {
+      setForm({});
+      setError({});
+      setChangeForm({});
+    };
+  }, [defaultForm, id, fireStoreQuery]);
+  //FUNCTIONS
   const handleChange = (acceptedFiles) => {
     //e.stopPropagation()
     //alert(JSON.stringify(acceptedFiles))
@@ -622,17 +602,17 @@ const CreateProduct = () => {
         } catch (e) {
           console.log("error");
           console.log(e);
-          alert(JSON.stringify(e));
+          //alert(JSON.stringify(e));
         } finally {
           setLoading(false);
         }
       } else {
         setLoading(false);
       }
-      
+
       setForm((oldForm: VIPClass) => ({
         ...oldForm,
-        ...{ image:url, fileName:filePath },
+        ...{ image: url, fileName: filePath },
       }));
       return setImgURL(url);
     }
@@ -640,14 +620,35 @@ const CreateProduct = () => {
 
   useEffect(() => {
     getImgURL();
+
+    //alert(formatDate(new Date(), ' EEE dd MMM'))
   }, []);
 
+
+  useEffect(() => {
+
+    console.log(`changeForm`);
+
+    console.log(changeForm);
+  }, [changeForm]);
+
+  
+  console.log("render");
   return (
     <>
-      <ModalHeader>Create VIP</ModalHeader>
+      <LoadHeader>
+        <div>{`Edit VIP `}</div>
+        {(fireStoreQuery.status === "loading" || loading) && (
+          <div>
+            <LoadBox>
+              <Spinner size={"18px"} color={"rgb(23,55,94)"} />
+            </LoadBox>
+          </div>
+        )}
+      </LoadHeader>
       <ModalBody>
         {/** Name */}
-        <FormSection ref={nameRef}>
+        <FormSection>
           <FormInput
             style={formStyle}
             label={<Label2>{"Name"}</Label2>}
@@ -656,15 +657,19 @@ const CreateProduct = () => {
             <FormControl error={error?.firstName}>
               <Input
                 required
-                disabled={loading}
+                disabled={fireStoreQuery.status === "loading" || loading}
                 onChange={(e) => {
                   const str = e?.currentTarget?.value;
-                  setForm((oldForm: VIPClass) => ({
+                  // setForm((oldForm: VIPClass) => ({
+                  //   ...oldForm,
+                  //   ...{ firstName: str },
+                  // }));
+                  setChangeForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ firstName: str },
                   }));
                 }}
-                value={form?.firstName}
+                value={changeForm?.firstName || form?.firstName}
                 onFocus={() =>
                   //executeScroll(firstNameRef),
                   setError({})
@@ -687,15 +692,19 @@ const CreateProduct = () => {
             <FormControl error={error?.lastName}>
               <Input
                 required
-                disabled={loading}
+                disabled={fireStoreQuery.status === "loading" || loading}
                 onChange={(e) => {
                   const str = e?.currentTarget?.value;
-                  setForm((oldForm: VIPClass) => ({
+                  // setForm((oldForm: VIPClass) => ({
+                  //   ...oldForm,
+                  //   ...{ lastName: str },
+                  // }));
+                  setChangeForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ lastName: str },
                   }));
                 }}
-                value={form?.lastName}
+                value={changeForm?.lastName || form?.lastName}
                 onFocus={() =>
                   //executeScroll(lastNameRef),
                   setError({})
@@ -717,8 +726,8 @@ const CreateProduct = () => {
             </FormControl>
           </FormInput>
         </FormSection>
-        {/** Collection **/}
-        <FormSection ref={collectionRef}>
+        {/** Dates **/}
+        <FormSection>
           <FormInput
             style={formStyle}
             label={<Label2>{"Dates"}</Label2>}
@@ -727,13 +736,18 @@ const CreateProduct = () => {
             Arrival
             <FormControl error={error?.arrival}>
               <DatePicker
-                value={form?.arrival||[]}
+                disabled={fireStoreQuery.status === "loading" || loading}
+                value={changeForm?.arrival || (form?.arrival || [])}
                 onChange={({ date }) => {
                   const arrival = Array.isArray(date) ? date : [date];
-                  setForm((oldForm: VIPClass) => ({
+                  setChangeForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ arrival },
                   }));
+                  // setForm((oldForm: VIPClass) => ({
+                  //   ...oldForm,
+                  //   ...{ arrival },
+                  // }));
                 }}
                 //quickSelect
                 overrides={{
@@ -752,10 +766,15 @@ const CreateProduct = () => {
             Departure
             <FormControl error={error?.departure}>
               <DatePicker
-                value={form?.departure}
+                disabled={fireStoreQuery.status === "loading" || loading}
+                value={changeForm?.departure || form?.departure}
                 onChange={({ date }) => {
                   const departure = Array.isArray(date) ? date : [date];
-                  setForm((oldForm: VIPClass) => ({
+                  // setForm((oldForm: VIPClass) => ({
+                  //   ...oldForm,
+                  //   ...{ departure },
+                  // }));
+                  setChangeForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ departure },
                   }));
@@ -776,7 +795,7 @@ const CreateProduct = () => {
           </FormInput>
         </FormSection>
         {/** Details */}
-        <FormSection ref={detailsRef}>
+        <FormSection>
           <FormInput
             style={formStyle}
             label={<Label2>{"Details"}</Label2>}
@@ -786,15 +805,19 @@ const CreateProduct = () => {
               <FormControl caption={() => "Room"} error={error?.roomNumber}>
                 <Input
                   //required
-                  disabled={loading}
+                  disabled={fireStoreQuery.status === "loading" || loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    setForm((oldForm: VIPClass) => ({
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ roomNumber: str },
+                    // }));
+                    setChangeForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ roomNumber: str },
                     }));
                   }}
-                  value={form?.roomNumber}
+                  value={changeForm?.roomNumber || form?.roomNumber}
                   onFocus={() =>
                     //executeScroll(thcRef),
                     setError({})
@@ -828,11 +851,16 @@ const CreateProduct = () => {
                     { label: "PICKUP", id: "PICKUP" },
                     { label: "OO", id: "OO" },
                   ]}
-                  value={form?.roomStatus}
+                  value={changeForm?.roomStatus || form?.roomStatus}
+                  disabled={fireStoreQuery.status === "loading" || loading}
                   placeholder="INSPECTED"
                   onChange={(params) => {
                     const roomStatus = params.value;
-                    setForm((oldForm: VIPClass) => ({
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ roomStatus },
+                    // }));
+                    setChangeForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ roomStatus },
                     }));
@@ -855,15 +883,19 @@ const CreateProduct = () => {
               <FormControl caption={() => "Rate Code"} error={error?.rateCode}>
                 <Input
                   required
-                  disabled={loading}
+                  disabled={fireStoreQuery.status === "loading" || loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    setForm((oldForm: VIPClass) => ({
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ rateCode: str },
+                    // }));
+                    setChangeForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ rateCode: str },
                     }));
                   }}
-                  value={form?.rateCode}
+                  value={changeForm?.rateCode || form?.rateCode}
                   onFocus={() =>
                     //executeScroll(cbdRef),
                     setError({})
@@ -904,11 +936,16 @@ const CreateProduct = () => {
                     { label: "V7", id: "V7" },
                     { label: "V8", id: "V8" },
                   ]}
-                  value={form?.vipStatus}
+                  value={changeForm?.vipStatus || form?.vipStatus}
+                  disabled={fireStoreQuery.status === "loading" || loading}
                   placeholder="V6"
                   onChange={(params) => {
                     const vipStatus = params.value;
-                    setForm((oldForm: VIPClass) => ({
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ vipStatus },
+                    // }));
+                    setChangeForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ vipStatus },
                     }));
@@ -929,10 +966,15 @@ const CreateProduct = () => {
             </FlexContainer>
 
             <Textarea
-              value={form?.notes}
+              value={changeForm?.notes || form?.notes}
+              disabled={fireStoreQuery.status === "loading" || loading}
               onChange={(e) => {
                 const str = e?.currentTarget?.value;
-                setForm((oldForm: VIPClass) => ({
+                // setForm((oldForm: VIPClass) => ({
+                //   ...oldForm,
+                //   ...{ notes: str },
+                // }));
+                setChangeForm((oldForm: VIPClass) => ({
                   ...oldForm,
                   ...{ notes: str },
                 }));
@@ -942,9 +984,8 @@ const CreateProduct = () => {
             />
           </FormInput>
         </FormSection>
-
         {/** Image **/}
-        <FormSection ref={imageRef}>
+        <FormSection>
           <FormInput
             style={formStyle}
             label={<Label2>{"Image"}</Label2>}
@@ -1002,8 +1043,6 @@ const CreateProduct = () => {
             }
           </FormInput>
         </FormSection>
-
-        {/* <div style={{ width: "100%", height: 65 }}></div> */}
         <Accordion>
           <Panel title="Form Dev">
             {
@@ -1017,41 +1056,6 @@ const CreateProduct = () => {
             }
           </Panel>
         </Accordion>
-        {/* {form && JSON.stringify(form)} */}
-        {/* {fireProductDefault && JSON.stringify(fireProductDefault)} */}
-
-        {
-          <>
-            {/*   <div>Form</div>
-             {
-                // Object.entries(fireProductDefault).map(function(key, value) {
-                //     <>{`${key} : ${value}`}</>
-                // })
-                form &&
-                  Object.keys(form).map(function (key, index) {
-                    //alert(fireProductDefault[key])
-                    return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
-                  })
-              } */}
-          </>
-        }
-        {/*    <div style={{ width: "100%", height: 65 }}></div>
-
-              {
-                  <>
-                    <div>Default</div>
-                    {
-                    // Object.entries(fireProductDefault).map(function(key, value) {
-                    //     <>{`${key} : ${value}`}</>
-                    // })  
-                    fireProductDefault && Object.keys(fireProductDefault).map(function(key, index) {
-                      //alert(fireProductDefault[key])
-                      return <div>{`${key} : ${JSON.stringify(fireProductDefault[key])}`}</div>
-                    })
-                    }                
-                  
-                  </>
-              } */}
         <>
           <ToasterContainer
             placement={PLACEMENT.topRight}
@@ -1063,14 +1067,23 @@ const CreateProduct = () => {
         </>
       </ModalBody>
       <ModalFooter>
-        <ModalButton onClick={closeModal} kind={ButtonKind.tertiary}>
-          Cancel
-        </ModalButton>
-        <ModalButton isLoading={loading} onClick={createProduct}>
-          Create
+        <ModalButtonRed
+          disabled={fireStoreQuery.status === "loading" || loading}
+          onClick={_VIPdelete}
+          kind={ButtonKind.tertiary}
+          
+        >
+          Remove
+        </ModalButtonRed>
+        <ModalButton
+          disabled={fireStoreQuery.status === "loading" || loading || Object.keys(changeForm).length === 0}
+          isLoading={loading}
+          onClick={updateVIP}
+        >
+          Update
         </ModalButton>
       </ModalFooter>
     </>
   );
 };
-export default CreateProduct;
+export default VIP_Edit;
