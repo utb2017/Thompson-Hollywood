@@ -182,7 +182,7 @@ const QueryVIPArrivals: FC = (): ReactElement => {
                   flex={`1`}
                   height={`100%`}
                 >
-                  <Cell>{`${vip.arrival.substring(4)}`}</Cell>
+                  <Cell>{`${`${vip.arrival}`.substring(4)}`}</Cell>
                 </FlexGridItem>
                 <FlexGridItem
                   {...Props}
@@ -190,7 +190,7 @@ const QueryVIPArrivals: FC = (): ReactElement => {
                   flex={`1`}
                   height={`100%`}
                 >
-                  <Cell>{`${vip.departure.substring(4)}`}</Cell>
+                  <Cell>{`${`${vip.departure}`.substring(4)}`}</Cell>
                 </FlexGridItem>
                 <FlexGridItem
                   {...Props}

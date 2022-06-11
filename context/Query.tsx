@@ -114,29 +114,30 @@ export default function QueryContextComp({ children }) {
 
   const fireStoreQueryTotal = isNum(fireStoreQueryTotals?.data?.[totalsField]);
 
-  useEffect(() => {
-   // alert(JSON.stringify('fireStoreQuery'))
-   // alert(JSON.stringify(fireStoreQuery))
-  }, [fireStoreQuery]);
+  // useEffect(() => {
+  //  alert(JSON.stringify('fireStoreQuery'))
+  //  alert(JSON.stringify(fireStoreQuery))
+  // }, [fireStoreQuery]);
 
 
   useEffect(() => {
+    console.log(`fireStoreQuery`)
     console.log(fireStoreQuery)
   }, [fireStoreQuery]);
 
   useEffect(() => {
     let z:any = null
     if(queryCollection){
-     //alert("single")
+     alert(`${queryCollection}`)
       z = firebase.firestore().collection(`${queryCollection}`)
     }
     if(queryGroupCollection){
-     // alert("grpup")
-      //alert(`${queryGroupCollection}`)
+     alert("grpup")
+      alert(`${queryGroupCollection}`)
       z = firebase.firestore().collectionGroup(`${queryGroupCollection}`)
     }
     if(querySubCollection && querySubCollection.length === 3){
-     // alert("sub")
+      alert("sub")
       z = firebase.firestore().collection(`${querySubCollection[0]}`).doc(`${querySubCollection[1]}`).collection(`${querySubCollection[2]}`)
     }
     if(querySubCollectionDoc && querySubCollectionDoc.length === 4){
@@ -226,8 +227,11 @@ export default function QueryContextComp({ children }) {
   }, [ref, orderBy, limit, where]);
 
   useEffect(() => {
-    //alert(` CONTEXT ${JSON.stringify(fireStoreQuery)}`)
+    alert(` CONTEXT ${JSON.stringify(fireStoreQuery)}`)
   }, [fireStoreQuery]);
+  useEffect(() => {
+    alert(` CONTEXT ${JSON.stringify(fireStoreQueryTotal)}`)
+  }, [fireStoreQueryTotal]);
 
   const nextPage = () => {
     if (orderBy) {

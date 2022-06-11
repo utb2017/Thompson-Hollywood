@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { withStyle, useStyletron } from "baseui";
 import { Block } from "baseui/block";
 import firebase, {
@@ -43,6 +43,7 @@ import ResetOrder from "./modals/ResetOrder";
 import Paid from "./modals/Paid";
 import { useForm } from "../../../context/formContext";
 import { useSnackbar, DURATION } from "baseui/snackbar";
+import { VIPClass } from "../../../classes";
 // interface CallableContext {
 //   auth?: {
 //     uid: string;
@@ -304,6 +305,7 @@ const Indicator = styled("div", ({ $isActive = false, $theme, $featured = false 
 });
 const CellWrapper = styled("div", ({ $theme }) => {
   return {
+    justifyContent:'center',
     minHeight: "100%",
     width: "100%",
     display: "flex",
@@ -372,11 +374,19 @@ const Results = styled("div", ({ $theme, $isDark }) => {
 const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme, $isDark }) => {
   return {
     justifyContent: "center!important",
+    padding:'0px',
+    height:'32px',
+    display:'flex',
+    alignItems:'center',
+    alignContent:'center',
+    //justifyContent:'center',
   };
 });
 const StyledBorderCell = withStyle<typeof StyledCell, Theme>(StyledCell, ({ $theme }) => ({
   borderBottom: `1px solid ${$theme.borders.border600.borderColor}`,
-  height: '79px'
+  borderRight: `1px solid ${$theme.borders.border600.borderColor}`,
+  height: '79px',
+  padding:'0px'
 }));
 const CustomTable = withStyle<typeof StyledTable, Theme>(StyledTable, ({ $theme }) => ({
   marginBottom: '0px'
@@ -417,7 +427,14 @@ export default function VIPSTable() {
     nextPage,
     prevPage,
     dataList,
+    setTotalsField,
     queryLoader,
+    setTotalsDoc,
+    setTotalsCollection,
+    setQueryGroupCollection,
+    setWhere,
+    setQueryCollection,
+    fireStoreQuery,
   } = useQuery();
 
   React.useEffect(() => {
@@ -499,19 +516,51 @@ export default function VIPSTable() {
       }
     }, 2000);
   }
+
+
+  /* add shit to the query questions*/
+  useEffect(() => {
+    setTotalsField(`total`);
+    setTotalsDoc("ArrivalVIPs");
+    setTotalsCollection("Totals")
+    
+    setQueryCollection("ArrivalVIPs");
+    setOrderBy("firstName");
+    // if(router?.query?.filter){
+    //   setWhere([["progress", "in", orderProgressObject[`${router?.query?.filter}`] ], ["settled", "==", false]])
+    // }
+    setLimit(5);
+    return () => {
+      setTotalsField(null);
+      setTotalsDoc(null);
+      setTotalsCollection(null)
+      setQueryGroupCollection(null);
+      setQueryCollection(null);
+      setLimit(5);
+      setOrderBy(null);
+      setWhere(null)
+    };
+    // }, [router]);
+  }, [router]);
+
+  useEffect(() => {
+    console.log(`fireStoreQuery`)
+    console.log(fireStoreQuery)
+  }, [fireStoreQuery]);
+
   return (
 
     <CustomTable>
       <StyledHead $width="100%">
         {/* {!isMobile && <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell>} */}
-        <StyledHeadCellMod style={{ flex: 2 }}>Name</StyledHeadCellMod>
+        <StyledHeadCellMod style={{ flex: 2 }}> <Label4>Name</Label4></StyledHeadCellMod>
         {/* {!isMobile && <StyledHeadCell style={{ flex: 2 }}>Schedule</StyledHeadCell>} */}
-        {<StyledHeadCellMod style={{ flex: 1 }}>Room</StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}>Arrival</StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}>Departure</StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}>Code</StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}>Notes</StyledHeadCellMod>}
-        {<StyledHeadCellMod style={{ flex: 1 }}>Status</StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <Label4>Room</Label4></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Arrival</Label4></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Departure</Label4></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Code</Label4></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}> <Label4>Notes</Label4></StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <Label4>Status</Label4></StyledHeadCellMod>}
         {/* {!isMobile && <StyledHeadCell style={{ flex: 1 }}>Items</StyledHeadCell>} */}
         {/* <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell> */}
       </StyledHead>
@@ -527,173 +576,43 @@ export default function VIPSTable() {
           </Results>
         )}
         {dataState &&
-          dataState.map((row: OrderClass, index: number) => (
+          dataState.map((row: VIPClass, index: number) => (
             <StyledRow key={index}>
-              {!isMobile && <StyledBorderCell style={{ minWidth: "80px", flex: 0 }}>
+              {!isMobile && <StyledBorderCell style={{ flex: 2 }}>
                 <CellWrapper>
-                  <Avatar
-                    overrides={{
-                      Avatar: {
-                        style: ({ $theme }) => ({
-                          height: '100%',
-                          borderTopLeftRadius: $theme.borders.radius100,
-                          borderTopRightRadius: $theme.borders.radius100,
-                          borderBottomRightRadius: $theme.borders.radius100,
-                          borderBottomLeftRadius: $theme.borders.radius100,
-                        }),
-                      },
-                      Root: {
-                        style: ({ $theme }) => ({
-                          //height:'60%',
-                          borderTopLeftRadius: $theme.borders.radius100,
-                          borderTopRightRadius: $theme.borders.radius100,
-                          borderBottomRightRadius: $theme.borders.radius100,
-                          borderBottomLeftRadius: $theme.borders.radius100,
-                        }),
-                      },
-                    }}
-                    name="user name #3"
-                    size="scale1400"
-                    src={(row.photoURL) ? `${row.photoURL}` : "https://avatars.dicebear.com/api/human/override.svg?width=285&mood=happy"}
-                  />
+                  <Label4>{`${row?.lastName}, ${row?.firstName}`}</Label4>
                 </CellWrapper>
               </StyledBorderCell>}
-              <StyledBorderCell
-                onClick={() => {
-                  router.push(`/[adminID]/orders/selected/[uid]/[oid]`, `/${user.uid}/orders/selected/${row.user}/${row.id}`)
-                }}
-                style={{ flex: 3 }}>
-                <CellWrapper style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }} >{row?.address && <Label2>{row?.address.substring(0, row?.address.indexOf(","))}</Label2>}<Paragraph3>{row.phoneNumber}</Paragraph3> </CellWrapper>
-              </StyledBorderCell>
-
-              {!isMobile && (
-                <StyledBorderCell
-                  onClick={() => {
-                    router.push(`/[adminID]/orders/selected/[uid]/[oid]`, `/${user.uid}/orders/selected/${row.user}/${row.id}`)
-                  }}
-                  style={{ flex: 1 }}>
-                  {<CellWrapper>{row?.driverName || 'No Driver'}</CellWrapper>}
-                </StyledBorderCell>
-              )}
-              {/* {!isMobile && ( 
-                <StyledBorderCell
-                  onClick={() => {
-                    router.push(`/[adminID]/orders/selected/[uid]/[oid]`, `/${user.uid}/orders/selected/${row.user}/${row.id}`)
-                  }}
-                  style={{ flex: 1 }}>
-                  <CellWrapper>{`${row?.cartTotals?.totalItemsSold ||''}`}</CellWrapper>
-                </StyledBorderCell>
-              )} */}
-              {/* {!isMobile && (
-                <StyledBorderCell style={{ flex: 1 }}>
-                  <CellWrapper>{`${row?.code || ``}`}</CellWrapper>
-                </StyledBorderCell>
-              )} */}
-
-
-
-
-
-
-              {(
-                <StyledBorderCell
-                  // onClick={() => {
-                  //   router.push(`/[adminID]/orders/selected/[uid]/[oid]`, `/${user.uid}/orders/selected/${row.user}/${row.id}`)
-                  // }}
-                  style={{ flex: 2 }}>
-                  <CellWrapper>
-                    <Tag
-                      //disabled={true}
-                      variant={VARIANT.solid}
-                      size={'small'}
-                      //kind={row.progress === 'received' ? _KIND.negative : row.progress !== 'received' ? _KIND.accent : undefined}
-                      overrides={{
-                        Root: {
-                          style: ({ $theme }) => ({ marginBottom: "0px", marginRight: "0px", marginLeft: "0px", marginTop: "0px" }),
-                        },
-                        // ActionIcon: {
-                        //     component: (props) => (
-                        //       <>
-                        //         <SVGIcon
-                        //           style={{
-                        //             transform: "scale(0.6) translate3d(-7px, 0px, 0px)",
-                        //             overflow: "visible",
-                        //             width: "12px",
-                        //           }}
-                        //           name="pencil"
-                        //         />
-                        //       </>
-                        //     ),
-                        //   },
-                      }}
-                      closeable={false}
-                    >
-                      {(row.progress === 'complete') ? `${('Unpaid').charAt(0).toUpperCase() + ('Unpaid').slice(1)}` :( (typeof row.progress === 'string') ? `${row.progress.charAt(0).toUpperCase() + row.progress.slice(1)}` : ``)}
-                    </Tag>
-                  </CellWrapper>
-                </StyledBorderCell>
-              )}
-
-
-
-
-
-
-              {router?.query?.filter !== 'paid' && (
-                <StyledBorderCell
-                  // onClick={() => {
-                  //   router.push(`/[adminID]/orders/selected/[uid]/[oid]`, `/${user.uid}/orders/selected/${row.user}/${row.id}`)
-                  // }}
-                  style={{ flex: 2 }}>
-                  <CellWrapper>
-                    {row.progress === 'received' && <Button
-                      onClick={() => addDriver(row)}
-                      size={SIZE.compact}
-                      kind={KIND.secondary}
-
-                    >
-                      Assign Driver
-                    </Button>}
-                    {row.progress === 'pending' && <Button
-                      onClick={() => resetOrder(row)}
-                      kind={KIND.secondary}
-                      size={SIZE.compact}
-                      disabled={loading}
-                      isLoading={loading}
-
-                    >
-                      Reset Order
-                    </Button>}
-                    {['assigned', 'pickup', 'warning', 'arrived'].includes(row.progress) && <Button
-                      onClick={() => changeProgress(row)}
-                      kind={KIND.secondary}
-                      size={SIZE.compact}
-
-                    >
-                      Edit Progress
-                    </Button>}
-                    {row.progress === 'complete' && <Button
-                      onClick={() => markPaid(row)}
-                      kind={KIND.secondary}
-                      size={SIZE.compact}
-
-                    >
-                      Mark Paid
-                    </Button>}
-                  </CellWrapper>
-                </StyledBorderCell>
-              )}
-
-
-              {/* <StyledBorderCell style={{ minWidth: "80px", flex: 0 }}>
-                  <StyledAction style={{ width: "100%" }}>
-                    <CellWrapper style={{ justifyContent: "center" }}>
-                      <Button   kind={KIND.minimal} size={SIZE.compact} shape={SHAPE.circle} key={index}>
-                      <SVGIcon name="delete" color={theme.colors.negative300} />
-                      </Button>
-                    </CellWrapper>
-                  </StyledAction>
-                </StyledBorderCell> */}
+              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+                <CellWrapper>
+                  <Label4>{`${row?.roomNumber}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
+              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+                <CellWrapper>
+                  <Label4>{`${`${row?.arrival}`.substring(4)}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
+              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+                <CellWrapper>
+                  <Label4>{`${`${row?.departure}`.substring(4)}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
+              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+                <CellWrapper>
+                  <Label4>{`${row?.rateCode}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
+              {!isMobile && <StyledBorderCell style={{ flex: 3 }}>
+                <CellWrapper>
+                  <Label4>{`${row?.notes}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
+              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+                <CellWrapper>
+                  <Label4>{`${row?.vipStatus}`}</Label4>
+                </CellWrapper>
+              </StyledBorderCell>}
             </StyledRow>
           ))}
       </StyledBody>
