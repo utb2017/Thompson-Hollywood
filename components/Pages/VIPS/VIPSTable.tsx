@@ -33,6 +33,7 @@ import { useRouter } from "next/router"
 import { useUser } from "../../../context/userContext"
 import { useUsers } from "../../../context/usersContext";
 
+import VIP_Edit from "../../Modals/ArrivalVIPedit";
 
 
 import { Avatar } from 'baseui/avatar';
@@ -394,6 +395,15 @@ const CustomTable = withStyle<typeof StyledTable, Theme>(StyledTable, ({ $theme 
   marginBottom: '0px',
   border:'none'
 }));
+const CellButton = styled(Button, ({ $theme }) => {
+  return {
+    //backgroundColor:`white`,
+    width:`100%`,
+    padding:`0px`,
+    border: `none`,
+    display:'block',
+  };
+});
 
 export default function VIPSTable() {
   const [css, theme] = useStyletron();
@@ -449,7 +459,10 @@ export default function VIPSTable() {
   }, [dataList, queryLoader]);
 
 
-  const openModalBase = (component: () => ReactElement, hasSquareBottom: boolean, closeable: boolean) => {
+  const openModalBase = (
+    component: () => ReactElement,
+    hasSquareBottom: boolean
+  ) => {
     modalBaseDispatch({
       type: "MODAL_UPDATE",
       payload: {
@@ -458,13 +471,14 @@ export default function VIPSTable() {
           key: [],
           component,
           hasSquareBottom,
-          closeable,
         },
       },
     });
   };
-
-
+  const _VIPedit = (id:string) => {
+    const component: () => ReactElement = () => <VIP_Edit collection={"ArrivalVIPs"} id={id} />;
+    openModalBase(component, true);
+  };
 
 
 
@@ -527,6 +541,10 @@ export default function VIPSTable() {
         )}
         {dataState &&
           dataState.map((row: VIPClass, index: number) => (
+            <CellButton 
+              onClick={()=>_VIPedit(row?.id)} 
+              kind={KIND.tertiary}  
+            >
             <StyledRow key={index}>
               {!isMobile && <StyledBorderCell style={{ flex: 2 }}>
                 <CellWrapper>
@@ -563,7 +581,9 @@ export default function VIPSTable() {
                   <Label4>{`${row?.vipStatus[0].label || `n/a`}`}</Label4>
                 </CellWrapper>
               </StyledBorderCellEnd>}
-            </StyledRow>
+            </StyledRow>              
+            </CellButton>
+
           ))}
       </StyledBody>
       <div
