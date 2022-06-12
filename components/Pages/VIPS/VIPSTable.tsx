@@ -36,11 +36,6 @@ import { useUsers } from "../../../context/usersContext";
 
 
 import { Avatar } from 'baseui/avatar';
-import Driver from "./modals/Driver";
-import ChangeDriver from "./modals/ChangeDriver";
-import ChangeProgress from "./modals/ChangeProgress";
-import ResetOrder from "./modals/ResetOrder";
-import Paid from "./modals/Paid";
 import { useForm } from "../../../context/formContext";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
@@ -379,17 +374,25 @@ const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme, $isDark }) => {
     display:'flex',
     alignItems:'center',
     alignContent:'center',
+    //backgroundColor:`#c6d9f1`
     //justifyContent:'center',
   };
 });
 const StyledBorderCell = withStyle<typeof StyledCell, Theme>(StyledCell, ({ $theme }) => ({
-  borderBottom: `1px solid ${$theme.borders.border600.borderColor}`,
-  borderRight: `1px solid ${$theme.borders.border600.borderColor}`,
+  borderBottom: `1px solid ${$theme.borders.border300.borderColor}`,
+  borderRight: `1px solid ${$theme.borders.border300.borderColor}`,
+  height: '79px',
+  padding:'0px'
+}));
+const StyledBorderCellEnd = withStyle<typeof StyledCell, Theme>(StyledCell, ({ $theme }) => ({
+  borderBottom: `1px solid ${$theme.borders.border300.borderColor}`,
+  borderRight: `none`,
   height: '79px',
   padding:'0px'
 }));
 const CustomTable = withStyle<typeof StyledTable, Theme>(StyledTable, ({ $theme }) => ({
-  marginBottom: '0px'
+  marginBottom: '0px',
+  border:'none'
 }));
 
 export default function VIPSTable() {
@@ -462,60 +465,7 @@ export default function VIPSTable() {
   };
 
 
-  const addDriver = (row: OrderClass) => {
 
-    //alert('hi')
-    const component = () => <Driver order={row} />;
-    openModalBase(component, false, true);
-  };
-
-  const changeDriver = (row: OrderClass) => {
-
-    //alert('hi')
-    const component = () => <ChangeDriver order={row} />;
-    openModalBase(component, false, true);
-  };
-
-  const changeProgress = (row: OrderClass) => {
-
-    //alert('hi')
-    const component = () => <ChangeProgress order={row} />;
-    openModalBase(component, false, true);
-  };
-  
-  const resetOrder = (row: OrderClass) => {
-    const component = () => <ResetOrder order={row} />;
-    openModalBase(component, false, true);
-  };
-  
-  const markPaid = (row: OrderClass) => {
-    const component = () => <Paid order={row} />;
-    openModalBase(component, false, true);
-  };
-  const handleReset = async (order: OrderClass) => {
-    setLoading(true)
-    enqueue({ message: "Reseting order", progress: true }, DURATION.infinite);
-    setTimeout(async () => {
-      try {
-        //const FieldValue = firebase.firestore.FieldValue
-        await updateFirestoreGroup("users", order.user, "Orders", order.id, {
-          progress: 'received',
-          driver: false,
-          driverName: false,
-        })
-        setIsSideOpen(false)
-        dequeue();
-        enqueue({ message: "Order reset", startEnhancer: ({ size }) => <Check size={size} /> }, DURATION.short);
-      } catch (e) {
-        setError((oldError) => ({ ...oldError, ...{ server: `Error reseting order.` } }));
-        dequeue();
-        //showToast(`${error?.message || error}`);
-        enqueue({ message: `Error reseting order`, startEnhancer: ({ size }) => <DeleteAlt size={size} /> }, DURATION.short);
-      } finally {
-        setLoading(false)
-      }
-    }, 2000);
-  }
 
 
   /* add shit to the query questions*/
@@ -608,11 +558,11 @@ export default function VIPSTable() {
                   <Label4>{`${row?.notes}`}</Label4>
                 </CellWrapper>
               </StyledBorderCell>}
-              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+              {!isMobile && <StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.vipStatus}`}</Label4>
+                  <Label4>{`${row?.vipStatus[0].label || `n/a`}`}</Label4>
                 </CellWrapper>
-              </StyledBorderCell>}
+              </StyledBorderCellEnd>}
             </StyledRow>
           ))}
       </StyledBody>

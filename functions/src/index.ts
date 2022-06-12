@@ -493,7 +493,7 @@ exports.onDeleteArrivalVIP = functions.firestore
 
     //archive the vip
     //to keep up with stays and id
-    
+
 
     try {
       await totalRef.set(totalsUpdate, { merge: true });
@@ -505,3 +505,202 @@ exports.onDeleteArrivalVIP = functions.firestore
     }
     return;
   });
+
+
+
+//firebase deploy --only functions:createVIP
+exports.createVIP = functions.https.onCall(
+  async (_form: VIPClass, context: CallableContext) => {
+    const clientData = { ..._form };
+    const updateData: VIPClass = {};
+    let x:
+      | `firstName`
+      | `lastName`
+      | `rateCode`
+      | `arrival`
+      | `departure`
+      | `image`
+      | `fileName`
+      | `vipStatus`
+      | `roomStatus`
+      | "roomNumber"
+      | `notes`
+      | `details`
+      | `stays`
+      | `reservationStatus`
+      | `id`;
+    const y: string = `VIP`;
+
+    // firstName
+    x = `firstName`;
+    if (!isValidString(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // lastName
+    x = `lastName`;
+    if (!isValidString(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // rateCode
+    x = `rateCode`;
+    if (!isValidString(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // arrival
+    x = `arrival`;
+    if (!isValidString(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // departure
+    x = `departure`;
+    if (!isValidString(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // image
+    x = `image`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          `Invalid/Missing: ${y} '${x}' data.`
+        );
+      } else {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[
+        x
+      ] = `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`;
+    }
+    // fileName
+    x = `fileName`;
+    if (clientData[x] != undefined) {
+      if (!isValidString(clientData[x])) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          `Invalid/Missing: ${y} '${x}' data.`
+        );
+      } else {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = `810-8105444_male-placeholder.png`;
+    }
+    // vipStatus
+    x = `vipStatus`;
+    if (!Array.isArray(clientData[x])) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `Invalid/Missing: ${y} '${x}' data.`
+      );
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // roomStatus
+    x = `roomStatus`;
+    if (clientData[x] != undefined) {
+      if (Array.isArray(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = [];
+    }
+    // roomNumber
+    x = `roomNumber`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = null;
+    }
+    // notes
+    x = `notes`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = null;
+    }
+    // details
+    x = `details`;
+    if (clientData[x] != undefined) {
+      if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = null;
+    }
+    // stays
+    x = `stays`;
+    if (clientData[x] != undefined) {
+      if (isValidNumber(clientData[x])) {
+        updateData[x] = clientData[x];
+      }
+    } else {
+      updateData[x] = 0;
+    }
+
+    const _vip = new VIPClass(
+      updateData.arrival, // arrival?: string,
+      updateData.departure, // departure?: string,
+      updateData.details, // details?: string,
+      updateData.fileName, // fileName?: string
+      updateData.firstName, // firstName?: string,
+      null, // id?: string,
+      updateData.image, // image?: string,
+      updateData.lastName, // lastName?: string,
+      updateData.notes, // notes?: string,
+      updateData.rateCode, // rateCode?: string,
+      null, // reservationStatus?:'DUEIN'|'DUEOUT'|'CHECKEDIN'|'CHECKEDOUT'|'RESERVED'|'NOSHOW'|'CANCEL',
+      updateData.roomNumber || null, // roomNumber?: string,
+      updateData.roomStatus || null, // roomStatus?: [],
+      updateData.vipStatus, // vipStatus?: [],
+      updateData.stays || 0 // stays?:number,
+    );
+
+    const completeVIP = { ..._vip };
+    try {
+      const ref = db.collection("ArrivalVIPs").doc();
+      const id = ref.id;
+      completeVIP.id = id;
+      await ref.set({ ...completeVIP });
+      return {
+        form: completeVIP,
+        success: true,
+        id,
+      };
+    } catch (error: any) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        `${error?.message || error || " error "}`
+      );
+    }
+  }
+);

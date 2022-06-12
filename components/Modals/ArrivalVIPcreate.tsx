@@ -46,7 +46,7 @@ import { Textarea } from "baseui/textarea";
 //import dateFormat from "dateformat";
 import { Card, StyledBody, StyledAction } from "baseui/card";
 //import { VIPClass } from "./types";
-
+import {StatefulCalendar} from 'baseui/datepicker';
 import { FileUploader } from "baseui/file-uploader";
 import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
@@ -129,7 +129,7 @@ const FlexContainer = styled("div", ({ $theme }) => {
   };
 });
 
-const CreateProduct = () => {
+const CreateVIP = () => {
 
   const nameRef = useRef<HTMLDivElement>(null);
   const collectionRef = useRef<HTMLDivElement>(null);
@@ -596,9 +596,36 @@ const CreateProduct = () => {
             </FormControl>
           </FormInput>
         </FormSection>
-        {/** Collection **/}
-        <FormSection ref={collectionRef}>
-          <FormInput
+        {/** Dates **/}
+        <FormSection>
+         
+        <FormInput
+            style={formStyle}
+            label={<Label2>{"Dates"}</Label2>}
+            stack={true}
+          >
+        <FormControl error={error?.arrival}>
+
+        <StatefulCalendar
+    //onChange={({date}) => console.log(date)}
+    range
+    value={(form?.arrival && form?.departure)?[form.arrival, form.departure]:(form?.arrival)?[form?.arrival]:(form?.departure)?[form?.departure]:[]}
+    onChange={({ date }) => {
+      const arrival = Array.isArray(date) ? date[0] : [date];
+      const departure = (Array.isArray(date) && date.length>1) ? (date[1]||null) : null;
+      setForm((oldForm: VIPClass) => ({
+        ...oldForm,
+        ...{ arrival, departure },
+      }));
+    }}
+  
+  />
+
+
+        </FormControl>
+         </FormInput>
+         
+         {/* <FormInput
             style={formStyle}
             label={<Label2>{"Dates"}</Label2>}
             stack={true}
@@ -653,6 +680,9 @@ const CreateProduct = () => {
               />
             </FormControl>
           </FormInput>
+       
+        */}
+       
         </FormSection>
         {/** Details */}
         <FormSection ref={detailsRef}>
@@ -952,4 +982,4 @@ const CreateProduct = () => {
     </>
   );
 };
-export default CreateProduct;
+export default CreateVIP;

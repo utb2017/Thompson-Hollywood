@@ -11,7 +11,7 @@ import { KIND } from "baseui/button";
 import { useRouter } from "next/router";
 import { useUser } from "../../../context/userContext";
 import { useRouting } from "../../../context/routingContext";
-import VIPCreate from "./VIPCreate";
+import VIPCreate from "../../Modals/ArrivalVIPcreate";
 
 type Selected = {
   label: string | number;
