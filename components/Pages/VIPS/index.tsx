@@ -12,12 +12,18 @@ import { useRouter } from "next/router";
 import { useUser } from "../../../context/userContext";
 import { useRouting } from "../../../context/routingContext";
 import VIPCreate from "../../Modals/ArrivalVIPcreate";
+import firebase from "../../../firebase/clientApp";
+import { useSnackbar, DURATION } from "baseui/snackbar";
+import { Check, Delete, DeleteAlt } from "baseui/icon";
+import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
+
+
+type INullableReactText = React.ReactText | null;
 
 type Selected = {
   label: string | number;
   value: string | Date;
 };
-
 class DiscountClass {
   active: boolean;
   alert: boolean;
@@ -173,6 +179,9 @@ const Orders: FC = (): ReactElement => {
   const router = useRouter()
   const { user } = useUser()
   const {  setNavLoading } = useRouting()
+  const { enqueue, dequeue } = useSnackbar();
+  const [toastKey, setToastKey] = useState<INullableReactText>(null);
+  const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
 
 
 
@@ -227,11 +236,66 @@ const Orders: FC = (): ReactElement => {
       },
     });
   };
-
-
+  const closeModal = () => {
+    modalBaseDispatch({
+      type: "MODAL_UPDATE",
+      payload: {
+        modalBase: {
+          isOpen: false,
+          key: [],
+          component: null,
+          hasSquareBottom:false
+          
+        },
+      },
+    });
+  };
   const _VIPCreate = () => {
     const component: () => ReactElement = () => <VIPCreate />;
     openModalBase(component, true);
+  };
+  const exportVIPs = async () => {
+
+
+    setLoading(true);
+    //enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
+    try {
+      const createVIP = firebase.functions().httpsCallable("getPdfUrl");
+      const response = await createVIP();
+      dequeue();
+      enqueue(
+        {
+          message: "VIP Exported",
+          startEnhancer: ({ size }) => <Check size={size} />,
+        },
+        DURATION.short
+      );
+      closeModal();
+      console.log(JSON.stringify(response))
+      // if (response?.data?.success === true) {
+      //   //alert(`${response?.data?.form}`)
+      //   //console.log(response?.data?.form);
+      //   //setFireProductDefault({...response?.data?.form});
+      //   //setForm({...response?.data?.form});
+      // }
+    } catch (e) {
+      //setError(`${e?.message || e}`);
+      // setError((oldError: Errors) => ({
+      //   ...oldError,
+      //   ...{ server: `VIP not created.` },
+      // }));
+      dequeue();
+      showToast(`${e?.message || e}`);
+      enqueue(
+        {
+          message: `Your VIPs weren't exported`,
+          startEnhancer: ({ size }) => <DeleteAlt size={size} />,
+        },
+        DURATION.short
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -277,7 +341,7 @@ const Orders: FC = (): ReactElement => {
           <div style={{width:'12px'}} ></div>
           <Button
             kind={themeState?.dark ? KIND.secondary : undefined}
-            onClick={_VIPCreate}
+            onClick={exportVIPs}
             isLoading={Boolean(loading)}
             disabled={Boolean(loading)}
           >

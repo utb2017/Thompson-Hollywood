@@ -836,7 +836,46 @@ const CreateVIP = () => {
                 />
               </FormControl>
             </FlexContainer>
+            <FlexContainer>
+              <FormControl caption={() => "City, State Country"} error={error?.rateCode}>
+                <Input
+                  required
+                  disabled={loading}
+                  onChange={(e) => {
+                    const str = e?.currentTarget?.value;
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ rateCode: str },
+                    // }));
+                    setForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ details: str },
+                    }));
+                  }}
+                  value={form?.details}
+                  onFocus={() =>
+                    //executeScroll(cbdRef),
+                    setError({})
+                  }
+                  key="details"
+                  id="details"
+                  name="details"
+                  error={Boolean(error?.details)}
+                  type="text"
+                  placeholder="Los Angeles, United States"
+                  overrides={{
+                    Root: {
+                      style: ({ $theme }) => ({
+                        // marginBottom: "16px",
+                      }),
+                    },
+                  }}
+                />
+              </FormControl>
 
+
+
+            </FlexContainer>
             <Textarea
               value={form?.notes}
               onChange={(e) => {

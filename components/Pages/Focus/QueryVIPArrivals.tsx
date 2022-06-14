@@ -79,17 +79,17 @@ const QueryVIPArrivals: FC = (): ReactElement => {
     ]
   ): string => {
     if (objectArray != undefined) {
-      if (objectArray[0].id === "CLEAN") {
+      if (objectArray[0]?.id === "CLEAN") {
         return `blue`;
-      } else if (objectArray[0].id === "DIRTY") {
+      } else if (objectArray[0]?.id === "DIRTY") {
         return `red`;
-      } else if (objectArray[0].id === "INSPECTED") {
+      } else if (objectArray[0]?.id === "INSPECTED") {
         return `green`;
-      } else if (objectArray[0].id === "PICKUP") {
+      } else if (objectArray[0]?.id === "PICKUP") {
         return `yellow`;
-      } else if (objectArray[0].id === "OS") {
+      } else if (objectArray[0]?.id === "OS") {
         return `red`;
-      } else if (objectArray[0].id === "OO") {
+      } else if (objectArray[0]?.id === "OO") {
         return `red`;
       } else {
         return `white`;
@@ -118,6 +118,7 @@ const QueryVIPArrivals: FC = (): ReactElement => {
     const component: () => ReactElement = () => <VIP_Edit collection={"ArrivalVIPs"} id={id} />;
     openModalBase(component, true);
   };
+  
   //OUTPUT
   if (fireStoreQuery.status === "loading") {
     return (

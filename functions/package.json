@@ -14,6 +14,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@adobe/pdfservices-node-sdk": "^2.2.2",
     "@easymoney/money": "^1.0.2",
     "@google-cloud/firestore": "^4.9.1",
     "@types/dinero.js": "^1.6.5",
@@ -30,13 +31,17 @@
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.1",
     "pdfjs": "^2.4.5",
+    "pdfkit": "^0.13.0",
     "playwright": "^0.13.0",
     "twilio": "^3.32.0",
     "typesaurus": "^7.1.0",
+    "uuid": "^8.3.2",
     "weeknumber": "^1.2.1"
   },
   "devDependencies": {
     "@types/big.js": "^6.1.0",
+    "@types/pdfkit": "^0.12.6",
+    "@types/uuid": "^8.3.4",
     "tslint": "^5.12.0",
     "typescript": "^4.1.3"
   },

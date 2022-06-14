@@ -2,6 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as playwright from "playwright";
 import { VIPClass, CallableContext } from "./interface";
+import * as PdfKit from 'pdfkit';
+import * as uuid from 'uuid';
 
 //const playwright = require('playwright');
 
@@ -17,6 +19,148 @@ const isValidString = (x: any): boolean => {
 const isValidNumber = (x: any): boolean => {
   return Boolean(typeof x === "number" && x > -1);
 };
+
+
+
+
+
+
+
+//firebase deploy --only functions:getPdfUrl
+exports.getPdfUrl = functions
+  .https.onCall(async () => {
+    const doc = new PdfKit();
+    
+    let receiptId = uuid.v4();
+    const file = admin
+      .storage()
+      .bucket()
+      .file(`detailedVIPs/receipt-${receiptId}.pdf`);
+
+      
+
+    await new Promise<void>((resolve, reject) => {
+      const writeStream = file.createWriteStream({
+        resumable: false,
+        contentType: "application/pdf",
+      });
+      writeStream.on("finish", () => resolve());
+      writeStream.on("error", (error) => {
+        reject(error)
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          `${error?.message || error || " error "}`
+        );
+      });
+      
+      doc.pipe(writeStream);
+      
+      doc
+        .fontSize(24)
+        .text("Receipt")
+        .fontSize(16)
+        .moveDown(2)
+        .text("This is your receipt!")
+        
+      doc.end()
+     });
+     
+    const url = await file.getSignedUrl({
+      version: "v4",
+      action: "read",
+      expires: Date.now() + 24 * 60 * 60 * 1000,
+    });
+      console.log(url)
+    return { url };
+  });
+
+
+
+//firebase deploy --only functions:exportAdobeDetailedVip
+exports.exportAdobeDetailedVip = functions
+  .https.onCall(async () => {
+    
+
+      const PDFServicesSdk = require('@adobe/pdfservices-node-sdk');
+
+      /**
+       * This sample illustrates how to create a PDF file from a HTML file with inline CSS.
+       * <p>
+       * Refer to README.md for instructions on how to run the samples.
+       */
+      
+      /**
+       * Sets any custom options for the operation.
+       *
+       * @param htmlToPDFOperation operation instance for which the options are provided.
+       */
+      const setCustomOptions = (htmlToPDFOperation) => {
+          // Define the page layout, in this case an 8 x 11.5 inch page (effectively portrait orientation).
+          const pageLayout = new PDFServicesSdk.CreatePDF.options.html.PageLayout();
+          pageLayout.setPageSize(20, 25);
+      
+          // Set the desired HTML-to-PDF conversion options.
+          const htmlToPdfOptions = new PDFServicesSdk.CreatePDF.options.html.CreatePDFFromHtmlOptions.Builder()
+              .includesHeaderFooter(true)
+              .withPageLayout(pageLayout)
+              .build();
+          htmlToPDFOperation.setOptions(htmlToPdfOptions);
+      };
+      
+      try {
+          // Initial setup, create credentials instance.
+          const credentials =  PDFServicesSdk.Credentials
+              .serviceAccountCredentialsBuilder()
+              .fromFile("pdfservices-api-credentials.json")
+              .build();
+      
+          // Create an ExecutionContext using credentials and create a new operation instance.
+          const executionContext = PDFServicesSdk.ExecutionContext.create(credentials),
+              htmlToPDFOperation = PDFServicesSdk.CreatePDF.Operation.createNew();
+      
+          // Set operation input from a source file.
+          const input = PDFServicesSdk.FileRef.createFromLocalFile('resources/createPDFFromHTMLWithInlineCSSInput.html');
+          htmlToPDFOperation.setInput(input);
+      
+          // Provide any custom configuration options for the operation.
+          setCustomOptions(htmlToPDFOperation);
+      
+          // Execute the operation and Save the result to the specified location.
+          htmlToPDFOperation.execute(executionContext)
+              .then(result => {
+                
+                return result.saveAsFile('output/createPDFFromHTMLWithInlineCSSOutput.pdf')
+              })
+              .catch(err => {
+                  if(err instanceof PDFServicesSdk.Error.ServiceApiError
+                      || err instanceof PDFServicesSdk.Error.ServiceUsageError) {
+                      console.log('Exception encountered while executing operation', err);
+                  } else {
+                      console.log('Exception encountered while executing operation', err);
+                  }
+              });
+      } catch (err) {
+          console.log('Exception encountered while executing operation', err);
+      }
+
+
+
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //firebase deploy --only functions:getExpedia
 exports.getExpedia = functions.https.onCall(() => {
@@ -505,9 +649,6 @@ exports.onDeleteArrivalVIP = functions.firestore
     }
     return;
   });
-
-
-
 //firebase deploy --only functions:createVIP
 exports.createVIP = functions.https.onCall(
   async (_form: VIPClass, context: CallableContext) => {
@@ -704,3 +845,12 @@ exports.createVIP = functions.https.onCall(
     }
   }
 );
+
+
+
+
+
+
+
+
+

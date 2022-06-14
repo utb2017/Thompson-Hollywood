@@ -18,7 +18,9 @@
 /TRASH
 
 # production
-/build
+/build]
+
+/adobe
 
 # misc
 .DS_Store
