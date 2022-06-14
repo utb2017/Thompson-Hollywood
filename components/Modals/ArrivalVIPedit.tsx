@@ -26,7 +26,7 @@ import { Button } from "baseui/button";
 import { ButtonGroup, MODE } from "baseui/button-group";
 import { Input } from "baseui/input";
 import { Check, Delete, DeleteAlt } from "baseui/icon";
-import { DatePicker } from "baseui/datepicker";
+import { Calendar, DatePicker, StatefulCalendar } from "baseui/datepicker";
 import { TimePicker } from "baseui/timepicker";
 import { FormControl } from "baseui/form-control";
 import { Select, TYPE } from "baseui/select";
@@ -144,7 +144,9 @@ const isValidString = (x: any) => {
 const isValidNumber = (x: any): boolean => {
   return Boolean(typeof x === "number" && x > -1);
 };
-
+const isValidDate = (x: Date): boolean => {
+  return Boolean(x.getTime());
+};
 const FlexSpacer = styled("div", ({ $theme, $width = `16px` }) => {
   return {
     height: "100%",
@@ -233,11 +235,15 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const updateVIP = async () => {
 
     //const clientData: VIPClass = { ...form };
-
-
     const clientData = { ...changeForm };
     clientData.id = form.id
     const updateData: VIPClass = {};
+
+    alert(JSON.stringify(clientData))
+  //  return
+
+
+
 
     let x:
       | `firstName`
@@ -299,10 +305,19 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     // arrival
     x = `arrival`;
     if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
+      if (!isValidDate(clientData[x])) {
         return setError((oldError: Errors) => ({
           ...oldError,
           ...{ [x]: "Arrival Date Required" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
+      clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Failed to convert arrival" },
         }));
       } else {
         updateData[x] = clientData[x];
@@ -311,7 +326,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     // departure
     x = `departure`;
     if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
+      if (!isValidDate(clientData[x])) {
         return setError((oldError: Errors) => ({
           ...oldError,
           ...{ [x]: "Departure Date Required" },
@@ -319,7 +334,18 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       } else {
         updateData[x] = clientData[x];
       }
+      clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
+      if (!isValidString(clientData[x])) {
+        return setError((oldError: Errors) => ({
+          ...oldError,
+          ...{ [x]: "Failed to convert departure" },
+        }));
+      } else {
+        updateData[x] = clientData[x];
+      }
+
     }
+
     // image
     x = `image`;
     if (clientData[x] != undefined) {
@@ -565,7 +591,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
           try {
             const photoURL =
               await taskRef.current.snapshot.ref.getDownloadURL();
-            setForm((oldForm: VIPClass) => ({
+            setChangeForm((oldForm: VIPClass) => ({
               ...oldForm,
               ...{ image: photoURL, filePath },
             }));
@@ -619,7 +645,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   };
 
   useEffect(() => {
-    getImgURL();
+   // getImgURL();
 
     //alert(formatDate(new Date(), ' EEE dd MMM'))
   }, []);
@@ -632,9 +658,22 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     console.log(changeForm);
   }, [changeForm]);
 
+
+const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | Date[]) => {
+  //alert(JSON.stringify({arrival, departure, changeArrival, changeDeparture}))
+  const Arrival = (changeArrival || arrival);
+  const Departure = (((changeArrival && changeDeparture)?changeDeparture:((!changeArrival && departure)?departure:null)));
+  if(Departure && Arrival){
+    return [Arrival, Departure]
+  }else if(Arrival){
+    return [Arrival]
+  }else{
+    return []
+  }
+}
   
   console.log("render");
-  return (
+  return (  
     <>
       <LoadHeader>
         <div>{`Edit VIP `}</div>
@@ -733,64 +772,34 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
             label={<Label2>{"Dates"}</Label2>}
             stack={true}
           >
-            Arrival
+           
             <FormControl error={error?.arrival}>
-              <DatePicker
-                disabled={fireStoreQuery.status === "loading" || loading}
-                value={changeForm?.arrival || (form?.arrival || [])}
-                onChange={({ date }) => {
-                  const arrival = Array.isArray(date) ? date : [date];
-                  setChangeForm((oldForm: VIPClass) => ({
-                    ...oldForm,
-                    ...{ arrival },
-                  }));
-                  // setForm((oldForm: VIPClass) => ({
-                  //   ...oldForm,
-                  //   ...{ arrival },
-                  // }));
-                }}
-                //quickSelect
-                overrides={{
-                  Popover: {
-                    props: {
-                      overrides: {
-                        Body: {
-                          style: ({ $theme }) => ({ zIndex: 1000 }),
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </FormControl>
-            Departure
-            <FormControl error={error?.departure}>
-              <DatePicker
-                disabled={fireStoreQuery.status === "loading" || loading}
-                value={changeForm?.departure || form?.departure}
-                onChange={({ date }) => {
-                  const departure = Array.isArray(date) ? date : [date];
-                  // setForm((oldForm: VIPClass) => ({
-                  //   ...oldForm,
-                  //   ...{ departure },
-                  // }));
-                  setChangeForm((oldForm: VIPClass) => ({
-                    ...oldForm,
-                    ...{ departure },
-                  }));
-                }}
-                overrides={{
-                  Popover: {
-                    props: {
-                      overrides: {
-                        Body: {
-                          style: ({ $theme }) => ({ zIndex: 1000 }),
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
+            <Calendar
+              //onChange={({date}) => console.log(date)}
+              range
+              //value={[form?.arrival, form?.departure]}
+              value={getRange({
+                arrival:form?.arrival, 
+                departure:form?.departure, 
+                changeArrival:changeForm?.arrival, 
+                changeDeparture:changeForm?.departure
+              })}
+              // value={():Date|Date[]=>{
+              //   const d = new Date()
+              //   return d
+              // }}
+              //value={((form?.arrival && form?.departure) || (changeForm?.arrival && changeForm?.departure)) ? [(changeForm?.arrival || form.arrival), (changeForm?.departure || form.departure)]:((changeForm?.arrival || form?.arrival))?[(changeForm?.arrival || form?.arrival)]:(changeForm?.departure || form.departure)?[(changeForm?.departure || form.departure)]:[]}
+              onChange={({ date }) => {
+                const arrival = Array.isArray(date) ? date[0] : [date];
+                const departure = (Array.isArray(date) && date.length>1) ? (date[1]||null) : null;
+                //alert(JSON.stringify({arrival,departure}))
+                setChangeForm((oldForm: VIPClass) => ({
+                  ...oldForm,
+                  ...{ arrival  , departure },
+                }));
+              }}
+            
+            />
             </FormControl>
           </FormInput>
         </FormSection>
@@ -964,6 +973,46 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
                 />
               </FormControl>
             </FlexContainer>
+            <FlexContainer>
+              <FormControl caption={() => "Location"} error={error?.rateCode}>
+                <Input
+                  required
+                  disabled={fireStoreQuery.status === "loading" || loading}
+                  onChange={(e) => {
+                    const str = e?.currentTarget?.value;
+                    // setForm((oldForm: VIPClass) => ({
+                    //   ...oldForm,
+                    //   ...{ rateCode: str },
+                    // }));
+                    setChangeForm((oldForm: VIPClass) => ({
+                      ...oldForm,
+                      ...{ details: str },
+                    }));
+                  }}
+                  value={changeForm?.details || form?.details}
+                  onFocus={() =>
+                    //executeScroll(cbdRef),
+                    setError({})
+                  }
+                  key="details"
+                  id="details"
+                  name="details"
+                  error={Boolean(error?.details)}
+                  type="text"
+                  placeholder="Los Angeles, United States"
+                  overrides={{
+                    Root: {
+                      style: ({ $theme }) => ({
+                        // marginBottom: "16px",
+                      }),
+                    },
+                  }}
+                />
+              </FormControl>
+
+
+
+            </FlexContainer>
 
             <Textarea
               value={changeForm?.notes || form?.notes}
@@ -1004,7 +1053,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
                   },
                 }}
                 headerImage={
-                  form?.image && (form?.image).length ? form.image : imgURL
+                  (changeForm?.image && (changeForm?.image).length)?changeForm?.image:(form?.image && (form?.image).length) ? form.image : imgURL
                 }
                 // phoneNumber="Example card"
               >
@@ -1049,6 +1098,19 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
               <>
                 {form &&
                   Object.keys(form).map(function (key, index) {
+                    //alert(fireProductDefault[key])
+                    return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
+                  })}
+              </>
+            }
+          </Panel>
+        </Accordion>
+        <Accordion>
+          <Panel title="Change Form Dev">
+            {
+              <>
+                {changeForm &&
+                  Object.keys(changeForm).map(function (key, index) {
                     //alert(fireProductDefault[key])
                     return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
                   })}
