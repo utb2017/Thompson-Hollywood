@@ -260,7 +260,7 @@ const Orders: FC = (): ReactElement => {
     setLoading(true);
     //enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
     try {
-      const createVIP = firebase.functions().httpsCallable("getPdfUrl");
+      const createVIP = firebase.functions().httpsCallable("exportAdobeDetailedVip");
       const response = await createVIP();
       dequeue();
       enqueue(

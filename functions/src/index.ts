@@ -2,8 +2,9 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as playwright from "playwright";
 import { VIPClass, CallableContext } from "./interface";
-import * as PdfKit from 'pdfkit';
-import * as uuid from 'uuid';
+import * as PDFDocument from 'pdfkit';
+const fs = require('fs');
+//import * as uuid from 'uuid';
 
 //const playwright = require('playwright');
 
@@ -24,55 +25,93 @@ const isValidNumber = (x: any): boolean => {
 
 
 
+//firebase deploy --only functions:getPdfUrlReq
+exports.getPdfUrlReq = functions.https.onRequest((req, res) => {
+  const doc = new PDFDocument();
+  //let filename = req.body.filename;
+  let filename = 'testPDF';
+  // Stripping special characters
+  filename = encodeURIComponent(filename) + ".pdf";
+  // Setting response to 'attachment' (download).
+  // If you use 'inline' here it will automatically open the PDF
+  res.setHeader(
+    "Content-disposition",
+    'attachment; filename="' + filename + '"'
+  );
+  res.setHeader("Content-type", "application/pdf");
+  //const content = req.body.content;
+  doc.y = 300;
+  doc.text('Test PDF', 50, 50);
+  doc.pipe(res);
+  doc.end();
 
+    const storage = admin.storage()
+  
 
-//firebase deploy --only functions:getPdfUrl
-exports.getPdfUrl = functions
-  .https.onCall(async () => {
-    const doc = new PdfKit();
-    
-    let receiptId = uuid.v4();
-    const file = admin
-      .storage()
-      .bucket()
-      .file(`detailedVIPs/receipt-${receiptId}.pdf`);
+// The path to your file to upload
+ const filePath = 'detailedVIPs/';
 
-      
-
-    await new Promise<void>((resolve, reject) => {
-      const writeStream = file.createWriteStream({
-        resumable: false,
-        contentType: "application/pdf",
-      });
-      writeStream.on("finish", () => resolve());
-      writeStream.on("error", (error) => {
-        reject(error)
-        throw new functions.https.HttpsError(
-          "failed-precondition",
-          `${error?.message || error || " error "}`
-        );
-      });
-      
-      doc.pipe(writeStream);
-      
-      doc
-        .fontSize(24)
-        .text("Receipt")
-        .fontSize(16)
-        .moveDown(2)
-        .text("This is your receipt!")
-        
-      doc.end()
-     });
-     
-    const url = await file.getSignedUrl({
-      version: "v4",
-      action: "read",
-      expires: Date.now() + 24 * 60 * 60 * 1000,
-    });
-      console.log(url)
-    return { url };
+// The new ID for your GCS file
+const destFileName = 'your-new-file-name';
+async function uploadFile() {
+  await storage.bucket().upload(filePath, {
+    destination: destFileName,
   });
+
+  console.log(`${filePath} uploaded to ${destFileName}`);
+}
+uploadFile().catch(console.error);
+return res.end()
+});
+
+    //return res.status(200).send();    
+    
+    // const doc = new PdfKit();
+    
+    // let receiptId = uuid.v4();
+    // const file = admin
+    //   .storage()
+    //   .bucket()
+    //   .file(`detailedVIPs/receipt-${receiptId}.pdf`);
+
+      
+
+    // await new Promise<void>((resolve, reject) => {
+    //   const writeStream = file.createWriteStream({
+    //     resumable: false,
+    //     contentType: "application/pdf",
+    //   });
+    //   writeStream.on("finish", () => resolve());
+    //   writeStream.on("error", (error) => {
+    //     reject(error)
+    //     throw new functions.https.HttpsError(
+    //       "failed-precondition",
+    //       `${error?.message || error || " error "}`
+    //     );
+    //   });
+      
+    //   doc.pipe(writeStream);
+      
+    //   doc
+    //     .fontSize(24)
+    //     .text("Receipt")
+    //     .fontSize(16)
+    //     .moveDown(2)
+    //     .text("This is your receipt!")
+        
+    //   doc.end()
+    //  });
+     
+    // const url = await file.getSignedUrl({
+    //   version: "v4",
+    //   action: "read",
+    //   expires: Date.now() + 24 * 60 * 60 * 1000,
+    // });
+    //   console.log(url)
+    // return { url };
+  //});
+
+
 
 
 
@@ -94,7 +133,7 @@ exports.exportAdobeDetailedVip = functions
        *
        * @param htmlToPDFOperation operation instance for which the options are provided.
        */
-      const setCustomOptions = (htmlToPDFOperation) => {
+      const setCustomOptions = (htmlToPDFOperation:any) => {
           // Define the page layout, in this case an 8 x 11.5 inch page (effectively portrait orientation).
           const pageLayout = new PDFServicesSdk.CreatePDF.options.html.PageLayout();
           pageLayout.setPageSize(20, 25);
@@ -124,26 +163,42 @@ exports.exportAdobeDetailedVip = functions
       
           // Provide any custom configuration options for the operation.
           setCustomOptions(htmlToPDFOperation);
-      
+
+
           // Execute the operation and Save the result to the specified location.
           htmlToPDFOperation.execute(executionContext)
-              .then(result => {
-                
-                return result.saveAsFile('output/createPDFFromHTMLWithInlineCSSOutput.pdf')
+              .then((result:any) => {
+                //result.saveAsFile('output/createPDFFromHTMLWithInlineCSSOutput.pdf')
+
+                const file = admin
+                .storage()
+                .bucket()
+                .file(`detailedVIPs/receipt-adobe.pdf`);
+
+                fs.createReadStream(result)
+                  .pipe(file.createWriteStream({
+                    resumable: false,
+                    contentType: "application/pdf",
+                  }))
+                  .on('error', function(err:any) {console.log('errer')})
+                  .on('finish', function() {
+                    // The file upload is complete.
+                    console.log('complete')
+                  });
+
+                return
               })
-              .catch(err => {
+              .catch((err:any) => {
                   if(err instanceof PDFServicesSdk.Error.ServiceApiError
                       || err instanceof PDFServicesSdk.Error.ServiceUsageError) {
-                      console.log('Exception encountered while executing operation', err);
+                      console.log('Exception encountered while executing operation 1', err);
                   } else {
-                      console.log('Exception encountered while executing operation', err);
+                      console.log('Exception encountered while executing operation 2', err);
                   }
               });
       } catch (err) {
-          console.log('Exception encountered while executing operation', err);
+          console.log('Exception encountered while executing operation 3', err);
       }
-
-
 
   });
 
