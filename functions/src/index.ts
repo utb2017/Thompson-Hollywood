@@ -3,7 +3,11 @@ import * as admin from "firebase-admin";
 import * as playwright from "playwright";
 import { VIPClass, CallableContext } from "./interface";
 import * as PDFDocument from 'pdfkit';
-const fs = require('fs');
+
+
+//const bucketName = `thompson-hollywood.appspot.com`;
+//import { getStorage, ref, uploadBytes } from "firebase/storage";
+//const fs = require('fs');
 //import * as uuid from 'uuid';
 
 //const playwright = require('playwright');
@@ -64,52 +68,53 @@ uploadFile().catch(console.error);
 return res.end()
 });
 
-    //return res.status(200).send();    
-    
-    // const doc = new PdfKit();
-    
-    // let receiptId = uuid.v4();
-    // const file = admin
-    //   .storage()
-    //   .bucket()
-    //   .file(`detailedVIPs/receipt-${receiptId}.pdf`);
 
-      
+// https://us-central1-thompson-hollywood.cloudfunctions.net/PDFTest
+//firebase deploy --only functions:PDFTest
+exports.PDFTest = functions.https.onRequest((req, res) => {
 
-    // await new Promise<void>((resolve, reject) => {
-    //   const writeStream = file.createWriteStream({
-    //     resumable: false,
-    //     contentType: "application/pdf",
-    //   });
-    //   writeStream.on("finish", () => resolve());
-    //   writeStream.on("error", (error) => {
-    //     reject(error)
-    //     throw new functions.https.HttpsError(
-    //       "failed-precondition",
-    //       `${error?.message || error || " error "}`
-    //     );
-    //   });
-      
-    //   doc.pipe(writeStream);
-      
-    //   doc
-    //     .fontSize(24)
-    //     .text("Receipt")
-    //     .fontSize(16)
-    //     .moveDown(2)
-    //     .text("This is your receipt!")
-        
-    //   doc.end()
-    //  });
-     
-    // const url = await file.getSignedUrl({
-    //   version: "v4",
-    //   action: "read",
-    //   expires: Date.now() + 24 * 60 * 60 * 1000,
-    // });
-    //   console.log(url)
-    // return { url };
-  //});
+    var doc = new PDFDocument();
+
+    // draw some text
+    doc.fontSize(25)
+       .text('Here is some vector graphics...', 100, 80);
+
+    // some vector graphics
+    doc.save()
+       .moveTo(100, 150)
+       .lineTo(100, 250)
+       .lineTo(200, 250)
+       .fill("#FF3300");
+
+    doc.circle(280, 200, 50)
+       .fill("#6600FF");
+
+    // an SVG path
+    doc.scale(0.6)
+       .translate(470, 130)
+       .path('M 250,75 L 323,301 131,161 369,161 177,301 z')
+       .fill('red', 'even-odd')
+       .restore();
+
+    // and some justified text wrapped into columns
+    doc.text('And here is some wrapped text...', 100, 300)
+       .font('Times-Roman', 13)
+       .moveDown()
+       .text("... lorem ipsum would go here...", {
+         width: 412,
+         align: 'justify',
+         indent: 20,
+         columns: 2,
+         height: 300,
+         ellipsis: true
+       });
+
+
+    doc.pipe(res.status(200));
+
+    doc.end();
+
+});
 
 
 
@@ -145,48 +150,103 @@ exports.exportAdobeDetailedVip = functions
               .build();
           htmlToPDFOperation.setOptions(htmlToPdfOptions);
       };
-      
       try {
           // Initial setup, create credentials instance.
           const credentials =  PDFServicesSdk.Credentials
               .serviceAccountCredentialsBuilder()
               .fromFile("pdfservices-api-credentials.json")
               .build();
-      
           // Create an ExecutionContext using credentials and create a new operation instance.
           const executionContext = PDFServicesSdk.ExecutionContext.create(credentials),
               htmlToPDFOperation = PDFServicesSdk.CreatePDF.Operation.createNew();
-      
           // Set operation input from a source file.
+          console.log('1')
           const input = PDFServicesSdk.FileRef.createFromLocalFile('resources/createPDFFromHTMLWithInlineCSSInput.html');
+          console.log('2')
           htmlToPDFOperation.setInput(input);
-      
+          console.log('4')
           // Provide any custom configuration options for the operation.
           setCustomOptions(htmlToPDFOperation);
-
+          console.log('5')
 
           // Execute the operation and Save the result to the specified location.
           htmlToPDFOperation.execute(executionContext)
-              .then((result:any) => {
-                //result.saveAsFile('output/createPDFFromHTMLWithInlineCSSOutput.pdf')
+              .then( async (result:any) => {
+                //await result.saveAsFile('createPDFFromHTMLWithInlineCSSOutput.pdf')
+                //fs.createReadStream('createPDFFromHTMLWithInlineCSSOutput.pdf')
 
-                const file = admin
-                .storage()
-                .bucket()
-                .file(`detailedVIPs/receipt-adobe.pdf`);
 
-                fs.createReadStream(result)
-                  .pipe(file.createWriteStream({
-                    resumable: false,
-                    contentType: "application/pdf",
-                  }))
-                  .on('error', function(err:any) {console.log('errer')})
-                  .on('finish', function() {
-                    // The file upload is complete.
-                    console.log('complete')
-                  });
+              //const { getStorage } = require('firebase-admin/storage');
+              //const bucket = getStorage().bucket();
+                //const pdf = result.saveAsFile('createPDFFromHTMLWithInlineCSSOutput.pdf')
+                //console.log('7')
+              //   const filePath = admin
+              //   .storage()
+              //   .bucket()
+              //   .file(`detailedVIPs/test-adobe.pdf`);
+              //   console.log('8')
+              //const filePath = `./test-adobe.pdf`;
+              //const uploadTo = `detailedVIPs/test-adobe.pdf`;
 
-                return
+
+              
+              const bucket = admin.storage().bucket()
+            
+              const options = {
+                destination: 'detailedVIPs/hello_world.pdf',
+              };
+            
+             await bucket.upload('createPDFFromHTMLWithInlineCSSOutput.pdf', options).then(function(data:any) {
+                //const file = data[0];
+              }).catch((err:any) => {
+                console.log('error uploading to storage', err);
+            });
+            
+
+            return {success:true}
+            
+
+              // const bucket = admin.storage().bucket();
+              // bucket.upload(result, { destination: 'detailedVIPs/' }).then(data => {
+              //     console.log('upload success');
+              // }).catch(err => {
+              //     console.log('error uploading to storage', err);
+              // });
+
+           
+                
+              //   bucket.upload(filePath,{
+              //     destination:uploadTo,
+              //     public:true,
+              //     metadata: {contentType: "application/pdf", cacheControl: "public, max-age=300"}
+              // }, function(err, file) {
+              //     if(err)
+              //     {
+              //         console.log(err);
+              //         return;
+              //     }
+              //     console.log(createPublicFileURL(uploadTo));
+              // });
+               
+               
+              // function createPublicFileURL(storageName:any) {
+              //     return `http://storage.googleapis.com/${bucketName}/${encodeURIComponent(storageName)}`;
+               
+              // }
+                
+                // fs.createReadStream(result)
+                //   .pipe(file.createWriteStream({
+                //     resumable: false,
+                //     contentType: "application/pdf",
+                //   }))
+                //   .on('error', function(err:any) {console.log('errer')})
+                //   .on('finish', function() {
+                //     // The file upload is complete.
+                //     console.log('complete')
+                //   });
+
+                //return {url:createPublicFileURL(uploadTo)}
+       
               })
               .catch((err:any) => {
                   if(err instanceof PDFServicesSdk.Error.ServiceApiError
