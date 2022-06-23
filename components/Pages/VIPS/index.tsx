@@ -16,6 +16,7 @@ import firebase from "../../../firebase/clientApp";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { Check, Delete, DeleteAlt } from "baseui/icon";
 import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
+import OpenPrintDetailedVIP from "../../Modals/OpenPrintDetailedVIP" 
 
 
 type INullableReactText = React.ReactText | null;
@@ -159,7 +160,7 @@ const orderProgressObject = {
   'false':[],
   '':[],
 }
-const Orders: FC = (): ReactElement => {
+const VIPs: FC = (): ReactElement => {
   const {
     setTotalsField,
     setQueryCollection,
@@ -191,7 +192,7 @@ const Orders: FC = (): ReactElement => {
   //   setTotalsDoc("unsettled");
   //   setTotalsCollection("totals")
     
-  //   setQueryGroupCollection("Orders");
+  //   setQueryGroupCollection("VIPs");
   //   setOrderBy("start");
   //   if(router?.query?.filter){
   //     setWhere([["progress", "in", orderProgressObject[`${router?.query?.filter}`] ], ["settled", "==", false]])
@@ -254,6 +255,11 @@ const Orders: FC = (): ReactElement => {
     const component: () => ReactElement = () => <VIPCreate />;
     openModalBase(component, true);
   };
+
+        const _VIPOpenPrint = (url) => {
+          const component: () => ReactElement = () => <OpenPrintDetailedVIP url={url} />;
+          openModalBase(component, true);
+        };  
   const exportVIPs = async () => {
 
 
@@ -263,29 +269,35 @@ const Orders: FC = (): ReactElement => {
       const createVIP = firebase.functions().httpsCallable("exportAdobeDetailedVip");
       const response = await createVIP();
       dequeue();
-      enqueue(
-        {
-          message: "VIP Exported",
-          startEnhancer: ({ size }) => <Check size={size} />,
-        },
-        DURATION.short
-      );
-      closeModal();
+
+      //closeModal();
       console.log(JSON.stringify(response))
-      // if (response?.data?.success === true) {
-      //   //alert(`${response?.data?.form}`)
-      //   //console.log(response?.data?.form);
-      //   //setFireProductDefault({...response?.data?.form});
-      //   //setForm({...response?.data?.form});
-      // }
+      if (response?.data?.success === true) {
+        //alert(`${response?.data?.form}`)
+        //console.log(response?.data?.form);
+        //setFireProductDefault({...response?.data?.form});
+        //setForm({...response?.data?.form});
+        //window.open(response?.data?.url, null, null);
+
+        _VIPOpenPrint(response?.data?.url)
+
+         enqueue(
+            {
+              message: "VIP Exported",
+              startEnhancer: ({ size }) => <Check size={size} />,
+            },
+            DURATION.short
+          );     
+      }
     } catch (e) {
       //setError(`${e?.message || e}`);
       // setError((oldError: Errors) => ({
       //   ...oldError,
       //   ...{ server: `VIP not created.` },
       // }));
+      console.log(`${e?.message || e}`)
       dequeue();
-      showToast(`${e?.message || e}`);
+      //showToast(`${e?.message || e}`);
       enqueue(
         {
           message: `Your VIPs weren't exported`,
@@ -390,4 +402,4 @@ const Orders: FC = (): ReactElement => {
   );
 };
 
-export default Orders;
+export default VIPs;

@@ -51,6 +51,12 @@ import { FileUploader } from "baseui/file-uploader";
 import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
 
+const unformatDate = (formattedDate: string | Date): Date => {
+  const thisYear: number = new Date().getFullYear(),
+    numericDate: number = new Date(formattedDate).setFullYear(thisYear),
+    unformattedDate: Date = new Date(numericDate);
+  return unformattedDate;
+};
 
 
 interface Errors {
@@ -266,6 +272,48 @@ const CreateVIP = () => {
     } else {
       updateData[x] = clientData[x];
     }
+
+  
+
+
+
+
+  const arrDate:Date = unformatDate(`${updateData['arrival']}`),
+  depDate:Date = unformatDate(`${updateData['departure']}`),
+  todDate:Date = new Date();
+  if((arrDate.getMonth === depDate.getMonth) && (todDate.getMonth() === depDate.getMonth())){
+    if(todDate.getDate() < arrDate.getDate()){
+      updateData[`reservationStatus`] = `RESERVED`
+    }else if(arrDate.getDate() === todDate.getDate()){
+      updateData[`reservationStatus`] = `DUEIN`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() < arrDate.getDate()){
+      updateData[`reservationStatus`] = `CHECKEDIN`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() === depDate.getDate()){
+      updateData[`reservationStatus`] = `DUEOUT`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() > depDate.getDate()){
+      updateData[`reservationStatus`] = `CHECKEDOUT`
+    }else{
+      updateData[`reservationStatus`] = null
+    }
+  }
+  if((arrDate.getMonth() < depDate.getMonth()) && (todDate.getMonth() < depDate.getMonth())){
+    if(todDate.getDate() < arrDate.getDate()){
+      updateData[`reservationStatus`] = `RESERVED`
+    }else if(arrDate.getDate() === todDate.getDate()){
+      updateData[`reservationStatus`] = `DUEIN`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() > arrDate.getDate()){
+      updateData[`reservationStatus`] = `CHECKEDIN`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() === depDate.getDate()){
+      updateData[`reservationStatus`] = `DUEOUT`
+    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() < depDate.getDate()){
+      updateData[`reservationStatus`] = `CHECKEDOUT`
+    }else{
+      updateData[`reservationStatus`] = null
+    }
+  }
+
+  alert(updateData[`reservationStatus`])
+
     // image
     x = `image`;
     if (!isValidString(clientData[x])) {

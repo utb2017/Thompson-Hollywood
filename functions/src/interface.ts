@@ -3,14 +3,16 @@ import * as admin from "firebase-admin";
 export interface VIPTotals {
 total: number;
 }
-export interface CallableContext {
-auth?: {
-    uid: string;
-    token: admin.auth.DecodedIdToken;
+export interface Select {
+    id:string;
+    label:string;
 };
-instanceIdToken?: string;
-//rawRequest: Request;
-}
+export interface CallableContext {
+    auth?: {
+        uid: string;
+        token: admin.auth.DecodedIdToken;   
+    }
+};
 export class VIPClass {
 arrival?: string | null;
 departure?: string | null;
@@ -32,21 +34,21 @@ reservationStatus?:
     | "CANCEL"
     | null;
 roomNumber?: string | null;
-roomStatus?: [] | null;
-vipStatus?: [] | null;
+roomStatus?: [{label:string,id:string}];
+vipStatus?:[{label:string,id:string}];
 stays?: number | null;
 constructor(
-    arrival?: string | null,
-    departure?: string | null,
-    details?: string | null,
-    fileName?: string | null,
-    firstName?: string | null,
-    id?: string | null,
-    image?: string | null,
-    lastName?: string | null,
-    notes?: string | null,
-    rateCode?: string | null,
-    reservationStatus?:
+    arrival: string | null | undefined,
+    departure: string | null | undefined,
+    details: string | null | undefined,
+    fileName: string | null | undefined,
+    firstName: string | null | undefined,
+    id: string | null | undefined,
+    image: string | null | undefined,
+    lastName: string | null | undefined,
+    notes: string | null | undefined,
+    rateCode: string | null | undefined,
+    reservationStatus:
     | "DUEIN"
     | "DUEOUT"
     | "CHECKEDIN"
@@ -54,11 +56,11 @@ constructor(
     | "RESERVED"
     | "NOSHOW"
     | "CANCEL"
-    | null,
-    roomNumber?: string | null,
-    roomStatus?: [] | null,
-    vipStatus?: [] | null,
-    stays?: number | null
+    | null | undefined,
+    roomNumber: string | null | undefined,
+    roomStatus:[{label:string,id:string}],
+    vipStatus:[{label:string,id:string}],
+    stays: number | null | undefined
 ) {
     this.arrival = arrival;
     this.departure = departure;

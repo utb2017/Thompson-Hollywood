@@ -346,6 +346,40 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
 
     }
 
+    const arrDate:Date = unformatDate(`${updateData['arrival']}`),
+    depDate:Date = unformatDate(`${updateData['departure']}`),
+    todDate:Date = new Date();
+    if((arrDate.getMonth === depDate.getMonth) && (todDate.getMonth() === depDate.getMonth())){
+      if(arrDate.getDate() > todDate.getDate()){
+        updateData[`reservationStatus`] = `RESERVED`
+      }else if(arrDate.getDate() === todDate.getDate()){
+        updateData[`reservationStatus`] = `DUEIN`
+      }else if((arrDate.getDate() <= todDate.getDate()) && depDate.getDate() > todDate.getDate()){
+        updateData[`reservationStatus`] = `CHECKEDIN`
+      }else if(arrDate.getDate() <= todDate.getDate() && depDate.getDate() === todDate.getDate()){
+        updateData[`reservationStatus`] = `DUEOUT`
+      }else if(arrDate.getDate() < todDate.getDate() && depDate.getDate() < todDate.getDate()){
+        updateData[`reservationStatus`] = `CHECKEDOUT`
+      }else{
+        updateData[`reservationStatus`] = null
+      }
+    }
+    if((arrDate.getMonth() < depDate.getMonth()) && (todDate.getMonth() < depDate.getMonth())){
+      if(arrDate.getDate() < todDate.getDate()){
+        updateData[`reservationStatus`] = `RESERVED`
+      }else if(arrDate.getDate() === todDate.getDate()){
+        updateData[`reservationStatus`] = `DUEIN`
+      }else if(arrDate.getDate() > todDate.getDate() && depDate.getDate() > todDate.getDate()){
+        updateData[`reservationStatus`] = `CHECKEDIN`
+      }else if(arrDate.getDate() > todDate.getDate() && depDate.getDate() === todDate.getDate()){
+        updateData[`reservationStatus`] = `DUEOUT`
+      }else if(arrDate.getDate() > todDate.getDate() && depDate.getDate() < todDate.getDate()){
+        updateData[`reservationStatus`] = `CHECKEDOUT`
+      }else{
+        updateData[`reservationStatus`] = null
+      }
+    }
+  
     // image
     x = `image`;
     if (clientData[x] != undefined) {

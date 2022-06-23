@@ -490,9 +490,12 @@ export default function VIPSTable() {
     
     setQueryCollection("ArrivalVIPs");
     setOrderBy("firstName");
-    // if(router?.query?.filter){
-    //   setWhere([["progress", "in", orderProgressObject[`${router?.query?.filter}`] ], ["settled", "==", false]])
-    // }
+    if(router?.query?.filter === 'arriving'){
+      setWhere([["reservationStatus", "==", 'DUEIN']])
+    }
+    if(router?.query?.filter === 'inhouse'){
+      setWhere([["reservationStatus", "==", 'CHECKEDIN'], ["reservationStatus", "==", 'DUEOUT']])
+    }
     setLimit(5);
     return () => {
       setTotalsField(null);
