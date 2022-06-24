@@ -16,7 +16,8 @@ export class VIPClass {
       | "CHECKEDOUT"
       | "RESERVED"
       | "NOSHOW"
-      | "CANCEL";
+      | "CANCEL"
+      | "ERROR";
     roomNumber?: string;
     roomStatus?: [{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}] | [];
     vipStatus?: [{label:string,id:string}];
@@ -39,7 +40,8 @@ export class VIPClass {
         | "CHECKEDOUT"
         | "RESERVED"
         | "NOSHOW"
-        | "CANCEL",
+        | "CANCEL"
+        | "ERROR",
       roomNumber?: string,
       roomStatus?:[{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}] | [],
       vipStatus?:[{label:string,id:string}],

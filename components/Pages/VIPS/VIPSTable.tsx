@@ -484,7 +484,12 @@ export default function VIPSTable() {
 
   /* add shit to the query questions*/
   useEffect(() => {
-    setTotalsField(`total`);
+    if(router?.query?.filter === 'arriving'){
+      setTotalsField('DUEIN');
+    }
+    if(router?.query?.filter === 'inhouse'){
+      setTotalsField(router?.query?.filter);
+    }
     setTotalsDoc("ArrivalVIPs");
     setTotalsCollection("Totals")
     
@@ -494,7 +499,7 @@ export default function VIPSTable() {
       setWhere([["reservationStatus", "==", 'DUEIN']])
     }
     if(router?.query?.filter === 'inhouse'){
-      setWhere([["reservationStatus", "==", 'CHECKEDIN'], ["reservationStatus", "==", 'DUEOUT']])
+      setWhere([["reservationStatus", "in", ['CHECKEDIN','DUEOUT']]])
     }
     setLimit(5);
     return () => {

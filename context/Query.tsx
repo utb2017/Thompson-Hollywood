@@ -58,8 +58,8 @@ interface QueryValidation {
   setDataList(data: object[]): void;
   queryLoader: boolean;
   setQueryLoader(data: boolean): void;
-  where: [string, WhereFilterOp, string | boolean | number][] | [];
-  setWhere(data: [string, WhereFilterOp, string | boolean | number][] | []): void;
+  where: [string, WhereFilterOp, string | boolean | number | string[]][] | [];
+  setWhere(data: [string, WhereFilterOp, string | boolean | number | string[]][] | []): void;
 }
 const QueryContext = createContext<QueryValidation>({} as QueryValidation);
 //export const QueryContext = createContext()
@@ -85,7 +85,7 @@ export default function QueryContextComp({ children }) {
   const [querySubCollection, setQuerySubCollection] = useState<[string, string, string] | null>(null);
   const [querySubCollectionDoc, setQuerySubCollectionDoc] = useState<[string, string, string, string] | null>(null);
   const [totalsSubCollection, setTotalsSubCollection] = useState<[string, string, string] | null>(null);
-  const [where, setWhere] = useState<[string, WhereFilterOp, string | boolean | number][] | []>([]);
+  const [where, setWhere] = useState<[string, WhereFilterOp, string | boolean | number | string[]][] | []>([]);
   const [dataList, setDataList] = useState<object[]>([]);
   const [ref, setRef] = useState(null);
 

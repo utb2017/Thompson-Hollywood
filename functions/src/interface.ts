@@ -32,7 +32,7 @@ reservationStatus?:
     | "RESERVED"
     | "NOSHOW"
     | "CANCEL"
-    | null;
+    | "ERROR";
 roomNumber?: string | null;
 roomStatus?: [{label:string,id:string}];
 vipStatus?:[{label:string,id:string}];
@@ -56,7 +56,7 @@ constructor(
     | "RESERVED"
     | "NOSHOW"
     | "CANCEL"
-    | null | undefined,
+    | "ERROR",
     roomNumber: string | null | undefined,
     roomStatus:[{label:string,id:string}],
     vipStatus:[{label:string,id:string}],

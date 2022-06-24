@@ -58,6 +58,10 @@ const unformatDate = (formattedDate: string | Date): Date => {
   return unformattedDate;
 };
 
+const dayOfYear = (date:any):number =>{
+  const fullYear:any = new Date(date.getFullYear(), 0, 0)
+  return Math.floor((date - fullYear) / 1000 / 60 / 60 / 24);
+}
 
 interface Errors {
   name?: string;
@@ -202,7 +206,7 @@ const CreateVIP = () => {
       | `stays`
       | `reservationStatus`
       | `id`;
-    const y: string = `VIP`;
+    //const y: string = `VIP`;
 
     // firstName
     x = `firstName`;
@@ -274,45 +278,38 @@ const CreateVIP = () => {
     }
 
   
+  // const unformatDate = (formattedDate: string | Date): Date => {
+  //   const thisYear: number = new Date().getFullYear(),
+  //     numericDate: number = new Date(formattedDate).setFullYear(thisYear),
+  //     unformattedDate: Date = new Date(numericDate);
+  //   return unformattedDate;
+  // };
+  // const dayOfYear = (date:any):number =>{
+  //   const fullYear:any = new Date(date.getFullYear(), 0, 0)
+  //   return Math.floor((date - fullYear) / 1000 / 60 / 60 / 24);
+  // }
+  // x = `reservationStatus`;
+  // const arrDate:Date = unformatDate(`${updateData['arrival']}`),
+  // depDate:Date = unformatDate(`${updateData['departure']}`),
+  // todDate:Date = new Date(),
+  // a = dayOfYear(arrDate),
+  // d = dayOfYear(depDate),
+  // t = dayOfYear(todDate);
+  // updateData[x] = 
+  //   (t < a)
+  //     ?`RESERVED`
+  //     :(t === a)
+  //       ? `DUEIN`
+  //       : (t > a && t < d)
+  //         ? `CHECKEDIN`
+  //         : (t > a && t === d)
+  //           ? `DUEOUT`
+  //           : (t > a && t > d)
+  //             ? `CHECKEDOUT`
+  //             : `ERROR`;
 
 
-
-
-  const arrDate:Date = unformatDate(`${updateData['arrival']}`),
-  depDate:Date = unformatDate(`${updateData['departure']}`),
-  todDate:Date = new Date();
-  if((arrDate.getMonth === depDate.getMonth) && (todDate.getMonth() === depDate.getMonth())){
-    if(todDate.getDate() < arrDate.getDate()){
-      updateData[`reservationStatus`] = `RESERVED`
-    }else if(arrDate.getDate() === todDate.getDate()){
-      updateData[`reservationStatus`] = `DUEIN`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() < arrDate.getDate()){
-      updateData[`reservationStatus`] = `CHECKEDIN`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() === depDate.getDate()){
-      updateData[`reservationStatus`] = `DUEOUT`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() > depDate.getDate()){
-      updateData[`reservationStatus`] = `CHECKEDOUT`
-    }else{
-      updateData[`reservationStatus`] = null
-    }
-  }
-  if((arrDate.getMonth() < depDate.getMonth()) && (todDate.getMonth() < depDate.getMonth())){
-    if(todDate.getDate() < arrDate.getDate()){
-      updateData[`reservationStatus`] = `RESERVED`
-    }else if(arrDate.getDate() === todDate.getDate()){
-      updateData[`reservationStatus`] = `DUEIN`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() > arrDate.getDate()){
-      updateData[`reservationStatus`] = `CHECKEDIN`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() === depDate.getDate()){
-      updateData[`reservationStatus`] = `DUEOUT`
-    }else if(todDate.getDate() > arrDate.getDate() && todDate.getDate() < depDate.getDate()){
-      updateData[`reservationStatus`] = `CHECKEDOUT`
-    }else{
-      updateData[`reservationStatus`] = null
-    }
-  }
-
-  alert(updateData[`reservationStatus`])
+ 
 
     // image
     x = `image`;
