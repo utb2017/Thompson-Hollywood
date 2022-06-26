@@ -362,7 +362,7 @@ const CreateVIP = () => {
     // details
     x = `details`;
     if (!isValidString(clientData[x])) {
-      updateData[x] = `No Details`;
+      updateData[x] = `No Location`;
     }else{
       updateData[x] = clientData[x];
     }

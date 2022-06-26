@@ -136,12 +136,28 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
         .collection("ArrivalVIPs")
         .where("reservationStatus", "in", ["DUEIN", "CHECKEDIN", "DUEOUT"]);
       const vipSnapshot = await vipRef.get();
-      const vipData: VIPClass[] = [];
+      const vipData: VIPClass[] = [],
+      vipArr:VIPClass[] = [],
+      vipInh:VIPClass[] = [];
       if (!vipSnapshot.empty) {
         vipSnapshot.forEach((doc) => {
-          vipData.push(doc.data() as VIPClass);
+
+          const docData:VIPClass = doc.data();
+
+          vipData.push(docData);
+
+          if(docData.reservationStatus === 'DUEIN'){
+            vipArr.push(docData)
+          }
+          if(docData.reservationStatus === 'CHECKEDIN' || docData.reservationStatus === 'DUEOUT'){
+            vipInh.push(docData)
+          }
+
         });
       }
+
+
+
       /**
        * This sample illustrates how to create a PDF file from a HTML file with inline CSS.
        * <p>
@@ -181,9 +197,13 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
 
         const pageLoop = (_vipData: VIPClass[]): string => {
           const A4pages: string[] = [];
-          const totalVips: number = _vipData.length;
+          //const totalVips: number = _vipData.length;
+          const totalArrVips: number = vipArr.length;
+          const totalInhVips: number = vipInh.length;
+
+
           let pageNumber = 1;
-          _vipData.forEach((vip: VIPClass, index) => {
+          vipArr.forEach((vip, index) => {
             let nIndex = index + 1;
 
             if (!(nIndex % 2 == 0)) {
@@ -200,6 +220,7 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
                 </div>`);
               pageNumber++;
             }
+
 
             A4pages.push(`
                 <div class="vip-card">
@@ -243,14 +264,90 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
                   </div>
               `);
 
-            if (!(nIndex % 2 == 0) && totalVips === nIndex) {
+
+            if (!(nIndex % 2 == 0) && totalArrVips === nIndex) {
               //number is not even but last page
               A4pages.push(`</page>`);
             }
+
             if (nIndex % 2 == 0) {
               //number is even
               A4pages.push(`</page>`);
             }
+
+          });
+          vipInh.forEach((vip, index) => {
+            let nIndex = index + 1;
+
+            if (!(nIndex % 2 == 0)) {
+              A4pages.push(`<page size="A4">`);
+              A4pages.push(`
+                <div class="header">
+                  <div class="header-center">
+                    <span class="header-page-number">${`${pageNumber}`}</span>
+                    <span class="header-page-title"> VIP In-House - ${formatDate(
+                      new Date(),
+                      " EEE dd MMM"
+                    )}</span>           
+                  </div> 
+                </div>`);
+              pageNumber++;
+            }
+
+
+            A4pages.push(`
+                <div class="vip-card">
+                         <style>
+                    .vip-image-${nIndex} {
+                      background-image: url(${
+                        vip?.image ||
+                        `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`
+                      });
+                      background-repeat:no-repeat;
+                      background-position: center center;
+                      background-size: cover;
+                    }
+                  </style>            
+                    <div class="image vip-image-${nIndex}"></div>
+                    <div class="vip-label">
+                      <span class="vip-name">${`${vip?.lastName}, ${vip?.firstName}`}</span>
+                      <span class="name-dash"> - </span>
+                      <span class="vip-status${
+                        Boolean(vip?.vipStatus && vip?.vipStatus.length)
+                          ? ` ${vip?.vipStatus ? vip?.vipStatus[0].label : ``}`
+                          : ``
+                      }">${`${
+              vip?.vipStatus ? vip?.vipStatus[0].label : ``
+            }`}</span>
+                    </div>  
+                    <div class="top-line"></div>
+                    <div class="vip-details"> 
+                      <div class="vip-notes">${vip?.notes || "No Notes"}</div>
+                      <div class="vip-location">${
+                        vip?.details || "No Location"
+                      }</div>
+                    </div>
+                    <div class="bottom-line"></div>
+                    <div class="arrival-departure">
+                      <span class="vip-arrival">${vip?.arrival}</span>
+                      <span> - </span>
+                      <span class="vip-departure">${vip?.departure}</span>
+                    </div>
+                    <div class="vip-room">RM: ${vip.roomNumber || `TBD`}</div>
+                  </div>
+              `);
+
+
+            if (!(nIndex % 2 == 0) && totalInhVips === nIndex) {
+              //number is not even but last page
+              A4pages.push(`</page>`);
+            }
+
+            if (nIndex % 2 == 0) {
+              //number is even
+              A4pages.push(`</page>`);
+            }
+
           });
           return A4pages.join(" ");
         };
