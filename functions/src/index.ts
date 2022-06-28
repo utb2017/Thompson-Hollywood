@@ -225,7 +225,7 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
             A4pages.push(`
                 <div class="vip-card">
                          <style>
-                    .vip-image-${nIndex} {
+                    .vip-image-${vip?.id} {
                       background-image: url(${
                         vip?.image ||
                         `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`
@@ -235,7 +235,7 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
                       background-size: cover;
                     }
                   </style>            
-                    <div class="image vip-image-${nIndex}"></div>
+                    <div class="image vip-image-${vip?.id}"></div>
                     <div class="vip-label">
                       <span class="vip-name">${`${vip?.lastName}, ${vip?.firstName}`}</span>
                       <span class="name-dash"> - </span>
