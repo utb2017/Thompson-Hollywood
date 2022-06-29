@@ -77,7 +77,7 @@ export default function ConsoleLayout({ children }) {
   let title = capitalize(router.pathname.split("/")[2]);
   //const scrollRef = useRef(null)
   const widthRef = useRef(null);
-  const lockRef = createRef(null);
+  //const lockRef = createRef(null);
   const { setNavLoading } = useRouting();
   const [css, theme] = useStyletron();
 
@@ -89,17 +89,17 @@ export default function ConsoleLayout({ children }) {
     }
   }, [query]);
 
-  useEffect(() => {
-    if (!isCollapsed) {
-      disableBodyScroll(lockRef.current);
-    } else {
-      enableBodyScroll(lockRef.current);
-      // clearAllBodyScrollLocks();
-    }
-    return () => {
-      clearAllBodyScrollLocks();
-    };
-  }, [isCollapsed, lockRef]);
+  // useEffect(() => {
+  //   if (!isCollapsed) {
+  //     disableBodyScroll(lockRef.current);
+  //   } else {
+  //     enableBodyScroll(lockRef.current);
+  //     // clearAllBodyScrollLocks();
+  //   }
+  //   return () => {
+  //     clearAllBodyScrollLocks();
+  //   };
+  // }, [isCollapsed, lockRef]);
   return (
     <>
       <div
@@ -144,7 +144,9 @@ export default function ConsoleLayout({ children }) {
               </FireLogoBox>
             {/* </Link> */}
             {/*NAV-CONTAINER*/}
-            <LockContainer ref={lockRef} className="nav-groups-container" role="tree" tabIndex={0}>
+            <LockContainer 
+            //ref={lockRef} 
+            className="nav-groups-container" role="tree" tabIndex={0}>
               {/* {fireUser?.status === "success" && fireCollections?.status === "success" ? ( */}
                 <>
                   <NavList className="nav-group is-expanded">

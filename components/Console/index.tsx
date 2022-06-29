@@ -117,7 +117,7 @@ export const ActiveConsoleLink = ({
   index,
   name = 'ordersFilled',
   blackList = [],
-}) => {
+}:any) => {
   const router = useRouter()
   const { setNavLoading } = useRouting()
   //const { user, fireUser } = useUser()

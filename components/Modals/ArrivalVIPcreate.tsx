@@ -322,7 +322,7 @@ const CreateVIP = () => {
     if (Array.isArray(clientData[x]) && clientData[x].length ) {
       updateData[x] = clientData[x];
     }else{
-      updateData[x] = [];
+      updateData[x] = undefined;
     }
     // notes
     x = `notes`;

@@ -19,7 +19,7 @@ export class VIPClass {
       | "CANCEL"
       | "ERROR";
     roomNumber?: string;
-    roomStatus?: [{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}] | [];
+    roomStatus?: [{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}] ;
     vipStatus?: [{label:string,id:string}];
     stays?: number;
     constructor(
@@ -43,7 +43,7 @@ export class VIPClass {
         | "CANCEL"
         | "ERROR",
       roomNumber?: string,
-      roomStatus?:[{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}] | [],
+      roomStatus?:[{label:string,id:`DIRTY`|`CLEAN`|`INSPECTED`|`OO`|`OS`|`PICKUP`}],
       vipStatus?:[{label:string,id:string}],
       stays?: number
     ) {
