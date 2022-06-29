@@ -6,6 +6,7 @@
 /.pnp
 .pnp.js
 
+/components/Pages/Focus
 # testing
 /coverage
 
