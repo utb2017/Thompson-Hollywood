@@ -2,12 +2,13 @@
 /templates
 # dependencies
 /node_modules
-# /functions
 /functions
+
+
 /.pnp
 .pnp.js
 
-/components/Pages/Focus
+
 # testing
 /coverage
 
