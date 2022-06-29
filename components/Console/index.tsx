@@ -211,10 +211,12 @@ export const Nav = ({ links }) => {
             })
           }
         }}
-        onClick={(e) => {
-          router.push(`${href}`, `${as}`)
-        }} 
-        key={key} title={label} 
+        // onClick={(e) => {
+        //   router.push(`${href}`, `${as}`)
+        //   alert(`${href} ${as}`)
+        // }} 
+        key={key} 
+        title={label} 
         >
           <>
           </>
@@ -253,9 +255,30 @@ export const Nav = ({ links }) => {
   return (
     <Tabs
       activeKey={`${activeKey}`}
-      // onChange={(props) => {
-      //   setActiveKey(activeKey);
-      // }}
+      onChange={(props) => {
+        //alert(JSON.stringify(props));
+        if(props.activeKey === `0`){
+          let href = `/[property]/vip/[filter]`;
+          let as = `/LAXTH/vip/arriving`;
+          router.push(`${href}`, `${as}`)
+        }
+        if(props.activeKey === `1`){
+          let href = `/[property]/vip/[filter]`;
+          let as = `/LAXTH/vip/inhouse`;
+          router.push(`${href}`, `${as}`)
+        }
+        if(props.activeKey === `2`){
+          let href = `/[property]/vip/[filter]`;
+          let as = `/LAXTH/vip/dueout`;
+          router.push(`${href}`, `${as}`)
+        }
+        if(props.activeKey === `3`){
+          let href = `/[property]/vip/[filter]`;
+          let as = `/LAXTH/vip/all`;
+          router.push(`${href}`, `${as}`)
+        }
+
+      }}
       overrides={{
         TabBorder: {
           style: ({ $theme }) => ({ height: "2px" })
