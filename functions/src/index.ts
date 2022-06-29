@@ -622,6 +622,491 @@ exports.exportAdobeDetailedVip = functions.https.onCall(async () => {
 
   return _url;
 });
+
+
+//firebase deploy --only functions:updateVIPs
+exports.updateVIPs = functions.https.onCall(async () => {
+  //const accessTokenHTML = uuid.v4();
+  const x = "reservationStatus";
+  const y = ["DUEIN","CHECKEDIN","DUEOUT","RESERVED"];
+  const db = admin.firestore();
+  const batch = db.batch();
+  const vipRef = db.collection("ArrivalVIPs")
+  const vipSnapshot = await vipRef.where(x, "in", y).get();
+  const vipChanges: VIPClass[] = [];
+  if (!vipSnapshot.empty) {
+    vipSnapshot.forEach((doc) => {
+      const vip:VIPClass = doc.data(),
+      vipDuplicate = { ...vip},
+      arrDate: Date = unformatDate(`${vip["arrival"]}`),
+      depDate: Date = unformatDate(`${vip["departure"]}`),
+      todDate: Date = new Date(),
+      a = dayOfYear(arrDate),
+      d = dayOfYear(depDate),
+      t = dayOfYear(todDate);
+      vipDuplicate[x] =
+        t < a
+          ? `RESERVED`
+          : t === a
+          ? `DUEIN`
+          : t > a && t === d
+          ? `DUEOUT`
+          : t > a && t < d
+          ? `CHECKEDIN`
+          : t > a && t > d
+          ? `CHECKEDOUT`
+          : `ERROR`;
+        //compare with orginal and see if change
+        if(vipDuplicate[x] !== vip[x]){
+          vipChanges.push(vipDuplicate);
+          batch.set(
+            vipRef.doc(`${vipDuplicate.id}`),
+            {[x]:vipDuplicate[x]},
+            {merge: true}
+          )
+        }
+    });
+  }
+  try {
+    batch.commit()
+    return {
+      //form: completeVIP,
+      success: true,
+      //id,
+    };
+  } catch (error:any) {
+    console.log(`${error.message || error || 'Error: updating vips'}`)
+    throw new functions.https.HttpsError(
+      'unimplemented',
+      `${error.message || error || 'Error: updating vips'}`
+    )
+  }
+
+
+});
+//firebase deploy --only functions:exportAdobeRHVip
+exports.exportAdobeRHVip = functions.https.onCall(async () => {
+  const _url = await new Promise<{ url: any; success: boolean; error: any }>(
+    async (resolve, reject) => {
+      const accessToken = uuid.v4();
+      const accessTokenHTML = uuid.v4();
+      const PDFServicesSdk = require("@adobe/pdfservices-node-sdk");
+      /**
+       * Get VIP Arrivals.
+       */
+      const db = admin.firestore();
+      const vipRef = db
+        .collection("ArrivalVIPs")
+        .where("reservationStatus", "in", ["DUEIN", "CHECKEDIN", "DUEOUT"]);
+      const vipSnapshot = await vipRef.get();
+      const vipData: VIPClass[] = [],
+      vipArr:VIPClass[] = [],
+      vipInh:VIPClass[] = [],
+      vipOut:VIPClass[] = [];
+      if (!vipSnapshot.empty) {
+        vipSnapshot.forEach((doc) => {
+
+          const docData:VIPClass = doc.data();
+
+          vipData.push(docData);
+
+          if(docData.reservationStatus === 'DUEIN'){
+            vipArr.push(docData)
+          }
+          if(docData.reservationStatus === 'CHECKEDIN' || docData.reservationStatus === 'DUEOUT'){
+            vipInh.push(docData)
+          }
+          if(docData.reservationStatus === 'DUEOUT'){
+            vipOut.push(docData)
+          }
+
+        });
+      }
+
+
+
+      /**
+       * This sample illustrates how to create a PDF file from a HTML file with inline CSS.
+       * <p>
+       * Refer to README.md for instructions on how to run the samples.
+       */
+
+      /**
+       * Sets any custom options for the operation.
+       *
+       * @param htmlToPDFOperation operation instance for which the options are provided.
+       */
+      const setCustomOptions = (htmlToPDFOperation: any) => {
+        // Define the page layout, in this case an 8 x 11.5 inch page (effectively portrait orientation).
+        const pageLayout =
+          new PDFServicesSdk.CreatePDF.options.html.PageLayout();
+        pageLayout.setPageSize(20, 25);
+
+        // Set the desired HTML-to-PDF conversion options.
+        const htmlToPdfOptions =
+          new PDFServicesSdk.CreatePDF.options.html.CreatePDFFromHtmlOptions.Builder()
+            .includesHeaderFooter(true)
+            .withPageLayout(pageLayout)
+            .build();
+        htmlToPDFOperation.setOptions(htmlToPdfOptions);
+      };
+      try {
+        // Initial setup, create credentials instance.
+        const credentials =
+          await PDFServicesSdk.Credentials.serviceAccountCredentialsBuilder()
+            .fromFile("pdfservices-api-credentials.json")
+            .build();
+        // Create an ExecutionContext using credentials and create a new operation instance.
+        const executionContext =
+            PDFServicesSdk.ExecutionContext.create(credentials),
+          htmlToPDFOperation = PDFServicesSdk.CreatePDF.Operation.createNew();
+        // Set operation input from a source file.
+
+        const pageLoop = (_vipData: VIPClass[]): string => {
+          const Table: string[] = [];
+          //const totalVips: number = _vipData.length;
+          _vipData.forEach((vip, index) => {
+            Table.push(`
+              <div class="rh-row">
+                <div class="rh-cell rh-name">${`${vip?.lastName}, ${vip?.firstName}`}</div>
+                <div class="rh-cell rh-room">${vip?.roomNumber || "TBD"}</div>
+                <div class="rh-cell rh-arrival">${vip?.arrival||`N/A`}</div>
+                <div class="rh-cell rh-departure">${vip?.departure||`N/A`}</div>
+                <div class="rh-cell rh-notes">${vip?.notes||`No Notes`}</div>
+                <div class="rh-cell rh-rate-code">${vip?.rateCode||`N/A`}</div>
+                <div class="rh-cell rh-vip-status end${
+                  Boolean(vip?.vipStatus && vip?.vipStatus.length)
+                    ? ` ${vip?.vipStatus ? vip?.vipStatus[0].label : ``}`
+                    : ``
+                }">${`${
+                  vip?.vipStatus ? vip?.vipStatus[0].label : `N/A`
+                }`}</div>
+              </div>
+            `)
+          });
+          return Table.join(" ");
+        };
+
+        const HTML = `
+    <!DOCTYPE html>
+
+    <head>
+      <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      />
+      <style>
+      @page {
+        size: A4;
+        margin: 24px;
+      }
+      @media print {
+        html,
+        body {
+          width: 210mm;
+          height: 297mm;
+        }
+        /* ... the rest of the rules ... */
+      }
+    
+        body {
+          background: white;
+          font-family:Arial, Helvetica, sans-serif
+        }
+        page[size="A4"] {
+          background: white;
+          width: 21cm;
+          height: 29.7cm;
+          display: block;
+          margin: 24px auto;
+          margin-bottom: 0.5cm;
+          box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+        }
+        @media print {
+          body,
+          page[size="A4"] {
+            margin: 0;
+            box-shadow: 0;
+          }
+        }
+        body {
+          background: white;
+          font-family:Arial, Helvetica, sans-serif;
+          display: flex;
+          height: 100%;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          /* margin: 20%; */
+          flex-direction: column;
+        }
+        .rh-vip-margin{
+          display: flex;
+          height: 100%;
+          width: 90%;
+          /* margin: 20%; */
+          flex-direction: column;
+        }
+        .header{
+          width:100%;
+          display:flex;
+          height: 100%;
+          justify-content:space-between;
+          padding: 24px 2px;
+          /* padding: 36px; */
+        }
+        .left-logo{
+          height: 25px;
+          /* background-color:#16365c; */
+          /* color: white; */
+          font-weight: bold;
+          width:64px;
+          padding: 6px 18px;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          justify-content:center;
+          display:flex;
+          border-radius: 8px;
+        }
+        .right-date{
+          height: 25px;
+          background-color:#16365c;
+          color: white;
+          font-weight: bold;
+          width:64px;
+          padding: 6px 18px;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          justify-content:center;
+          display:flex;
+          border-radius: 8px;
+          /* flex:1; */
+    
+        }
+        .rh-table-title{
+          width:100%;
+          display:flex;
+          height: 100%;
+          justify-content:center;
+          /* margin: 36px; */
+          min-height: 38px;
+          background-color:#16365c;
+          color: white;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          border-right: solid 1px #16365c;
+          border-left: solid 1px #16365c;
+          font-weight: bold;
+        }
+        .rh-table-header{
+          width:100%;
+          display:flex;
+          height: 100%;
+          justify-content:center;
+          /* margin: 36px; */
+          min-height: 34px;
+          background-color:#c5d9f1;
+          color: black;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          font-weight: bold;
+          border-right: solid 1px #16365c;
+          border-left: solid 1px #16365c;
+        }
+        .rh-table{
+          border-right: solid 1px #16365c;
+          width:100%;
+          display: flex;
+          /* border:solid 1px #16365c; */
+          /* border-right: solid 1px #16365c; */
+          border-left: solid 1px #16365c;
+          border-top: solid 1px #16365c;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+        }
+        .rh-row{
+          width:100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          /*border:solid 1px black*/
+    
+        }
+        .rh-name{
+          flex:2;
+        }
+        .rh-room{
+          flex:1;
+        }
+        .rh-arrival{
+          flex:1;
+        }
+        .rh-departure{
+          flex:1;
+        }
+        .rh-notes{
+          flex:3;
+        }
+        .rh-rate-code{
+          flex:1;
+        }
+        .rh-vip-status{
+          flex:1;
+        }
+        .rh-cell{
+          border-bottom: solid 1px #16365c;
+          border-right: solid 1px #16365c;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+          display: flex;
+          padding: 14px 2px;
+        }
+        .end{
+          border-right: none;
+        }
+    </style>
+    </head>
+<html>
+<body>
+  <div class="rh-vip-margin">
+    <div class="header">
+      <div class="left-logo">Thompson</div>
+      <div class="right-date">06.23.22</div>           
+    </div>
+    <div class="rh-table">
+      <div class="rh-table-title">VIP List</div>
+      <div class="rh-table-header">Arrivals</div>
+      <div class="rh-table">
+        ${pageLoop(vipArr)}
+      </div>
+      <div class="rh-table-header">In House</div>
+      <div class="rh-table">
+        ${pageLoop(vipInh)}
+      </div>
+      <div class="rh-table-header">Departure</div>
+      <div class="rh-table">
+        ${pageLoop(vipOut)}
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+        await fs.appendFile(
+          `/tmp/html-${accessToken}.html`,
+          HTML,
+          function (err: any) {
+            if (err) throw reject({ url: null, success: false, error: err });
+            console.log("Saved! HTML");
+          }
+        );
+
+        const input = await PDFServicesSdk.FileRef.createFromLocalFile(
+          `/tmp/html-${accessToken}.html`
+        );
+        htmlToPDFOperation.setInput(input);
+        // Provide any custom configuration options for the operation.
+        setCustomOptions(htmlToPDFOperation);
+
+        // Execute the operation and Save the result to the specified location.
+        await htmlToPDFOperation
+          .execute(executionContext)
+          .then(async (result: any) => {
+            //await result.saveAsFile('createPDFFromHTMLWithInlineCSSOutput.pdf')
+            //fs.createReadStream('createPDFFromHTMLWithInlineCSSOutput.pdf')
+            await result.saveAsFile(`/tmp/VIP's Detailed - ${accessToken}.pdf`);
+
+            const bucket = admin.storage().bucket();
+
+            const options = {
+              destination: `detailedVIPs/VIP's Detailed - ${accessToken}.pdf`,
+              public: true,
+              metadata: {
+                contentType: "application/pdf",
+                metadata: {
+                  firebaseStorageDownloadTokens: accessToken,
+                },
+              },
+            };
+            const options2 = {
+              destination: `detailedVIPs/VIP's Detailed HTML - ${accessTokenHTML}.html`,
+              public: true,
+              metadata: {
+                contentType: "html/txt",
+                metadata: {
+                  firebaseStorageDownloadTokens: accessTokenHTML,
+                },
+              },
+            };
+            await bucket
+              .upload(`/tmp/html-${accessToken}.html`, options2)
+            await bucket
+              .upload(`/tmp/VIP's Detailed - ${accessToken}.pdf`, options)
+              .then(async (data: any) => {
+                //const file = data[0];
+                //console.log('upload', file);
+                console.log("uploaded");
+                //resolve({success: true})
+                //let file_name = `detailedVIPs/VIP's Detailed - ${accessToken}.pdf`;
+                // const file = bucket.file(file_name);
+                // const url = await file.getSignedUrl({
+                //   version: "v4",
+                //   action: "read",
+                //   expires: Date.now() + 24 * 60 * 60 * 1000,
+                // });
+                const url = `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/${replaceWhitespace(
+                  options.destination
+                )}?alt=media&token=${accessToken}`;
+
+                //         return { url };
+                return resolve({ url, success: true, error: null });
+              })
+              .catch((err: any) => {
+                console.log("Error uploading to storage", err);
+                reject(err);
+                throw new functions.https.HttpsError(
+                  "failed-precondition",
+                  `Error uploading to storage: ${err}`
+                );
+              });
+          })
+          .catch((err: any) => {
+            if (
+              err instanceof PDFServicesSdk.Error.ServiceApiError ||
+              err instanceof PDFServicesSdk.Error.ServiceUsageError
+            ) {
+              console.log(
+                "Exception encountered while executing operation 1",
+                err
+              );
+              return reject({ url: null, success: false, error: err });
+            } else {
+              console.log(
+                "Exception encountered while executing operation 2",
+                err
+              );
+              return reject({ url: null, success: false, error: err });
+            }
+          });
+      } catch (err) {
+        console.log("Exception encountered while executing operation 3", err);
+        return reject({ url: null, success: false, error: err });
+      }
+    }
+  );
+
+  return _url;
+});
 //firebase deploy --only functions:getExpedia
 exports.getExpedia = functions.https.onCall(() => {
   const vgmUrl = "https://www.vgmusic.com/music/console/nintendo/nes";
@@ -730,10 +1215,10 @@ exports.createArrivalVIP = functions.https.onCall(
         ? `RESERVED`
         : t === a
         ? `DUEIN`
-        : t > a && t < d
-        ? `CHECKEDIN`
         : t > a && t === d
         ? `DUEOUT`
+        : t > a && t < d
+        ? `CHECKEDIN`
         : t > a && t > d
         ? `CHECKEDOUT`
         : `ERROR`;
@@ -971,10 +1456,10 @@ exports.updateArrivalVIP = functions.https.onCall(
           ? `RESERVED`
           : t === a
           ? `DUEIN`
-          : t > a && t < d
-          ? `CHECKEDIN`
           : t > a && t === d
           ? `DUEOUT`
+          : t > a && t < d
+          ? `CHECKEDIN`
           : t > a && t > d
           ? `CHECKEDOUT`
           : `ERROR`;
@@ -1257,3 +1742,14 @@ exports.onDeleteArrivalVIP = functions.firestore
       return;
     }
   );
+
+// exports.openStore = functions.pubsub
+//   .schedule("0 12 * * *")
+//   .timeZone("America/Los_Angeles")
+//   .onRun(() => {
+//     console.log("Open the Store!");
+//     return admin
+//       .database()
+//       .ref("/ControlPanel")
+//       .update({ storeOpen: true });
+//   });

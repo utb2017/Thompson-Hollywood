@@ -3,7 +3,7 @@ import TextField from "../components/Forms/TextField"
 import ButtonTS from "../components/Buttons/ButtonTS"
 import AuthLayout from "../layouts/AuthLayout"
 import ServerError from "../components/Forms/ServerError"
-//import { useUser } from "../context/userContext"
+import { useUser } from "../context/userContext"
 import { withRouter } from "next/router"
 import Link from "next/link"
 //import { normalizeInput } from "../helpers"
@@ -18,7 +18,7 @@ import firebase, {
   addCredit,
   findAddCustomer
 } from "../firebase/clientApp"
-//import { useAuth } from "../context/authContext"
+import { useAuth } from "../context/authContext"
 //import AddressField from "../../components/Forms/AddressField"
 import { useRouting } from "../context/routingContext"
 import parsePhoneNumber, {
@@ -30,7 +30,6 @@ import { Select } from "baseui/select";
 
 import { Button, SIZE } from "baseui/button";
 import {useStyletron} from 'baseui';
-import { H5 } from "baseui/typography"
 
 const signinProps = {
   showCrumbs: false,
@@ -39,12 +38,12 @@ const signinProps = {
 }
 
 const SignIn = ({ router }) => {
-  //const { user, loadingUser } = useUser()
+  const { user, loadingUser } = useUser()
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [error, setError] = useState(null)
-  //const {form, setForm} = useAuth()
+  const {form, setForm} = useAuth()
   const {setNavLoading} = useRouting()
 
 
@@ -56,7 +55,7 @@ const SignIn = ({ router }) => {
     <>
       <FlexParent1>
         <FlexChild1_1>
-         <H5> Log In</H5>
+          Log In
           <Spacer/>
           <Input
             value={value}
@@ -91,12 +90,12 @@ const SignIn = ({ router }) => {
                 }}
               />
               <Spacer/>
-              <Link href={"/[property]/vip/[filter]"} as={`/${'LAXTH'}/vip/arriving`}>
+              <Link href={"/[property]/focus"} as={`/${value3[0]?.id||'LAXTH'}/focus`}>
               <ButtonMod
       //  onClick={() => alert("click")}
       size={SIZE.large}
     >
-      Just Go
+      Hello
     </ButtonMod>                
               </Link>
 
@@ -113,11 +112,9 @@ const FlexParent1 = styled("div", ({ $theme }) => {
     display:'flex',
     width: `100%`,
     flexDirection:`column`,
-    backgroundColor:`#16365c`,
-    alignItems:`center`,
+    backgroundColor:`blue`,
+    alignItems  :`center`,
     height:`100vh`,
-    justifyContent:`center`,
-    paddingBottom:'100px'
   };
 });
 const FlexChild1_1 = styled("div", ({ $theme }) => {
@@ -125,13 +122,13 @@ const FlexChild1_1 = styled("div", ({ $theme }) => {
     display:`flex`,
     width:`100%`,
     maxWidth:`400px`,
-    backgroundColor:`white`,
+    backgroundColor:`red`,
     flexDirection:`column`,
     flexPosition:`center`,
     alignItems:`center`,
     justifyContent:`center`,
     margin:`12px`,
-    padding:`12px`,
+    padding:`12px`
   };
 });
 const Spacer = styled("div", ({ $theme }) => {

@@ -181,7 +181,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const imageRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
-  const { user } = useUser();
+  //const { user } = useUser();
   //const [loading, setLoading] = useState(false);
   const { form, setForm, error, setError, loading, setLoading } = useForm();
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
@@ -239,7 +239,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     clientData.id = form.id
     const updateData: VIPClass = {};
 
-    alert(JSON.stringify(clientData))
+    //alert(JSON.stringify(clientData))
   //  return
 
 
@@ -262,7 +262,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       | `reservationStatus`
       | `id`;
     //const y: string = `VIP`;
-    alert(JSON.stringify(clientData))
+    //alert(JSON.stringify(clientData))
 
     // firstName
     x = `firstName`;
@@ -315,6 +315,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       }
       clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
       if (!isValidString(clientData[x])) {
+        alert("Failed to convert arrival")
         return setError((oldError: Errors) => ({
           ...oldError,
           ...{ [x]: "Failed to convert arrival" },
@@ -336,6 +337,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       }
       clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
       if (!isValidString(clientData[x])) {
+        alert("Failed to convert departure")
         return setError((oldError: Errors) => ({
           ...oldError,
           ...{ [x]: "Failed to convert departure" },
@@ -345,40 +347,6 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       }
 
     }
-
-    // const unformatDate = (formattedDate: string | Date): Date => {
-    //   const thisYear: number = new Date().getFullYear(),
-    //     numericDate: number = new Date(formattedDate).setFullYear(thisYear),
-    //     unformattedDate: Date = new Date(numericDate);
-    //   return unformattedDate;
-    // };
-    // const dayOfYear = (date:any):number =>{
-    //   const fullYear:any = new Date(date.getFullYear(), 0, 0)
-    //   return Math.floor((date - fullYear) / 1000 / 60 / 60 / 24);
-    // }
-    // x = `reservationStatus`;
-
-    // if (clientData[x] != undefined) {
-    //   const arrDate:Date = unformatDate(`${updateData['arrival']}`),
-    //   depDate:Date = unformatDate(`${updateData['departure']}`),
-    //   todDate:Date = new Date(),
-    //   a = dayOfYear(arrDate),
-    //   d = dayOfYear(depDate),
-    //   t = dayOfYear(todDate);
-    //   updateData[x] = 
-    //     (t < a)
-    //       ?`RESERVED`
-    //       :(t === a)
-    //         ? `DUEIN`
-    //         : (t > a && t < d)
-    //           ? `CHECKEDIN`
-    //           : (t > a && t === d)
-    //             ? `DUEOUT`
-    //             : (t > a && t > d)
-    //               ? `CHECKEDOUT`
-    //               : `ERROR`;
-    // }
-
 
   
     // image
@@ -460,7 +428,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       updateData[x] = clientData[x];
     }
 
-    alert(JSON.stringify(updateData))
+    //(JSON.stringify(updateData))
 
     setLoading(true);
     enqueue({ message: "Updating VIP", progress: true }, DURATION.infinite);
@@ -489,7 +457,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
         ...{ server: `VIP not updated.` },
       }));
       dequeue();
-      alert(`${e?.message || e}`)
+      //alert(`${e?.message || e}`)
       showToast(`${e?.message || e}`);
       enqueue(
         {
@@ -506,7 +474,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const [data, setData] = useState(null);
   const [progress, setProgress] = useState(null);
   const [file, setFile] = useState(null);
-  const { fireCustomer } = useUser();
+  //const { fireCustomer } = useUser();
   const taskRef = useRef(null);
   const [photoURL, setPhotoURL] = useState(null);
   const [query, setQuery] = useState(null);
@@ -578,7 +546,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     setLoading(true);
     try {
       const fieldUpdate = { photoURL };
-      await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
+      //await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
       NotificationManager.success("License Updated");
       closeModal();
     } catch (e) {
@@ -643,7 +611,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
         }
       );
     },
-    [taskRef, user, data]
+    [taskRef, data]
   );
 
   const [imgURL, setImgURL] = useState(null);
@@ -1127,7 +1095,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
             }
           </FormInput>
         </FormSection>
-        <Accordion>
+        {/* <Accordion>
           <Panel title="Form Dev">
             {
               <>
@@ -1152,7 +1120,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
               </>
             }
           </Panel>
-        </Accordion>
+        </Accordion> */}
         <>
           <ToasterContainer
             placement={PLACEMENT.topRight}

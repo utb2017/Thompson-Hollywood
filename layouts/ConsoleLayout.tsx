@@ -70,7 +70,7 @@ export default function ConsoleLayout({ children }) {
   const router = useRouter();
   const { asPath, pathname, query } = router;
   //const { isDark} = useScreen();
-  const { user, fireUser, fireCollections } = useUser();
+ // const { user, fireUser, fireCollections } = useUser();
   const size = useWindowSize();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -118,7 +118,7 @@ export default function ConsoleLayout({ children }) {
           <Nav className={`navbar${isCollapsed ? ` is-collapsed` : ``}`}>
             {/* LOGO */}
             {/* LOGO href={"/[adminID]/settings/store"} as={`/${user?.uid}/settings/store`} */}
-            <Link href={"/[adminID]/overview"} as={`/${user?.uid}/overview`} scroll={false}>
+            {/* <Link href={"/[adminID]/overview"} as={`/${user?.uid}/overview`} scroll={false}> */}
               <FireLogoBox
                 className="firebase-logo-lockup fire-router-link-host"
                 aria-label="Go to project list"
@@ -142,7 +142,7 @@ export default function ConsoleLayout({ children }) {
                   <span style={{ color: "white", paddingLeft: "5px" }}><Label4> {`${String.fromCharCode(160)} Beta `}</Label4></span>
                 </div>
               </FireLogoBox>
-            </Link>
+            {/* </Link> */}
             {/*NAV-CONTAINER*/}
             <LockContainer ref={lockRef} className="nav-groups-container" role="tree" tabIndex={0}>
               {/* {fireUser?.status === "success" && fireCollections?.status === "success" ? ( */}
@@ -153,15 +153,15 @@ export default function ConsoleLayout({ children }) {
                         <Label1>{"LAXTH"}</Label1>
                       </NavHeader>
                       <div>
-                        <ActiveConsoleLink blackList={[]} name="graph" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>
+                        {/* <ActiveConsoleLink blackList={[]} name="graph" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>
                           Focus
-                        </ActiveConsoleLink>
+                        </ActiveConsoleLink> */}
 
                         <ActiveConsoleLink blackList={[]} name="shield" href={"/[property]/vip/[filter]"} as={`/${'LAXTH'}/vip/arriving`}>
                           VIP's
                         </ActiveConsoleLink>
 
-                        <ActiveConsoleLink blackList={[]} name="personAdd" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
+                        {/* <ActiveConsoleLink blackList={[]} name="personAdd" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
                           Groups
                         </ActiveConsoleLink>
 
@@ -175,7 +175,7 @@ export default function ConsoleLayout({ children }) {
 
                         <ActiveConsoleLink blackList={[]} name="calendar" href={"/[property]/incidents"} as={`/${'LAXTH'}/incidents`}>
                           14-day forecast
-                        </ActiveConsoleLink>    
+                        </ActiveConsoleLink>     */}
                         
 
   

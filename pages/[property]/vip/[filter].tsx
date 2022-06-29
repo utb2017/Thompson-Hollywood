@@ -23,7 +23,7 @@ const VIPsPage = dynamic(() => import("../../../components/Pages/VIPS"), {
   ),
 })
 const index = () => {
-  const { user, fireUser, fireTotals, fireOrders, fireSettings, fireTotalsUnsettled } = useUser()
+  //const { user, fireUser, fireTotals, fireOrders, fireSettings, fireTotalsUnsettled } = useUser()
   const blackList = []
   const { setNavLoading } = useRouting()
   const router = useRouter()
@@ -42,12 +42,22 @@ const index = () => {
       label: `In House`,
       href: "/[property]/vip/[filter]",
       as: `/${`LAXTH`}/vip/inhouse`,
+    },
+    {
+      label: `Due Out`,
+      href: "/[property]/vip/[filter]",
+      as: `/${`LAXTH`}/vip/dueout`,
+    },
+    {
+      label: `All`,
+      href: "/[property]/vip/[filter]",
+      as: `/${`LAXTH`}/vip/all`,
     }
   ]
 
-  if(fireUser?.data?.role === 'driver'){
-    links.pop()
-  }
+  // if(fireUser?.data?.role === 'driver'){
+  //   links.pop()
+  // }
 
   return (
     <Console id='orders-page' title={`VIP's`} links={links}>
@@ -70,7 +80,7 @@ const index = () => {
         Boolean(fireUser?.data?.role && !blackList.includes(fireUser?.data?.role || "")) && (
           <VIPsPage {...{ fireUser }} {...{ fireTotals }} {...{ fireSettings }} />
         )} */}
-         <VIPsPage {...{ fireUser }} {...{ fireTotals }} {...{ fireSettings }} />
+         <VIPsPage />
 
       {/* NO DATA */}
       {/* {Boolean(fireUser?.status === "success") && !Boolean(fireUser?.data) && (

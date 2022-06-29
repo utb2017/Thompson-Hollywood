@@ -112,6 +112,9 @@ const ModalBase = (props)  => {
 
                 style: () => ({
                   zIndex: 30,
+                  marginTop:'42px',
+                  marginBottom:'120px',
+                  minWidth:'60%'
                 }),
               },
             }}

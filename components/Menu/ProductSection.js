@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import firebase from "../../firebase/clientApp"
 import { useUser } from "../../context/userContext"
-import ScrollTrack from "../ScrollTrack/ScrollTrack"
+//import ScrollTrack from "../ScrollTrack/ScrollTrack"
 import Product from "./Product"
 import ProductSkeleton from "./ProductSkeleton"
 import { useFirestoreQuery } from "../../hooks/useFirestoreQuery"

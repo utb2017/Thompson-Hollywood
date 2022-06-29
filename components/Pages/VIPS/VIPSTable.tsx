@@ -13,7 +13,7 @@ import { ChevronRight, ChevronLeft } from "baseui/icon";
 import SVGIcon from "../../SVGIcon";
 import { useDispatchModalBase } from "../../../context/Modal";
 import { StyledTable, StyledHead, StyledHeadCell, StyledBody, StyledRow, StyledCell, StyledAction } from "baseui/table";
-import { Caption1, Caption2, Display, H3, H5, Label1, Label2, Label4, Paragraph1, Paragraph2, Paragraph3 } from "baseui/typography";
+import { Caption1, Caption2, Display, H3, H5, Label1, Label2, Label3, Label4, Paragraph1, Paragraph2, Paragraph3 } from "baseui/typography";
 import { Theme } from "baseui/theme";
 import { styled } from "baseui";
 import { TriangleDown } from "baseui/icon";
@@ -32,273 +32,18 @@ import { useScreen } from "../../../context/screenContext";
 import { useRouter } from "next/router"
 import { useUser } from "../../../context/userContext"
 import { useUsers } from "../../../context/usersContext";
+import {ChevronDown} from 'baseui/icon';
 
 import VIP_Edit from "../../Modals/ArrivalVIPedit";
 
 
-import { Avatar } from 'baseui/avatar';
+
 import { useForm } from "../../../context/formContext";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
-// interface CallableContext {
-//   auth?: {
-//     uid: string;
-//     token: admin.auth.DecodedIdToken;
-//   };
-//   instanceIdToken?: string;
-//   //rawRequest: Request;
-// }
-type OrderForm = {
-  customerID: string;
-};
-type Selected = {
-  label: string;
-  value: string;
-};
-type CartItems = {
-  id: string;
-  img: string[];
-  genome: string;
-  inventory: number;
-  name: string;
-  pid: string;
-  uid: string;
-  price: number;
-  qty: number;
-  size: string;
-  type: string;
-  //collection: string;
-  discountRate: number;
-  hasDiscount: boolean;
-  discountTotal: number;
-  wholesale: number;
-  onSale: boolean | null;
-  saleRate: number | null;
-  couponID?: string;
-  brand: Selected;
-  brandID: string;
-  queryIDs: string[];
-  collections: Selected[];
-  collectionIDs: string[];
-  saleTitle: string;
-  comparePrice: number | null;
-};
-type Discounts = {
-  active: boolean;
-  alert: boolean;
-  alertSent: boolean;
-  bogoQty?: number;
-  code: string;
-  collectionIDs: string[];
-  collections: Selected[];
-  dateEnd?: any;
-  dateStart: any;
-  days: string[];
-  featured: boolean;
-  filters: string[] | null;
-  id: string;
-  method: Selected;
-  methodID: "flatRate" | "percent" | "taxFree" | "bogo";
-  rate: number;
-  recurring: boolean;
-  recurringDays: Selected[] | undefined;
-  sort: "credit" | "coupon" | "refund";
-  stackable: boolean;
-  title: string | null;
-  type: { [k: string]: any } | undefined;
-  uid: string | null;
-  used: boolean;
-  //queryIDs: string[];
-};
-class CartTotals {
-  subtotal: number;
-  deliveryFee: number;
-  deliveryTotal: number;
-  stateTax: number;
-  localTax: number;
-  exciseTax: number;
-  grandTotal: number;
-  serviceFee: number;
-  totalItemsSold: number;
-  minOrder: number;
-  freeDeliveryMin: number;
-  productsTotal: number;
-  //productsPrice: number;
-  taxableSubtotal: number;
-  stateTaxTotal: number;
-  exciseTaxTotal: number;
-  localTaxTotal: number;
-  combinedTaxTotal: number;
-  wholesaleTotal: number;
-  profitTotal: number;
-  freeDelivery: boolean;
-  discountsApplied: number;
-  discountsTotal: number;
-  totalSaved: number;
-  creditsApplied: number;
-  creditTotal: number;
-  creditRemainder: number;
-  serviceFeeTotal: number;
-  savedTaxTotal: number;
-  //discount: number;
 
-  constructor(
-    subtotal: number,
-    deliveryFee: number,
-    deliveryTotal: number,
-    stateTax: number,
-    localTax: number,
-    exciseTax: number,
-    grandTotal: number,
-    serviceFee: number,
-    totalItemsSold: number,
-    minOrder: number,
-    freeDeliveryMin: number,
-    productsTotal: number,
-    //productsPrice: number,
-    taxableSubtotal: number,
-    stateTaxTotal: number,
-    exciseTaxTotal: number,
-    localTaxTotal: number,
-    combinedTaxTotal: number,
-    wholesaleTotal: number,
-    profitTotal: number,
-    discountsTotal: number,
-    discountsApplied: number,
-    freeDelivery: boolean,
-    totalSaved: number,
-    creditsApplied: number,
-    creditTotal: number,
-    creditRemainder: number,
-    serviceFeeTotal: number,
-    savedTaxTotal: number,
-    //discount: number
-  ) {
-    this.stateTax = stateTax || 0;
-    this.exciseTax = exciseTax || 0;
-    this.localTax = localTax || 0;
-    this.subtotal = subtotal || 0;
-    this.deliveryFee = deliveryFee || 0;
-    this.deliveryTotal = deliveryTotal || 0;
-    this.grandTotal = grandTotal || 0;
-    this.serviceFee = serviceFee || 0;
-    this.totalItemsSold = totalItemsSold || 0;
-    this.minOrder = minOrder || 0;
-    this.freeDeliveryMin = freeDeliveryMin || 0;
-    this.productsTotal = productsTotal || 0;
-    //this.productsPrice = productsPrice;
-    this.taxableSubtotal = taxableSubtotal || 0;
-    this.stateTaxTotal = stateTaxTotal || 0;
-    this.exciseTaxTotal = exciseTaxTotal || 0;
-    this.localTaxTotal = localTaxTotal || 0;
-    this.combinedTaxTotal = combinedTaxTotal || 0;
-    this.wholesaleTotal = wholesaleTotal || 0;
-    this.profitTotal = profitTotal || 0;
-    this.discountsApplied = discountsApplied || 0;
-    this.discountsTotal = discountsTotal || 0;
-    this.freeDelivery = freeDelivery || false;
-    this.totalSaved = totalSaved || 0;
-    this.creditsApplied = creditsApplied || 0;
-    this.creditTotal = creditTotal || 0;
-    this.creditRemainder = creditRemainder || 0;
-    this.serviceFeeTotal = serviceFeeTotal || 0;
-    this.savedTaxTotal = savedTaxTotal || 0;
-    //this.discount = discount;
-  }
-}
-interface Customer {
-  name: string;
-  uid: string;
-  id: string;
-  email: string;
-  displayName: string;
-  photoURL: string;
-  phoneNumber: string;
-  disabled: boolean;
-  metadata: { creationTime: Date };
-  role: "manager" | "customer" | "dispatcher" | "driver";
-  status: "accepted" | "pending" | "denied";
-  address: string;
-  coords: number[];
-  inRange: boolean;
-}
 
-type Credits = {
-  amount: number;
-  initialAmount: number;
-  created: any;
-  id: string;
-  title: string;
-  used: boolean;
-  user: string;
-};
 
-class OrderClass {
-  user: string;
-  id?: string;
-  phoneNumber: string;
-  displayName: string | false;
-  photoURL: string | false;
-  address: string;
-  coordinates: number[];
-  cartTotals: CartTotals;
-  cartItems: CartItems[];
-  discounts: Discounts[] | [];
-  credits: Credits[] | [];
-  instructions: string | false;
-  progress: string;
-  start: any;
-  end?: any;
-  settled: boolean;
-  driver: string | false;
-  driverName?: string | false;
-  driverPhone?: string | false;
-  refund: boolean;
-  constructor(
-    user: string,
-    //id:string,
-    phoneNumber: string,
-    displayName: string | false,
-    photoURL: string | false,
-    address: string,
-    coords: number[],
-    cartTotals: CartTotals,
-    cartItems: CartItems[],
-    discounts: Discounts[] | [],
-    credits: Credits[] | [],
-    start: any,
-  ) {
-    //this.id = id;
-    this.user = user;
-    this.phoneNumber = phoneNumber;
-    this.displayName = displayName;
-    this.photoURL = photoURL;
-    this.address = address;
-    this.coordinates = coords;
-    this.cartTotals = cartTotals;
-    this.cartItems = cartItems;
-    this.discounts = discounts;
-    this.credits = credits;
-    this.instructions = false;
-    this.progress = "received";
-    this.start = start;
-    this.end = false;
-    this.settled = false;
-    this.driver = false;
-    this.driverName = false;
-    this.driverPhone = false;
-    this.refund = false;
-  }
-}
-
-const Indicator = styled("div", ({ $isActive = false, $theme, $featured = false }) => {
-  return {
-    height: "8px",
-    width: "8px",
-    borderRadius: "100%",
-    backgroundColor: $isActive ? $theme.colors.positive300 : $theme.colors.positive50,
-  };
-});
 const CellWrapper = styled("div", ({ $theme }) => {
   return {
     justifyContent:'center',
@@ -315,27 +60,9 @@ const CellWrapper = styled("div", ({ $theme }) => {
     },
   };
 });
-// const PageNum = styled("div", ({ $theme }) => {
-//     return {
 
-//     };
-//   });
 
-const TagWrapper = styled("div", ({ $theme }) => {
-  return {
-    minHeight: "100%",
-    width: "100%",
-    display: "flex",
-    //minHeight: "46px",
-    height: "78px",
-    alignItems: "center",
-    "@media (max-width: 450px)": {
-      minHeight: "100%",
-      //minHeight: "40px",
-      height: "40px",
-    },
-  };
-});
+
 const QueryLoader = styled("div", ({ $theme, $isDark }) => {
   return {
     position: "absolute",
@@ -370,12 +97,19 @@ const Results = styled("div", ({ $theme, $isDark }) => {
 const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme, $isDark }) => {
   return {
     justifyContent: "center!important",
-    padding:'0px',
+    padding:`0px!important`,
     height:'32px',
     display:'flex',
     alignItems:'center',
     alignContent:'center',
-    //backgroundColor:`#c6d9f1`
+    //backgroundColor:`#c6d9f1`,
+    fontWeight:'bold',
+    //justifyContent:'center',
+  };
+});
+const Label3Mod = styled(Label3, ({ $theme, $isDark }) => {
+  return {
+    fontWeight:'bold',
     //justifyContent:'center',
   };
 });
@@ -383,7 +117,7 @@ const StyledBorderCell = withStyle<typeof StyledCell, Theme>(StyledCell, ({ $the
   borderBottom: `1px solid ${$theme.borders.border300.borderColor}`,
   borderRight: `1px solid ${$theme.borders.border300.borderColor}`,
   height: '79px',
-  padding:'0px'
+  padding:`0px!important`,
 }));
 const StyledBorderCellEnd = withStyle<typeof StyledCell, Theme>(StyledCell, ({ $theme }) => ({
   borderBottom: `1px solid ${$theme.borders.border300.borderColor}`,
@@ -399,7 +133,7 @@ const CellButton = styled(Button, ({ $theme }) => {
   return {
     //backgroundColor:`white`,
     width:`100%`,
-    padding:`0px`,
+    padding:`0px!important`,
     border: `none`,
     display:'block',
   };
@@ -411,7 +145,7 @@ export default function VIPSTable() {
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
   const { toggleTheme, themeState } = useScreen();
   const router = useRouter()
-  const { user } = useUser()
+  //const { user } = useUser()
   const { enqueue, dequeue } = useSnackbar();
   //const router = useRouter()
   //const [page, setPage] = React.useState(1);
@@ -490,6 +224,12 @@ export default function VIPSTable() {
     if(router?.query?.filter === 'inhouse'){
       setTotalsField(router?.query?.filter);
     }
+    if(router?.query?.filter === 'dueout'){
+      setTotalsField('DUEOUT');
+    }
+    if(router?.query?.filter === 'all'){
+      setTotalsField('total');
+    }
     setTotalsDoc("ArrivalVIPs");
     setTotalsCollection("Totals")
     
@@ -500,6 +240,12 @@ export default function VIPSTable() {
     }
     if(router?.query?.filter === 'inhouse'){
       setWhere([["reservationStatus", "in", ['CHECKEDIN','DUEOUT']]])
+    }
+    if(router?.query?.filter === 'dueout'){
+      setWhere([["reservationStatus", "==", 'DUEOUT']])
+    }
+    if(router?.query?.filter === 'all'){
+      setWhere(null)
     }
     setLimit(5);
     return () => {
@@ -525,14 +271,14 @@ export default function VIPSTable() {
     <CustomTable>
       <StyledHead $width="100%">
         {/* {!isMobile && <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell>} */}
-        <StyledHeadCellMod style={{ flex: 2 }}> <Label4>Name</Label4></StyledHeadCellMod>
+        <StyledHeadCellMod style={{ flex: 2 }}> <Label3Mod>Name</Label3Mod></StyledHeadCellMod>
         {/* {!isMobile && <StyledHeadCell style={{ flex: 2 }}>Schedule</StyledHeadCell>} */}
-        {<StyledHeadCellMod style={{ flex: 1 }}> <Label4>Room</Label4></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Arrival</Label4></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Departure</Label4></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label4>Code</Label4></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}> <Label4>Notes</Label4></StyledHeadCellMod>}
-        {<StyledHeadCellMod style={{ flex: 1 }}> <Label4>Status</Label4></StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Room</Label3Mod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Arrival</Label3Mod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Departure</Label3Mod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Code</Label3Mod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}> <Label3Mod>Notes</Label3Mod></StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Status</Label3Mod></StyledHeadCellMod>}
         {/* {!isMobile && <StyledHeadCell style={{ flex: 1 }}>Items</StyledHeadCell>} */}
         {/* <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell> */}
       </StyledHead>
@@ -561,32 +307,32 @@ export default function VIPSTable() {
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.roomNumber}`}</Label4>
+                  <Label3>{`${row?.roomNumber}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${`${row?.arrival}`.substring(4)}`}</Label4>
+                  <Label3>{`${`${row?.arrival}`.substring(4)}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${`${row?.departure}`.substring(4)}`}</Label4>
+                  <Label3>{`${`${row?.departure}`.substring(4)}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.rateCode}`}</Label4>
+                  <Label3>{`${row?.rateCode}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 3 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.notes}`}</Label4>
+                  <Label3>{`${row?.notes}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.vipStatus[0].label || `n/a`}`}</Label4>
+                  <Label3>{`${row?.vipStatus[0].label || `n/a`}`}</Label3>
                 </CellWrapper>
               </StyledBorderCellEnd>}
             </StyledRow>              

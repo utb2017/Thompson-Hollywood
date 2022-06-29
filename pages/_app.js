@@ -81,7 +81,7 @@ export default class Admin extends App {
     const Layout = Component.Layout || Noop;
     return (
       <>
-        <UserProvider>
+        {/* <UserProvider> */}
           <QueryProvider>
             <EditUserContext>
               <CreateUserContext>
@@ -90,12 +90,12 @@ export default class Admin extends App {
                     <EditProductContext>
                       <CreateProductContext>
                         <ProductContext>
-                          <CreateOrderContext>
+                          {/* <CreateOrderContext> */}
                             <OrdersProvider>
                               <OrderProvider>
                                 <MenuSettingsContext>
-                                  <AuthContext>
-                                    <VehicleContext>
+                                  {/* <AuthContext> */}
+                                    {/* <VehicleContext> */}
                                       <FilterProvider>
                                         <HistoryProvider>
                                           <ScreenContext
@@ -147,12 +147,12 @@ export default class Admin extends App {
                                           </ScreenContext>
                                         </HistoryProvider>
                                       </FilterProvider>
-                                    </VehicleContext>
-                                  </AuthContext>
+                                    {/* </VehicleContext> */}
+                                  {/* </AuthContext> */}
                                 </MenuSettingsContext>
                               </OrderProvider>
                             </OrdersProvider>
-                          </CreateOrderContext>
+                          {/* </CreateOrderContext> */}
                         </ProductContext>
                       </CreateProductContext>
                     </EditProductContext>
@@ -161,7 +161,7 @@ export default class Admin extends App {
               </CreateUserContext>
             </EditUserContext>
           </QueryProvider>
-        </UserProvider>
+        {/* </UserProvider> */}
         <NotificationContainer />
       </>
     );

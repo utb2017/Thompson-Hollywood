@@ -13,7 +13,7 @@ import {useWindowSize} from '../hooks/useWindowSize'
 import { capitalize } from '../helpers'
 import { colors } from "../styles"
 import { defaultTheme } from '../styles/themer/utils'
-import ScrollTrack from "../components/ScrollTrack/ScrollTrack"
+//import ScrollTrack from "../components/ScrollTrack/ScrollTrack"
 import { useThrottle } from "@react-hook/throttle"
 
 const ActiveLink = ({children, href, className, as}) => {

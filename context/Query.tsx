@@ -66,7 +66,7 @@ const QueryContext = createContext<QueryValidation>({} as QueryValidation);
 
 export default function QueryContextComp({ children }) {
   const router = useRouter();
-  const { user, fireCustomer } = useUser();
+  //const { user, fireCustomer } = useUser();
   const [lastID, setLastID] = useState<string | null>(null);
   const [firstID, setFirstID] = useState<string | null>(null);
   const [reverse, setReverse] = useState<boolean>(false);
@@ -110,7 +110,8 @@ export default function QueryContextComp({ children }) {
     // return () => {
     //   setTotalQuery(null)
     // };
-  }, [totalsSubCollection, totalsCollection, totalsDoc, user, router, fireCustomer]);
+  // }, [totalsSubCollection, totalsCollection, totalsDoc, user, router, fireCustomer]);
+}, [totalsSubCollection, totalsCollection, totalsDoc, router]);
 
   const fireStoreQueryTotal = isNum(fireStoreQueryTotals?.data?.[totalsField]);
 
@@ -184,7 +185,7 @@ export default function QueryContextComp({ children }) {
       setReverse(false);
       setQuery(null);
     };
-  }, [user, router, queryCollection, limit, where, queryGroupCollection, fireCustomer, querySubCollection]);
+  }, [router, queryCollection, limit, where, queryGroupCollection, querySubCollection]);
 
   useEffect(() => {
     let load = false;

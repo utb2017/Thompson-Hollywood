@@ -146,7 +146,7 @@ const CreateVIP = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
-  const { user } = useUser();
+  //const { user } = useUser();
   //const [loading, setLoading] = useState(false);
   const { form, setForm, error, setError, loading, setLoading } = useForm();
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
@@ -238,6 +238,13 @@ const CreateVIP = () => {
     } else {
       updateData[x] = clientData[x];
     }
+    // roomNumber
+    x = `roomNumber`;
+    if (isValidString(clientData[x])) {
+        updateData[x] = clientData[x];
+    } else {
+        updateData[x] = `TBD`;
+    }
     // arrival
     x = `arrival`;
     if (!(clientData[x] instanceof Date)) {
@@ -276,41 +283,6 @@ const CreateVIP = () => {
     } else {
       updateData[x] = clientData[x];
     }
-
-  
-  // const unformatDate = (formattedDate: string | Date): Date => {
-  //   const thisYear: number = new Date().getFullYear(),
-  //     numericDate: number = new Date(formattedDate).setFullYear(thisYear),
-  //     unformattedDate: Date = new Date(numericDate);
-  //   return unformattedDate;
-  // };
-  // const dayOfYear = (date:any):number =>{
-  //   const fullYear:any = new Date(date.getFullYear(), 0, 0)
-  //   return Math.floor((date - fullYear) / 1000 / 60 / 60 / 24);
-  // }
-  // x = `reservationStatus`;
-  // const arrDate:Date = unformatDate(`${updateData['arrival']}`),
-  // depDate:Date = unformatDate(`${updateData['departure']}`),
-  // todDate:Date = new Date(),
-  // a = dayOfYear(arrDate),
-  // d = dayOfYear(depDate),
-  // t = dayOfYear(todDate);
-  // updateData[x] = 
-  //   (t < a)
-  //     ?`RESERVED`
-  //     :(t === a)
-  //       ? `DUEIN`
-  //       : (t > a && t < d)
-  //         ? `CHECKEDIN`
-  //         : (t > a && t === d)
-  //           ? `DUEOUT`
-  //           : (t > a && t > d)
-  //             ? `CHECKEDOUT`
-  //             : `ERROR`;
-
-
- 
-
     // image
     x = `image`;
     if (!isValidString(clientData[x])) {
@@ -441,8 +413,8 @@ const CreateVIP = () => {
   const [data, setData] = useState(null);
   const [progress, setProgress] = useState(null);
   const [file, setFile] = useState(null);
-  const { fireCustomer } = useUser();
-  const taskRef = useRef(null);
+  // //const { fireCustomer } = useUser();
+   const taskRef = useRef(null);
   const [photoURL, setPhotoURL] = useState(null);
 
 
@@ -454,19 +426,19 @@ const CreateVIP = () => {
     setError(false);
     setPhotoURL(URL.createObjectURL(acceptedFiles[0]));
   };
-  const updateProfile = async (photoURL) => {
-    setLoading(true);
-    try {
-      const fieldUpdate = { photoURL };
-      await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
-      NotificationManager.success("License Updated");
-      closeModal();
-    } catch (e) {
-      setLoading(false);
-      setError(`${e?.message || e || "ERROR"}`);
-      NotificationManager.error(e.message);
-    }
-  };
+  // const updateProfile = async (photoURL) => {
+  //   setLoading(true);
+  //   try {
+  //     const fieldUpdate = { photoURL };
+  //     await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
+  //     NotificationManager.success("License Updated");
+  //     closeModal();
+  //   } catch (e) {
+  //     setLoading(false);
+  //     setError(`${e?.message || e || "ERROR"}`);
+  //     NotificationManager.error(e.message);
+  //   }
+  // };
   // const uploadImgComplete = async (filePath) => {
   //   (`${storage}/${file.name}`)
   //   try {
@@ -523,7 +495,7 @@ const CreateVIP = () => {
         }
       );
     },
-    [taskRef, user, data]
+    [taskRef, data]
   );
 
   const [imgURL, setImgURL] = useState(null);
@@ -670,63 +642,6 @@ const CreateVIP = () => {
         </FormControl>
          </FormInput>
          
-         {/* <FormInput
-            style={formStyle}
-            label={<Label2>{"Dates"}</Label2>}
-            stack={true}
-          >
-            Arrival
-            <FormControl error={error?.arrival}>
-              <DatePicker
-                value={form?.arrival||[]}
-                onChange={({ date }) => {
-                  const arrival = Array.isArray(date) ? date : [date];
-                  setForm((oldForm: VIPClass) => ({
-                    ...oldForm,
-                    ...{ arrival },
-                  }));
-                }}
-                //quickSelect
-                overrides={{
-                  Popover: {
-                    props: {
-                      overrides: {
-                        Body: {
-                          style: ({ $theme }) => ({ zIndex: 1000 }),
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </FormControl>
-            Departure
-            <FormControl error={error?.departure}>
-              <DatePicker
-                value={form?.departure}
-                onChange={({ date }) => {
-                  const departure = Array.isArray(date) ? date : [date];
-                  setForm((oldForm: VIPClass) => ({
-                    ...oldForm,
-                    ...{ departure },
-                  }));
-                }}
-                overrides={{
-                  Popover: {
-                    props: {
-                      overrides: {
-                        Body: {
-                          style: ({ $theme }) => ({ zIndex: 1000 }),
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </FormControl>
-          </FormInput>
-       
-        */}
        
         </FormSection>
         {/** Details */}
@@ -997,7 +912,7 @@ const CreateVIP = () => {
         </FormSection>
 
         {/* <div style={{ width: "100%", height: 65 }}></div> */}
-        <Accordion>
+        {/* <Accordion>
           <Panel title="Form Dev">
             {
               <>
@@ -1009,7 +924,7 @@ const CreateVIP = () => {
               </>
             }
           </Panel>
-        </Accordion>
+        </Accordion> */}
         {/* {form && JSON.stringify(form)} */}
         {/* {fireProductDefault && JSON.stringify(fireProductDefault)} */}
 

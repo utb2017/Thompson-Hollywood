@@ -1,7 +1,7 @@
 import { useState, useEffect, FC, ReactElement } from "react";
 import { useDispatchModalBase } from "../../../context/Modal";
-import { Button } from "baseui/button";
-import { useStyletron } from "baseui";
+import { Button, SHAPE, SIZE } from "baseui/button";
+import { styled, useStyletron } from "baseui";
 import { Card } from "baseui/card";
 import VIPSTable from "./VIPSTable";
 import { useQuery } from "../../../context/Query";
@@ -17,149 +17,29 @@ import { useSnackbar, DURATION } from "baseui/snackbar";
 import { Check, Delete, DeleteAlt } from "baseui/icon";
 import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 import OpenPrintDetailedVIP from "../../Modals/OpenPrintDetailedVIP" 
+import {ChevronDown} from 'baseui/icon';
+import {StatefulPopover} from 'baseui/popover';
+import {StatefulMenu} from 'baseui/menu';
+import {Upload} from 'baseui/icon';
 
 
 type INullableReactText = React.ReactText | null;
 
-type Selected = {
-  label: string | number;
-  value: string | Date;
-};
-class DiscountClass {
-  active: boolean;
-  alert: boolean;
-  alertSent: boolean;
-  bogoQty?: number;
-  code: string;
-  collectionIDs: string[];
-  collections: Selected[];
-  dateEnd?: any;
-  dateStart: any;
-  days: string[];
-  featured: boolean;
-  filters: string[] | null;
-  id: string;
-  method: Selected;
-  methodID: "flatRate" | "percent" | "taxFree" | "bogo";
-  rate: number;
-  recurring: boolean;
-  recurringDays: Selected[] | undefined;
-  sort: "coupon";
-  stackable: boolean;
-  title: string | null;
-  type: { [k: string]: any } | undefined;
-  uid: string | null;
-  used: boolean;
-  happyHour: boolean;
-  startHour: Selected;
-  endHour: Selected;
-  //queryIDs: string[];
+const AddButton = styled(Button, ({ $theme }) => {
+  return {...{
+    //backgroundColor:'#16365c',
+  },...$theme.lighting.shadow400};
+});
+const ButtonBlue = styled(Button, ({ $theme }) => {
+  return {...{
+    //backgroundColor:'#16365c',
+  },...$theme.lighting.shadow400};
+});
 
-  constructor(
-    active: boolean,
-    alert: boolean,
-    bogoQty: number,
-    code: string | null,
-    collectionIDs: string[],
-    collections: Selected[],
-    dateEnd: any | null,
-    dateStart: any,
-    days: string[],
-    featured: boolean,
-    id: string | null,
-    method: Selected,
-    methodID: "flatRate" | "percent" | "taxFree" | "bogo",
-    rate: number,
-    recurring: boolean,
-    recurringDays: Selected[] | undefined,
-    //sort: "coupon",
-    stackable: boolean,
-    title: string | null,
-    //type: { [k: string]: any } | undefined,
-    uid: string | null,
-    used: boolean,
-    happyHour: boolean,
-    startHour: Selected,
-    endHour: Selected
-  ) {
-    this.active = active || false;
-    this.alert = alert || false;
-    this.alertSent = false;
-    this.bogoQty = bogoQty || 2;
-    this.code = code || null;
-    this.collectionIDs = collectionIDs || [];
-    this.collections = collections || [];
-    this.dateEnd = dateEnd || null;
-    this.dateStart = dateStart || null;
-    this.days = days || [];
-    this.featured = featured || false;
-    this.filters = [];
-    this.id = id || null;
-    this.method = method || { label: `Flat rate`, value: "flatRate" };
-    this.methodID = methodID || `flatRate`;
-    this.rate = rate || null;
-    this.recurring = recurring || false;
-    this.recurringDays = recurringDays || [];
-    this.sort = "coupon";
-    this.stackable = stackable || false;
-    this.title = title || null;
-    this.type = { label: "Coupon", value: "coupon" };
-    this.uid = uid || null;
-    this.used = used || false;
-    this.happyHour = happyHour || false;
-    this.startHour = startHour || null;
-    this.endHour = endHour || null;
-  }
-}
-interface DiscountClassMod extends DiscountClass {
-  fireDiscount: DiscountClass;
-}
-type Query = {
-  data: any;
-  status: string;
-  error: any;
-};
-
-interface QueryValidation {
-  firstID: string | null;
-  setFirstID(data: string | null): void;
-  lastID: string | null;
-  setLastID(data: string | null): void;
-  reverse: boolean;
-  setReverse(data: boolean): void;
-  page: number;
-  setPage(data: number): void;
-  orderBy: string;
-  setOrderBy(data: string): void;
-  prevPage: () => void;
-  nextPage: () => void;
-  fireStoreQuery: Query;
-  fireStoreQueryTotals: Query;
-  fireStoreQueryTotal: number | null;
-  disableNext: boolean;
-  setDisableNext(data: boolean): void;
-  disablePrev: boolean;
-  setDisablePrev(data: boolean): void;
-  totalsField: string | null;
-  setTotalsField(data: string | null): void;
-  queryCollection: string | null;
-  setQueryCollection(data: string | null): void;
-  maxPage: number;
-  setMaxPage(data: number): void;
-}
-const orderProgressObject = {
-  'settled': ['settled'],
-  'received': ['received'],
-  'cancel': ['cancel'],
-  'complete': ['complete'],
-  'paid': ['paid'],
-  'active': ['received', 'pending', 'assigned', 'pickup', 'warning','arrived'],
-  'none': [],
-  'undefined':[],
-  'null':[],
-  'false':[],
-  '':[],
-}
+const ITEMS = [
+  {label: 'Detailed VIP'},
+  {label: 'RH VIP'},
+];
 const VIPs: FC = (): ReactElement => {
   const {
     setTotalsField,
@@ -178,7 +58,7 @@ const VIPs: FC = (): ReactElement => {
   const { modalBaseDispatch } = useDispatchModalBase();
   const [css, theme] = useStyletron();
   const router = useRouter()
-  const { user } = useUser()
+  //const { user } = useUser()
   const {  setNavLoading } = useRouting()
   const { enqueue, dequeue } = useSnackbar();
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
@@ -309,9 +189,85 @@ const VIPs: FC = (): ReactElement => {
       setLoading(false);
     }
   };
+  const exportRH = async () => {
+
+
+    setLoading(true);
+    //enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
+    try {
+      const createRH = firebase.functions().httpsCallable("exportAdobeRHVip");
+      const response = await createRH();
+      dequeue();
+
+      //closeModal();
+      console.log(JSON.stringify(response))
+      if (response?.data?.success === true) {
+        //alert(`${response?.data?.form}`)
+        //console.log(response?.data?.form);
+        //setFireProductDefault({...response?.data?.form});
+        //setForm({...response?.data?.form});
+        //window.open(response?.data?.url, null, null);
+
+        _VIPOpenPrint(response?.data?.url)
+
+         enqueue(
+            {
+              message: "RH Exported",
+              startEnhancer: ({ size }) => <Check size={size} />,
+            },
+            DURATION.short
+          );     
+      }
+    } catch (e) {
+      //setError(`${e?.message || e}`);
+      // setError((oldError: Errors) => ({
+      //   ...oldError,
+      //   ...{ server: `VIP not created.` },
+      // }));
+      console.log(`${e?.message || e}`)
+      dequeue();
+      //showToast(`${e?.message || e}`);
+      enqueue(
+        {
+          message: `Your RH wasn't exported`,
+          startEnhancer: ({ size }) => <DeleteAlt size={size} />,
+        },
+        DURATION.short
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
+              <div
+          className={css({
+            position: "fixed",
+            bottom: "6%",
+            right: "22px",
+            zIndex:"10",
+          })}
+        >
+            <AddButton
+              kind={themeState?.dark ? KIND.secondary : undefined}
+              onClick={_VIPCreate}
+              isLoading={Boolean(loading)}
+              disabled={Boolean(loading)}
+              shape={SHAPE.circle}
+              size={SIZE.large}
+            >
+              <Upload size={30} />
+              {/* <div
+                className={css({
+                  paddingLeft: theme.sizing.scale600,
+                  paddingRight: theme.sizing.scale600,
+                })}
+              >
+                Add VIP
+              </div> */}
+            </AddButton>
+          </div>
       <div
         className={css({
           paddingBottom: theme.sizing.scale600,
@@ -334,34 +290,53 @@ const VIPs: FC = (): ReactElement => {
             paddingBottom: theme.sizing.scale600,
           })}
         >
-          <div>{""}</div>
-          <Button
-            kind={themeState?.dark ? KIND.secondary : undefined}
-            onClick={_VIPCreate}
-            isLoading={Boolean(loading)}
-            disabled={Boolean(loading)}
-          >
-            <div
-              className={css({
-                paddingLeft: theme.sizing.scale600,
-                paddingRight: theme.sizing.scale600,
-              })}
-            >
-              Add VIP
-            </div>
-          </Button>
+
+
           <div style={{width:'12px'}} ></div>
-          <Button
+          {/* <StatefulPopover
+      //focusLock
+      placement={PLACEMENT.bottomLeft}
+      content={({close}) => (
+        <StatefulMenu
+          items={ITEMS}
+          onItemSelect={() => close()}
+          // overrides={{
+          //   List: {style: {height: '100px', width: '138px'}},
+          // }}
+        />
+      )}
+    >
+      <Button endEnhancer={() => <ChevronDown size={24} />}>
+        Open Menu
+      </Button>
+    </StatefulPopover> */}
+          
+          <ButtonBlue
             kind={themeState?.dark ? KIND.secondary : undefined}
             onClick={exportVIPs}
             isLoading={Boolean(loading)}
             disabled={Boolean(loading)}
+            size={SIZE.compact}
           >
             <div
             >
-              Export
+              Export Detailed
             </div>
-          </Button>
+          </ButtonBlue>
+          
+          <div style={{width:'12px'}} ></div>
+          <ButtonBlue
+            kind={themeState?.dark ? KIND.secondary : undefined}
+            onClick={exportRH}
+            isLoading={Boolean(loading)}
+            disabled={Boolean(loading)}
+            size={SIZE.compact}
+          >
+            <div
+            >
+              Export RH
+            </div>
+          </ButtonBlue>
         </div>
         {/* OUTLET */}
         <Card

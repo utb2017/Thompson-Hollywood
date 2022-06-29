@@ -1,7 +1,7 @@
 //import ScrollTrack from '../ScrollTrack/ScrollTrack'
 import Link from 'next/link'
 import router, { useRouter } from 'next/router'
-import { useEffect, useState, useCallback, forwardRef, ReactElement } from 'react'
+import { useEffect, useState, useCallback, forwardRef } from 'react'
 import { useThrottle } from '@react-hook/throttle'
 import SVGIcon from '../SVGIcon'
 import SettingsAlertMenu from '../SettingsAlertMenu'
@@ -15,7 +15,6 @@ import { useUser } from '../../context/userContext'
 import isEqual from 'lodash.isequal'
 import { useStyletron } from 'baseui';
 import { Navigation } from 'baseui/side-navigation';
-import VIP_END_OF_DAY from '../../components/Modals/VIP_END_OF_DAY'
 import {
   Card,
   StyledBody,
@@ -35,7 +34,6 @@ import {
 } from 'baseui/typography';
 import { styled } from "baseui";
 import { useScreen } from '../../context/screenContext'
-import { useDispatchModalBase } from '../../context/Modal'
 
 const FeatureDiv = styled("div", ({ $theme }) => {
   return {
@@ -120,11 +118,11 @@ export const ActiveConsoleLink = ({
 }) => {
   const router = useRouter()
   const { setNavLoading } = useRouting()
-  //const { user, fireUser } = useUser()
+  const { user, fireUser } = useUser()
   const { asPath, pathname } = router
 
 
-  return (
+  return !Boolean(blackList.includes(`${fireUser?.data?.role || ''}`)) && (
 
     <Navigation
       items={[
@@ -163,7 +161,7 @@ export const ActiveConsoleLinkX = ({
 }) => {
   const router = useRouter()
   const { setNavLoading } = useRouting()
-  //const { user, fireUser } = useUser()
+  const { user, fireUser } = useUser()
   const { asPath, pathname } = router
 
 
@@ -198,9 +196,9 @@ export const Nav = ({ links }) => {
     const tempLinks = []
     for (const key in links) {
       const { as, label, href, role } = links[key]
-      // if (role && !Boolean(role.includes(fireUser?.data?.role))) {
-      //   return
-      // }
+      if (role && !Boolean(role.includes(fireUser?.data?.role))) {
+        return
+      }
       tempLinks.push(
         <Tab 
         style={{whiteSpace: "nowrap"}}
@@ -337,34 +335,14 @@ export const Header = ({ title = 'default', id = 'console-header', isScrolled = 
   const router = useRouter()
   const { asPath, pathname } = router
   const { announcement } = useForm()
-  //const { user } = useUser()
+  const { user } = useUser()
   const { setNavLoading } = useRouting()
   const { themeState, toggleTheme } = useScreen()
-  const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
-  const openModalBase = (
-    component: () => ReactElement,
-    hasSquareBottom: boolean
-  ) => {
-    modalBaseDispatch({
-      type: "MODAL_UPDATE",
-      payload: {
-        modalBase: {
-          isOpen: true,
-          key: [],
-          component,
-          hasSquareBottom,
-        },
-      },
-    });
-  };
-  const END_OF_DAY = () => {
-    const component: () => ReactElement = () => <VIP_END_OF_DAY/>;
-    openModalBase(component, true);
-  };
 
   return (
     <>
       <header id={id}>
+        {Boolean(announcement) && <AnnouncementBar />}
         <div className='console-appbar-grid'>
           <AppBar
             $isScrolled={isScrolled}
@@ -375,7 +353,7 @@ export const Header = ({ title = 'default', id = 'console-header', isScrolled = 
             <div className='left-navigation'>
               {!Boolean(back) &&
                 <Link href={`${pathname}?menu`} as={`${asPath}?menu`} scroll={false}>
-                  <button  aria-label='Open navigation Menu'>
+                  <button aria-label='Open navigation Menu'>
                     <span>
                       <SVGIcon
                         color={theme.colors.primary}
@@ -419,21 +397,33 @@ export const Header = ({ title = 'default', id = 'console-header', isScrolled = 
                   />
                 </span>
               </button>
-              {/* <Link href={`${pathname}?alert`} as={`${asPath}?alert`}> */}
-                <button onClick={()=>END_OF_DAY()} aria-label='Open Quick Settings'>
+              <Link href={`${pathname}?alert`} as={`${asPath}?alert`}>
+                <button aria-label='Open Quick Settings'>
+                  <span>
+                    <SVGIcon
+                      style={{ transform: 'scale(1)' }}
+                      color={theme.colors.primary}
+                      name={'bellFilled'}
+                    />
+                  </span>
+                </button>
+              </Link>
+              <Link href={`${pathname}?alert`} as={`${asPath}?alert`}>
+                <button aria-label='Open Quick Settings'>
                   <span>
                     <SVGIcon
                       style={{ transform: 'rotate(90deg)' }}
                       color={theme.colors.primary}
-                      name={'replacement'}
+                      name={'gear'}
                     />
                   </span>
                 </button>
-              {/* </Link> */}
+              </Link>
             </div>
           </AppBar>
         </div>
       </header>
+      <SettingsAlertMenu />
     </>
   )
 }
