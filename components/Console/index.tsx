@@ -15,7 +15,7 @@ import { useUser } from '../../context/userContext'
 import isEqual from 'lodash.isequal'
 import { useStyletron } from 'baseui';
 import { Navigation } from 'baseui/side-navigation';
-import VIP_END_OF_DAY from '../../components/Modals/VIP_END_OF_DAY'
+import VIP_END_OF_DAY from '../Modals/VIP_END_OF_DAY'
 import {
   Card,
   StyledBody,
@@ -76,7 +76,7 @@ export const Feature = ({ children }) => {
     </div>
   )
 }
-export const Title = ({ title = 'No Title' }) => {
+export const Title = ({ title = 'No Title' }:any) => {
   return (
     <div className='console-feature-title-row canvas-theme-container'>
       <div className='console-feature-title-lockup stretch-across'>
@@ -134,9 +134,10 @@ export const ActiveConsoleLink = ({
               style={{ transform: 'scale(0.8)' }}
               name={name}
             />
-          </IconSpan><LabelSpan>{children}</LabelSpan></FlexContainer>,
+          </IconSpan><LabelSpan>{children}</LabelSpan>
+          </FlexContainer>,
           itemId: href,
-          as: as,
+          //as: as,
         },
       ]}
       activeItemId={pathname}
@@ -159,7 +160,6 @@ export const ActiveConsoleLinkX = ({
   as,
   index,
   name = 'ordersFilled',
-  blackList = [],
 }) => {
   const router = useRouter()
   const { setNavLoading } = useRouting()
@@ -167,7 +167,7 @@ export const ActiveConsoleLinkX = ({
   const { asPath, pathname } = router
 
 
-  return !Boolean(blackList.includes(`${fireUser?.data?.role || ''}`)) && (
+  return (
     <Link href={href} {...(as && { as })} scroll={false}>
       <a
         onClick={() => Boolean(pathname !== href) && setNavLoading(true)}
@@ -203,12 +203,22 @@ export const Nav = ({ links }) => {
       // }
       tempLinks.push(
         <Tab 
-        style={{whiteSpace: "nowrap"}}
+        //style={{whiteSpace: "nowrap"}}
+        overrides={{
+          Tab: {
+            style: ({ $theme }) => ({
+              whiteSpace: "nowrap"
+            })
+          }
+        }}
         onClick={(e) => {
-          //alert(JSON.stringify(e))
-          //console.log(e)]
           router.push(`${href}`, `${as}`)
-        }} key={key} title={label} ><></></Tab>
+        }} 
+        key={key} title={label} 
+        >
+          <>
+          </>
+          </Tab>
         // <ActiveLink key={key} index={key} href={href} as={as}>
         //   {label}
         // </ActiveLink>
@@ -293,7 +303,7 @@ export const Nav = ({ links }) => {
     // </div>
   )
 }
-export const Crumbs = ({ crumbs = [], title = false }) => {
+export const Crumbs = ({ crumbs = [], title = null }) => {
   const [links, setLinks] = useState([])
   const { setNavLoading } = useRouting()
   const handleClick = () => {
@@ -332,7 +342,7 @@ const AppBar = styled("div", ({ $theme, $isScrolled }) => {
     backgroundColor: $theme.colors.background,
   } : undefined
 });
-export const Header = ({ title = 'default', id = 'console-header', isScrolled = false, back = false }) => {
+export const Header = ({ title = 'default', id = 'console-header', isScrolled = false, back = false }:any) => {
   const [css, theme] = useStyletron();
   const router = useRouter()
   const { asPath, pathname } = router
@@ -388,7 +398,7 @@ export const Header = ({ title = 'default', id = 'console-header', isScrolled = 
               }
               {Boolean(back) &&
                 //  <Link href={"/[adminID]/users/[users]"} as={`/${user?.uid}/users/customer`} scroll={false}>
-                <button onClick={() => ((typeof back === 'string' || back instanceof String) ? router.push(back) : router.back(), setNavLoading(true))} className='visible' aria-label='Open navigation Menu'>
+                <button onClick={() => ((back) ? router.push(back) : router.back(), setNavLoading(true))} className='visible' aria-label='Open navigation Menu'>
                   <span>
                     <SVGIcon
                       color={theme.colors.primary}
@@ -446,7 +456,7 @@ export const Footer = ({ isShowing = true, children }) => {
 }
 
 export const Main = forwardRef(
-  ({ links = false, title = 'No Title', crumbs, children, onScroll, id = 'main-products', noNav = 'false' }, ref) => {
+  ({ links = false, title = 'No Title', crumbs, children, onScroll, id = 'main-products', noNav = 'false' }:any, ref:any) => {
     const [scrollPos, setScrollPos] = useThrottle(0, 10, false)
     useEffect(() => {
       onScroll && onScroll(scrollPos)
@@ -469,7 +479,7 @@ export const Main = forwardRef(
   }
 )
 export const Console = forwardRef(
-  ({ links, title = 'No Title', crumbs = false, children, id = 'console', back = false, noNav = false }, ref) => {
+  ({ links, title = 'No Title', crumbs = false, children, id = 'console', back = false, noNav = false }:any, ref) => {
     const [isScrolled, setIsScrolled] = useState(false)
     const handleScroll = useCallback(
       (scrollPos) => {
@@ -560,7 +570,7 @@ export const FileInput = ({
   onChange = undefined,
   onError = undefined,
   progress = 0,
-}) => {
+}:any) => {
   const [fileName, setFileName] = useState(null)
   const fileError = { code: "invalid-file-type", message: "Invalid file type." }
   const re = /(?:\.([^.]+))?$/;
