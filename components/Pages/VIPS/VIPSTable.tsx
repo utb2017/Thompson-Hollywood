@@ -3,7 +3,7 @@ import { withStyle, useStyletron } from "baseui";
 import { ChevronRight, ChevronLeft } from "baseui/icon";
 import { useDispatchModalBase } from "../../../context/Modal";
 import { StyledTable, StyledHead, StyledHeadCell, StyledBody, StyledRow, StyledCell } from "baseui/table";
-import { Label3, Label4, Paragraph2 } from "baseui/typography";
+import { LabelSmall, LabelMedium, ParagraphMedium } from "baseui/typography";
 import { Theme } from "baseui/theme";
 import { styled } from "baseui";
 import { TriangleDown } from "baseui/icon";
@@ -13,7 +13,7 @@ import { StatefulPopover, PLACEMENT } from "baseui/popover";
 import { Button, KIND, SIZE} from "baseui/button";
 import { useQuery } from "../../../context/Query";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import { StyledSpinnerNext } from "baseui/spinner";
+import { Spinner } from "baseui/spinner";
 import { ReactElement } from "react";
 import { KIND as _KIND } from "baseui/tag";
 import { useScreen } from "../../../context/screenContext";
@@ -21,6 +21,7 @@ import { useRouter } from "next/router"
 import VIP_Edit from "../../Modals/ArrivalVIPedit";
 import { useSnackbar } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
+import { WhereFilterOp } from '@firebase/firestore-types';
 
 
 
@@ -43,13 +44,13 @@ const CellWrapper = styled("div", () => {
 
 
 
-const QueryLoader = styled("div", ({ $theme, $isDark }) => {
+const QueryLoader = styled("div", ({ $theme }) => {
   return {
     position: "absolute",
     width: "100%",
     display: "flex",
     //height:'auto',
-    backgroundColor: $isDark ? `rgba(51, 51, 51, 0.5)` : `rgba(255, 255, 255, 0.6)`,
+    //backgroundColor: $isDark ? `rgba(51, 51, 51, 0.5)` : `rgba(255, 255, 255, 0.6)`,
     //bottom:'85px',
     top: "45px",
     alignItems: "center",
@@ -58,7 +59,7 @@ const QueryLoader = styled("div", ({ $theme, $isDark }) => {
     zIndex: 20,
   };
 });
-const Results = styled("div", ({ $theme, $isDark }) => {
+const Results = styled("div", ({ $theme }) => {
   return {
     position: "absolute",
     width: "100%",
@@ -74,7 +75,7 @@ const Results = styled("div", ({ $theme, $isDark }) => {
   };
 });
 
-const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme, $isDark }) => {
+const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme }) => {
   return {
     justifyContent: "center!important",
     padding:`0px!important`,
@@ -87,7 +88,7 @@ const StyledHeadCellMod = styled(StyledHeadCell, ({ $theme, $isDark }) => {
     //justifyContent:'center',
   };
 });
-const Label3Mod = styled(Label3, ({ $theme, $isDark }) => {
+const LabelSmallMod = styled(LabelSmall, ({ $theme }) => {
   return {
     fontWeight:'bold',
     //justifyContent:'center',
@@ -186,50 +187,70 @@ export default function VIPSTable() {
 
 
 
-  /* add shit to the query questions*/
-  useEffect(() => {
-    if(router?.query?.filter === 'arriving'){
-      setTotalsField('DUEIN');
-    }
-    if(router?.query?.filter === 'inhouse'){
-      setTotalsField(router?.query?.filter);
-    }
-    if(router?.query?.filter === 'dueout'){
-      setTotalsField('DUEOUT');
-    }
-    if(router?.query?.filter === 'all'){
-      setTotalsField('total');
-    }
-    setTotalsDoc("ArrivalVIPs");
-    setTotalsCollection("Totals")
-    
-    setQueryCollection("ArrivalVIPs");
-    setOrderBy("firstName");
-    if(router?.query?.filter === 'arriving'){
-      setWhere([["reservationStatus", "==", 'DUEIN']])
-    }
-    if(router?.query?.filter === 'inhouse'){
-      setWhere([["reservationStatus", "in", ['CHECKEDIN','DUEOUT']]])
-    }
-    if(router?.query?.filter === 'dueout'){
-      setWhere([["reservationStatus", "==", 'DUEOUT']])
-    }
-    if(router?.query?.filter === 'all'){
-      setWhere(null)
-    }
+/* add shit to the query questions*/
+useEffect(() => {
+  const arr = "arriving",
+    inh = "inhouse",
+    out = "dueout",
+    all = "all",
+    IN = "DUEIN",
+    OUT = "DUEOUT",
+    CHK = "CHECKEDIN",
+    tot = "total",
+    rqf = router?.query?.filter as
+      | "arriving"
+      | "inhouse"
+      | "dueout"
+      | "all"
+      | null,
+    tot_field =
+      rqf === arr
+        ? IN
+        : rqf === inh
+        ? inh
+        : rqf === out
+        ? OUT
+        : rqf === all
+        ? tot
+        : null,
+    rqp = router?.query?.property as "LAXTH" | "LAXTE",
+    tot_doc = `${rqp}_VIPs`,
+    rS = "reservationStatus",
+    where = (
+      rqf === arr
+        ? [[rS, "==", IN]]
+        : rqf === inh
+        ? [[rS, "in", [CHK, OUT]]]
+        : rqf === out
+        ? [[rS, "==", OUT]]
+        : null
+    ) as [string, WhereFilterOp, string | boolean | number | string[]][] | [];
+
+  setTotalsCollection("Totals");
+  setTotalsDoc(tot_doc);
+  setTotalsField(tot_field);
+  setQueryCollection(`${rqp}_VIPs`);
+  setOrderBy("firstName");
+  setWhere(where);
+  setLimit(5);
+  return () => {
+    setTotalsField(null);
+    setTotalsDoc(null);
+    setTotalsCollection(null);
+    setQueryGroupCollection(null);
+    setQueryCollection(null);
     setLimit(5);
-    return () => {
-      setTotalsField(null);
-      setTotalsDoc(null);
-      setTotalsCollection(null)
-      setQueryGroupCollection(null);
-      setQueryCollection(null);
-      setLimit(5);
-      setOrderBy(null);
-      setWhere(null)
-    };
-    // }, [router]);
-  }, [router]);
+    setOrderBy(null);
+    setWhere(null);
+  };
+}, [router]);
+
+
+
+
+
+
+
 
   useEffect(() => {
     console.log(`fireStoreQuery`)
@@ -241,26 +262,26 @@ export default function VIPSTable() {
     <CustomTable>
       <StyledHead $width="100%">
         {/* {!isMobile && <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell>} */}
-        <StyledHeadCellMod style={{ flex: 2 }}> <Label3Mod>Name</Label3Mod></StyledHeadCellMod>
+        <StyledHeadCellMod style={{ flex: 2 }}> <LabelSmallMod>Name</LabelSmallMod></StyledHeadCellMod>
         {/* {!isMobile && <StyledHeadCell style={{ flex: 2 }}>Schedule</StyledHeadCell>} */}
-        {<StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Room</Label3Mod></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Arrival</Label3Mod></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Departure</Label3Mod></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Code</Label3Mod></StyledHeadCellMod>}
-        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}> <Label3Mod>Notes</Label3Mod></StyledHeadCellMod>}
-        {<StyledHeadCellMod style={{ flex: 1 }}> <Label3Mod>Status</Label3Mod></StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <LabelSmallMod>Room</LabelSmallMod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <LabelSmallMod>Arrival</LabelSmallMod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <LabelSmallMod>Departure</LabelSmallMod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 1 }}> <LabelSmallMod>Code</LabelSmallMod></StyledHeadCellMod>}
+        {!isMobile && <StyledHeadCellMod style={{ flex: 3 }}> <LabelSmallMod>Notes</LabelSmallMod></StyledHeadCellMod>}
+        {<StyledHeadCellMod style={{ flex: 1 }}> <LabelSmallMod>Status</LabelSmallMod></StyledHeadCellMod>}
         {/* {!isMobile && <StyledHeadCell style={{ flex: 1 }}>Items</StyledHeadCell>} */}
         {/* <StyledHeadCell style={{ minWidth: "80px", flex: 0 }}>{""}</StyledHeadCell> */}
       </StyledHead>
       <StyledBody $width="100%" style={{ minHeight: `${limit * (width > 450 ? 79 : 73)}px` }}>
         {queryLoader && (
-          <QueryLoader $isDark={themeState?.dark} style={{ minHeight: `${limit * (width > 450 ? 79 : 73) - 2}px` }}>
-            <StyledSpinnerNext size={32} />
+          <QueryLoader style={{ minHeight: `${limit * (width > 450 ? 79 : 73) - 2}px` }}>
+            <Spinner size={32} />
           </QueryLoader>
         )}
         {(!queryLoader && dataState.length === 0) && (
-          <Results $isDark={themeState?.dark} style={{ minHeight: `${limit * (width > 450 ? 79 : 73) - 2}px` }}>
-            <Paragraph2>{`No results`}</Paragraph2>
+          <Results style={{ minHeight: `${limit * (width > 450 ? 79 : 73) - 2}px` }}>
+            <ParagraphMedium>{`No results`}</ParagraphMedium>
           </Results>
         )}
         {dataState &&
@@ -273,37 +294,37 @@ export default function VIPSTable() {
             <StyledRow key={index}>
               {<StyledBorderCell style={{ flex: 2 }}>
                 <CellWrapper>
-                  <Label4>{`${row?.lastName}, ${row?.firstName}`}</Label4>
+                  <LabelMedium>{`${row?.lastName}, ${row?.firstName}`}</LabelMedium>
                 </CellWrapper>
               </StyledBorderCell>}
               {<StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label3>{`${row?.roomNumber}`}</Label3>
+                  <LabelSmall>{`${row?.roomNumber}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label3>{`${`${row?.arrival}`.substring(4)}`}</Label3>
+                  <LabelSmall>{`${`${row?.arrival}`.substring(4)}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label3>{`${`${row?.departure}`.substring(4)}`}</Label3>
+                  <LabelSmall>{`${`${row?.departure}`.substring(4)}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label3>{`${row?.rateCode}`}</Label3>
+                  <LabelSmall>{`${row?.rateCode}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 3 }}>
                 <CellWrapper>
-                  <Label3>{`${row?.notes}`}</Label3>
+                  <LabelSmall>{`${row?.notes}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {<StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
-                  <Label3>{`${row?.vipStatus[0].label || `n/a`}`}</Label3>
+                  <LabelSmall>{`${row?.vipStatus[0].label || `n/a`}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCellEnd>}
             </StyledRow>              
@@ -355,14 +376,14 @@ export default function VIPSTable() {
           overrides={{
             PrevButton: {
               component: ({ onClick }: any) => (
-                <Button kind={KIND.minimal} size={SIZE.compact} disabled={disablePrev} onClick={prevPage}>
+                <Button kind={KIND.tertiary} size={SIZE.compact} disabled={disablePrev} onClick={prevPage}>
                   <ChevronLeft size={24} />
                 </Button>
               ),
             },
             NextButton: {
               component: ({ onClick }: any) => (
-                <Button disabled={disableNext} kind={KIND.minimal} size={SIZE.compact} onClick={nextPage}>
+                <Button disabled={disableNext} kind={KIND.tertiary} size={SIZE.compact} onClick={nextPage}>
                   <ChevronRight size={24} />
                 </Button>
               ),

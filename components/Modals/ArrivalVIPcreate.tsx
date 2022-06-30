@@ -1,9 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import firebase from "../../firebase/clientApp";
 import { FormInput } from "../Console";
-import { Label2 } from "baseui/typography";
 import { styled } from "baseui";
-import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalButton,
+  SIZE,
+  ROLE
+} from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
 import { Input } from "baseui/input";
 import { Check, DeleteAlt } from "baseui/icon";
@@ -23,6 +30,8 @@ import { FileUploader } from "baseui/file-uploader";
 import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
 import { useForm } from "../../context/formContext";
+import { LabelMedium } from "baseui/typography";
+import { useRouter } from "next/router";
 
 
 
@@ -90,10 +99,10 @@ const isValidString = (x: any) => {
   return Boolean(x && typeof x === "string" && x.length > 0);
 };
 
-const FlexSpacer = styled("div", ({ $theme, $width = `16px` }) => {
+const FlexSpacer = styled("div", ({ $theme}) => {
   return {
     height: "100%",
-    width: $width,
+    width:`16px`,
   };
 });
 const FlexContainer = styled("div", ({ $theme }) => {
@@ -119,6 +128,7 @@ const CreateVIP = () => {
   const { enqueue, dequeue } = useSnackbar();
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
+  const router = useRouter()
   const closeModal = () => {
     modalBaseDispatch({
       type: "MODAL_UPDATE",
@@ -332,14 +342,11 @@ const CreateVIP = () => {
       updateData.vipStatus, // vipStatus?: [],
       updateData.stays, // stays?:number,
     );
-   
-
-
-
     setLoading(true);
     enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
     try {
-      const createVIP = firebase.functions().httpsCallable("createArrivalVIP");
+      const rqp = router?.query?.property as "LAXTH" | "LAXTE"
+      const createVIP = firebase.functions().httpsCallable(`createVIP_${rqp}`);
       const response = await createVIP(completeVIP);
       dequeue();
       enqueue(
@@ -512,7 +519,7 @@ const CreateVIP = () => {
         <FormSection ref={nameRef}>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Name"}</Label2>}
+            label={<LabelMedium>{"Name"}</LabelMedium>}
             stack={true}
           >
             <FormControl error={error?.firstName}>
@@ -584,7 +591,7 @@ const CreateVIP = () => {
          
         <FormInput
             style={formStyle}
-            label={<Label2>{"Dates"}</Label2>}
+            label={<LabelMedium>{"Dates"}</LabelMedium>}
             stack={true}
           >
         <FormControl error={error?.arrival}>
@@ -614,7 +621,7 @@ const CreateVIP = () => {
         <FormSection ref={detailsRef}>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Details"}</Label2>}
+            label={<LabelMedium>{"Details"}</LabelMedium>}
             stack={true}
           >
             <FlexContainer>
@@ -821,7 +828,7 @@ const CreateVIP = () => {
         <FormSection ref={imageRef}>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Image"}</Label2>}
+            label={<LabelMedium>{"Image"}</LabelMedium>}
             stack={true}
           >
             {

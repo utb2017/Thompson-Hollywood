@@ -18,7 +18,7 @@ import { useWindowSize } from "../../hooks/useWindowSize";
 import { FormInput } from "../Console";
 import { NotificationManager } from "react-notifications";
 import { useForm } from "../../context/formContext";
-import { Label2, Paragraph4 } from "baseui/typography";
+import { LabelMedium } from "baseui/typography";
 import { styled } from "baseui";
 import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
@@ -52,6 +52,7 @@ import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
 import { Spinner } from "baseui/spinner";
 import ArrivalVIPdelete from "./ArrivalVIPdelete";
+import { useRouter } from "next/router";
 
 interface Errors {
   name?: string;
@@ -118,15 +119,12 @@ const LoadBlock = styled("div", ({ $theme }) => {
 });
 const LoadBox = styled("div", ({ $theme }) => {
   return {
-    //position:'absolute',
     height: "30px",
     width: "35px",
-    //textAlign: "center",
     display: "flex",
     alignContent: "space-between",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: "2001",
   };
 });
 const ModalButtonRed = styled(ModalButton, ({ $theme }) => {
@@ -147,10 +145,10 @@ const isValidNumber = (x: any): boolean => {
 const isValidDate = (x: Date): boolean => {
   return Boolean(x.getTime());
 };
-const FlexSpacer = styled("div", ({ $theme, $width = `16px` }) => {
+const FlexSpacer = styled("div", ({ $theme }) => {
   return {
     height: "100%",
-    width: $width,
+    width: `16px`,
   };
 });
 const FlexContainer = styled("div", ({ $theme }) => {
@@ -189,6 +187,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
   const [changeForm, setChangeForm] = useState<any>({});
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
+  const router = useRouter()
   const closeModal = () => {
     modalBaseDispatch({
       type: "MODAL_UPDATE",
@@ -433,7 +432,8 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     setLoading(true);
     enqueue({ message: "Updating VIP", progress: true }, DURATION.infinite);
     try {
-      const updateVIP = firebase.functions().httpsCallable("updateArrivalVIP");
+      const rqp = router?.query?.property as "LAXTH" | "LAXTE"
+      const updateVIP = firebase.functions().httpsCallable(`updateVIP_${rqp}`);
       const response = await updateVIP(updateData);
       dequeue();
       enqueue(
@@ -482,7 +482,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   const fireStoreQuery: Query = useFirestoreQuery(query);
   useEffect(() => {
     if (firebase) {
-      setQuery(firebase.firestore().collection(collection).doc(id));
+      setQuery(firebase.firestore().collection(`${router?.query?.property}_VIPs`).doc(id));
     }
     return () => {
       setQuery(null);
@@ -693,7 +693,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         <FormSection>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Name"}</Label2>}
+            label={<LabelMedium>{"Name"}</LabelMedium>}
             stack={true}
           >
             <FormControl error={error?.firstName}>
@@ -772,7 +772,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         <FormSection>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Dates"}</Label2>}
+            label={<LabelMedium>{"Dates"}</LabelMedium>}
             stack={true}
           >
            
@@ -810,7 +810,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         <FormSection>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Details"}</Label2>}
+            label={<LabelMedium>{"Details"}</LabelMedium>}
             stack={true}
           >
             <FlexContainer>
@@ -1040,7 +1040,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         <FormSection>
           <FormInput
             style={formStyle}
-            label={<Label2>{"Image"}</Label2>}
+            label={<LabelMedium>{"Image"}</LabelMedium>}
             stack={true}
           >
             {

@@ -22,7 +22,6 @@ import { StatefulMenu } from "baseui/menu";
 import { FlexGrid, FlexGridItem } from "baseui/flex-grid";
 import { BlockProps } from "baseui/block";
 import { Img } from "react-image";
-import { H5, Label1 } from "baseui/typography";
 import firebase from "../../../firebase/clientApp";
 import { VIPClass } from "../../../classes";
 import QueryVIPArrivals from "./QueryVIPArrivals";

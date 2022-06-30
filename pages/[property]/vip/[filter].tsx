@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import ConsoleLayout from "../../../layouts/ConsoleLayout";
+import ConsoleLayout from "../../../components/Console/ConsoleLayout";
 import Spinner from "../../../TRASH/Buttons/Spinner";
 import { Console } from "../../../components/Console";
 import { useRouting } from "../../../context/routingContext";

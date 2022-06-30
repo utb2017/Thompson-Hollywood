@@ -1,12 +1,12 @@
-import React, { useState, useEffect, createRef } from "react";
+import React from "react";
 import { useDispatchModalBase } from "../../context/Modal";
-import { Modal, ModalHeader, ModalBody, ModalFooter, ModalButton, SIZE, ROLE } from "baseui/modal";
+import { Modal, SIZE, ROLE } from "baseui/modal";
 import {styled} from 'baseui';
 
-import { FC } from "react";
+
 const responsive = {
   left: `0px`,
-  position: `absolute`,
+  //position: `absolute`,
   //marginBottom: "160px",
   zIndex:100,
   background:"transparent",
@@ -83,7 +83,7 @@ const ModalBase = (props)  => {
 
           <Modal
             onClose={() => closeModal()}
-            unstable_ModalBackdropScroll
+            //unstable_ModalBackdropScroll
             closeable={props?.modalBase?.closeable}
             isOpen={Boolean(props?.modalBase?.isOpen && props?.modalBase?.component)}
             animate
@@ -94,14 +94,14 @@ const ModalBase = (props)  => {
               Root: {
                 style: () => responsive,
               },
-              Backdrop: {
-                style: () => ({
-                  zIndex: 30,
-                  //position: `fixed`,
-                  //background:"transparent",
-                  //backgroundColor:"transparent"
-                }),
-              },
+              // Backdrop: {
+              //   style: () => ({
+              //     zIndex: 30,
+              //     //position: `fixed`,
+              //     //background:"transparent",
+              //     //backgroundColor:"transparent"
+              //   }),
+              // },
               DialogContainer: {
 
                 style: () => ({

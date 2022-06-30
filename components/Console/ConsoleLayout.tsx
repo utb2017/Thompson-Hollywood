@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ActiveConsoleLink } from "../components/Console";
+import { ActiveConsoleLink } from ".";
 import { useStyletron } from "baseui";
 import { styled } from "baseui";
-import { H5, Label1, Label4 } from "baseui/typography";
+import { HeadingMedium, LabelMedium, LabelSmall } from "baseui/typography";
+//import { H5, Label1, Label4 } from "baseui/typography";
 
 const FireNav = styled("div", ({ $theme }) => {
   return {
@@ -36,7 +37,7 @@ const NavList = styled("div", () => {
 });
 const Nav = styled("nav", ({ $theme }) => {
   return {
-    backgroundColor: $theme.colors.background
+    backgroundColor: $theme.colors.backgroundPrimary
   };
 });
 
@@ -58,9 +59,10 @@ export default function ConsoleLayout({ children }) {
   return (
     <>
       <div
-        style={{ backgroundColor: theme.colors.background }}
+        style={{ backgroundColor: theme.colors.backgroundPrimary }}
         className={`console-home${"oid" in query || "page" in query ? ` split` : ``}`}
       >
+        
         <FireNav className="fire-navbar">
           {!isCollapsed && (
             <Link href={`${pathname.split("?")[0]}`} as={`${asPath.split("?")[0]}`} scroll={false}>
@@ -87,14 +89,16 @@ export default function ConsoleLayout({ children }) {
                     src="https://firebasestorage.googleapis.com/v0/b/bronto-eff70.appspot.com/o/Logos%2FchyllLogo.png?alt=media&token=e97f8afe-3b0d-4f21-8d71-f320dcae2d05"
                     style={{ height: 28, marginRight:`12px` }}
                   /> */}
-                  <H5>Thompson</H5>
+                  <Link href={"/"} scroll={false}> 
+                  <HeadingMedium>{`${router?.query?.property === `LAXTH`?`Thompson`:`tommie`}`}</HeadingMedium>
+                  </Link>
                   {/* <img
                     alt="Firebase logo"
                     className="firebase-logo-text"
                     src="https://firebasestorage.googleapis.com/v0/b/bronto-eff70.appspot.com/o/Logos%2FChyll-Admin.svg?alt=media&token=9d0e94b7-fbbe-4e2c-8fbd-224ac7fe2b19"
                     style={{}}
                   /> */}
-                  <span style={{ color: "white", paddingLeft: "5px" }}><Label4> {`${String.fromCharCode(160)} Beta `}</Label4></span>
+                  <span style={{ color: "white", paddingLeft: "5px" }}><LabelSmall> {`${String.fromCharCode(160)} Beta `}</LabelSmall></span>
                 </div>
               </FireLogoBox>
             {/* </Link> */}
@@ -107,7 +111,7 @@ export default function ConsoleLayout({ children }) {
                   <NavList className="nav-group is-expanded">
                     <div className="group-header">
                       <NavHeader className="group-header-label">
-                        <Label1>{"LAXTH"}</Label1>
+                        <LabelMedium>{"REPORTS"}</LabelMedium>
                       </NavHeader>
                       <div>
                         {/* <ActiveConsoleLink blackList={[]} name="graph" href={"/[property]/focus"} as={`/${'LAXTH'}/focus`}>

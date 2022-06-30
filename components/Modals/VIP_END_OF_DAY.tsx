@@ -14,6 +14,7 @@ import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 //import {Notification, KIND} from 'baseui/notification';
 import { VIPClass } from "../../classes";
 import { styled } from "baseui";
+import { useRouter } from "next/router";
 
 
 const ModalButtonRed = styled(ModalButton, ({ $theme }) => {
@@ -33,6 +34,7 @@ const VIPDelete = () => {
   const [loading, setLoading] = useState(false);
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
+  const router = useRouter()
 
   const closeToast = () => {
     if (toastKey) {
@@ -60,7 +62,8 @@ const VIPDelete = () => {
     setLoading(true);
     enqueue({ message: "Updating...", progress: true }, DURATION.infinite);
     try {
-      const deleteArrivalVIP:any = firebase.functions().httpsCallable("updateVIPs");
+      const rqp = router?.query?.property as "LAXTH" | "LAXTE"
+      const deleteArrivalVIP:any = firebase.functions().httpsCallable(`updateVIPs_${rqp}`);
       const res:{data:{success:boolean,id:string}} = await deleteArrivalVIP();
       if(res?.data?.success === true){
         dequeue();

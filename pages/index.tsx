@@ -5,7 +5,7 @@ import { Input } from "baseui/input";
 import { styled } from "baseui";
 import { Select } from "baseui/select";
 import { Button, SIZE } from "baseui/button";
-import { H5 } from "baseui/typography";
+import { HeadingMedium } from "baseui/typography";
 
 const SignIn = ({ router }) => {
   const [value, setValue] = React.useState(``);
@@ -16,7 +16,7 @@ const SignIn = ({ router }) => {
     <>
       <FlexParent1>
         <FlexChild1_1>
-          <H5> Log In</H5>
+          <HeadingMedium> Log In</HeadingMedium>
           <Spacer />
           <Input
             value={value}
@@ -26,6 +26,7 @@ const SignIn = ({ router }) => {
             }}
             placeholder="Username"
             clearOnEscape
+            disabled
           />
           <Spacer />
           <Input
@@ -36,6 +37,7 @@ const SignIn = ({ router }) => {
             }}
             placeholder="Password"
             clearOnEscape
+            disabled
           />
           <Spacer />
           <Select
@@ -53,7 +55,7 @@ const SignIn = ({ router }) => {
           <Spacer />
           <Link
             href={"/[property]/vip/[filter]"}
-            as={`/${"LAXTH"}/vip/arriving`}
+            as={`/${value3[0]?.id||`LAXTH`}/vip/arriving`}
           >
             <ButtonMod
               //  onClick={() => alert("click")}

@@ -6,12 +6,12 @@ import { VIPClass } from "../../../classes";
 import { styled } from "baseui";
 import { BlockProps } from "baseui/block";
 import { Spinner } from "baseui/spinner";
-import { Label4 } from "baseui/typography";
 import { Button, KIND } from "baseui/button";
 import { useDispatchModalBase } from "../../../context/Modal";
 import VIP_Edit from "../../Modals/ArrivalVIPedit";
+import { LabelMedium } from "baseui/typography";
 
-const Cell = styled(Label4, ({ $theme }) => {
+const Cell = styled(LabelMedium, ({ $theme }) => {
   return {
     borderRight: `solid 1px rgb(23,55,94)`,
     borderBottom: `solid 1px rgb(23,55,94)`,
@@ -21,7 +21,7 @@ const Cell = styled(Label4, ({ $theme }) => {
     alignItems: "center",
     justifyContent: "center",
     fontSize: $theme.sizing.scale500,
-    fontWeight: "500",
+    fontWeight: "bold",
     lineHeight: $theme.sizing.scale600,
     height: $theme.sizing.scale1200,
     alignText: "center",
@@ -231,7 +231,7 @@ const QueryVIPArrivals: FC = (): ReactElement => {
             height={`100%`}
           >
             <Cell>
-              <Label4> {`No Arrivals`}</Label4>
+              <LabelMedium> {`No Arrivals`}</LabelMedium>
             </Cell>
           </FlexGridItem>
         </FlexGrid>

@@ -16,10 +16,11 @@ import { Navigation } from "baseui/side-navigation";
 import VIP_END_OF_DAY from "../Modals/VIP_END_OF_DAY";
 import { Card } from "baseui/card";
 import { Tabs, Tab } from "baseui/tabs-motion";
-import { Label3, H4 } from "baseui/typography";
+// import { Label3, H4 } from "baseui/typography";
 import { styled } from "baseui";
 import { useScreen } from "../../context/screenContext";
 import { useDispatchModalBase } from "../../context/Modal";
+import { HeadingMedium, LabelMedium } from "baseui/typography";
 
 const FlexContainer = styled("div", () => {
   return {
@@ -51,7 +52,7 @@ export const Title = ({ title = "No Title" }: any) => {
     <div className="console-feature-title-row canvas-theme-container">
       <div className="console-feature-title-lockup stretch-across">
         <div className="console-feature-title">
-          <div className="console-feature-title-text">{<H4>{title}</H4>}</div>
+          <div className="console-feature-title-text">{<HeadingMedium>{title}</HeadingMedium>}</div>
         </div>
       </div>
     </div>
@@ -288,7 +289,7 @@ const AppBar = styled("div", ({ $theme, $isScrolled }) => {
   return $isScrolled
     ? {
         borderBottom: `1px solid ${$theme.borders.border600.borderColor}`,
-        backgroundColor: $theme.colors.background,
+        backgroundColor: $theme.colors.backgroundPrimary,
       }
     : undefined;
 });
@@ -382,7 +383,7 @@ export const Header = ({
                 <div className={`animation${isScrolled ? ` is-scrolled` : ""}`}>
                   <span className="console-crumb">
                     <a href="#">
-                      {<Label3>{title || "Missing Title"}</Label3>}
+                      {<LabelMedium>{title || "Missing Title"}</LabelMedium>}
                     </a>
                   </span>
                 </div>
