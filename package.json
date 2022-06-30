@@ -16,7 +16,7 @@
     "@types/styletron-react": "^5.0.3",
     "@types/styletron-standard": "^2.0.2",
     "@uhl7792/react-use-quote-of-the-day": "^1.0.0",
-    "baseui": "^11.1.2",
+    "baseui": "^10.12.1",
     "body-scroll-lock": "^3.1.5",
     "copy-to-clipboard": "^3.3.1",
     "d3-ease": "^2.0.0",
