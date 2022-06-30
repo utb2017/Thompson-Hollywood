@@ -300,12 +300,12 @@ export default function VIPSTable() {
               kind={KIND.tertiary}  
             >
             <StyledRow key={index}>
-              {!isMobile && <StyledBorderCell style={{ flex: 2 }}>
+              {isMobile && <StyledBorderCell style={{ flex: 2 }}>
                 <CellWrapper>
                   <Label4>{`${row?.lastName}, ${row?.firstName}`}</Label4>
                 </CellWrapper>
               </StyledBorderCell>}
-              {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
+              {isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
                   <Label3>{`${row?.roomNumber}`}</Label3>
                 </CellWrapper>
@@ -330,7 +330,7 @@ export default function VIPSTable() {
                   <Label3>{`${row?.notes}`}</Label3>
                 </CellWrapper>
               </StyledBorderCell>}
-              {!isMobile && <StyledBorderCellEnd style={{ flex: 1 }}>
+              {isMobile && <StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
                   <Label3>{`${row?.vipStatus[0].label || `n/a`}`}</Label3>
                 </CellWrapper>
