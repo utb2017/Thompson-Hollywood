@@ -1,30 +1,11 @@
-import SVGIcon from "../components/SVGIcon";
-import { useState, useEffect, useRef, useCallback, createRef } from "react";
-import { useWindowSize } from "../hooks/useWindowSize";
-import { useUser } from "../context/userContext";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock";
-import firebase from "../firebase/clientApp";
-import { useRouting } from "../context/routingContext";
 import { ActiveConsoleLink } from "../components/Console";
-import Spinner from "../components/Buttons/Spinner";
 import { useStyletron } from "baseui";
 import { styled } from "baseui";
-import { Button, KIND } from "baseui/button";
-import { LightTheme, ThemeProvider, DarkTheme } from "baseui";
-import { H2, H3, H4, H5, Label1, Label2, Label3, Label4 } from "baseui/typography";
-const capitalize = (s) => {
-  if (typeof s !== "string") return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
+import { H5, Label1, Label4 } from "baseui/typography";
 
-const OverviewBox = styled("div", ({ $theme }) => {
-  return {
-    display: "block",
-    width: "100%",
-  };
-});
 const FireNav = styled("div", ({ $theme }) => {
   return {
     borderRight: `1px solid ${$theme.borders.border600.borderColor}`,
@@ -37,25 +18,18 @@ const FireLogoBox = styled("div", ({ $theme }) => {
     height: "48px",
   };
 });
-const RootLinks = styled("div", ({ $theme }) => {
-  return {
-    borderTop: `1px solid ${$theme.borders.border600.borderColor}`,
-    boxShadow: "unset",
-    backgroundColor: $theme.colors.background
-  };
-});
-const LockContainer = styled("div", ({ $theme }) => {
+const LockContainer = styled("div", () => {
   return {
     marginBottom: "139px",
     borderBottom:'none'
   };
 });
-const NavHeader = styled("div", ({ $theme }) => {
+const NavHeader = styled("div", () => {
   return {
     paddingBottom:`10px`
   };
 });
-const NavList = styled("div", ({ $theme }) => {
+const NavList = styled("div", () => {
   return {
     borderBottom:'none'
   };
@@ -67,18 +41,10 @@ const Nav = styled("nav", ({ $theme }) => {
 });
 
 export default function ConsoleLayout({ children }) {
+
   const router = useRouter();
   const { asPath, pathname, query } = router;
-  //const { isDark} = useScreen();
- // const { user, fireUser, fireCollections } = useUser();
-  const size = useWindowSize();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
-  let title = capitalize(router.pathname.split("/")[2]);
-  //const scrollRef = useRef(null)
-  const widthRef = useRef(null);
-  //const lockRef = createRef(null);
-  const { setNavLoading } = useRouting();
   const [css, theme] = useStyletron();
 
   useEffect(() => {
@@ -89,17 +55,6 @@ export default function ConsoleLayout({ children }) {
     }
   }, [query]);
 
-  // useEffect(() => {
-  //   if (!isCollapsed) {
-  //     disableBodyScroll(lockRef.current);
-  //   } else {
-  //     enableBodyScroll(lockRef.current);
-  //     // clearAllBodyScrollLocks();
-  //   }
-  //   return () => {
-  //     clearAllBodyScrollLocks();
-  //   };
-  // }, [isCollapsed, lockRef]);
   return (
     <>
       <div

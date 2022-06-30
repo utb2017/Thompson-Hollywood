@@ -1,12 +1,8 @@
 import { useState, createContext, useContext } from 'react'
 //import Spinner from '../components/Buttons/Spinner'
 import { styled } from "baseui";
-import { StyledSpinnerNext, Spinner } from "baseui/spinner";
+import { Spinner } from "baseui/spinner";
 export const RoutingContext = createContext()
-
-
-
-
 
 const NavLoader = styled("div", ({ $theme, $isDark = false, $loading = true }) => {
   return {
@@ -53,11 +49,6 @@ const NavLoader = styled("div", ({ $theme, $isDark = false, $loading = true }) =
     }
   };
 });
-
-
-
-
-
 
 export default function RoutingContextComp({ children }) {
   const [navLoading, setNavLoading] = useState(false)

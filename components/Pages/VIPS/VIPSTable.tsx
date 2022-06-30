@@ -1,50 +1,30 @@
 import React, { useEffect } from "react";
 import { withStyle, useStyletron } from "baseui";
-import { Block } from "baseui/block";
-import firebase, {
-  updateFirestore,
-  getMatrix,
-  //getMapboxDirectionsX,
-  updateFirestoreGroup,
-} from "../../../firebase/clientApp";
-import { Check, DeleteAlt } from 'baseui/icon';
 import { ChevronRight, ChevronLeft } from "baseui/icon";
-//import { StyledHead, StyledHeadCell, StyledBody, StyledRow, StyledCell, StyledAction } from "baseui/table";
-import SVGIcon from "../../SVGIcon";
 import { useDispatchModalBase } from "../../../context/Modal";
-import { StyledTable, StyledHead, StyledHeadCell, StyledBody, StyledRow, StyledCell, StyledAction } from "baseui/table";
-import { Caption1, Caption2, Display, H3, H5, Label1, Label2, Label3, Label4, Paragraph1, Paragraph2, Paragraph3 } from "baseui/typography";
+import { StyledTable, StyledHead, StyledHeadCell, StyledBody, StyledRow, StyledCell } from "baseui/table";
+import { Label3, Label4, Paragraph2 } from "baseui/typography";
 import { Theme } from "baseui/theme";
 import { styled } from "baseui";
 import { TriangleDown } from "baseui/icon";
 import { StatefulMenu } from "baseui/menu";
-import { Pagination, StatefulPagination } from "baseui/pagination";
+import { Pagination } from "baseui/pagination";
 import { StatefulPopover, PLACEMENT } from "baseui/popover";
-import { Button, KIND, SIZE, SHAPE } from "baseui/button";
+import { Button, KIND, SIZE} from "baseui/button";
 import { useQuery } from "../../../context/Query";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import { expandBorderStyles } from "baseui/styles";
-import { capitalize, isCurr } from "../../../helpers";
-import { Spinner, StyledSpinnerNext } from "baseui/spinner";
+import { StyledSpinnerNext } from "baseui/spinner";
 import { ReactElement } from "react";
-import { Tag, VARIANT, KIND as _KIND } from "baseui/tag";
+import { KIND as _KIND } from "baseui/tag";
 import { useScreen } from "../../../context/screenContext";
 import { useRouter } from "next/router"
-import { useUser } from "../../../context/userContext"
-import { useUsers } from "../../../context/usersContext";
-import {ChevronDown} from 'baseui/icon';
-
 import VIP_Edit from "../../Modals/ArrivalVIPedit";
-
-
-
-import { useForm } from "../../../context/formContext";
-import { useSnackbar, DURATION } from "baseui/snackbar";
+import { useSnackbar } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
 
 
 
-const CellWrapper = styled("div", ({ $theme }) => {
+const CellWrapper = styled("div", () => {
   return {
     justifyContent:'center',
     minHeight: "100%",
@@ -150,16 +130,6 @@ export default function VIPSTable() {
   //const router = useRouter()
   //const [page, setPage] = React.useState(1);
   //const [limit, setLimit] = React.useState(12);
-  const {
-    form,
-    setForm,
-    error,
-    setError,
-    loading,
-    setLoading,
-    isSideOpen,
-    setIsSideOpen,
-  } = useForm();
   const { width, height } = useWindowSize();
   const isMobile = Boolean(width < 620);
   const {

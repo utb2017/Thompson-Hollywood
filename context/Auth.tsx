@@ -1,12 +1,17 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import firebase from "../firebase/clientApp";
 
-export const UserContext = createContext();
+interface UserValidation {
+  user:any,
+  setUser:any,
+  loadingUser:any,
+}
+
+export const UserContext = createContext<UserValidation>({} as UserValidation);
 
 export default function UserContextComp({ children }) {
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true); // Helpful, to update the UI accordingly.
-  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     // Look for Orders if logged in
@@ -39,9 +44,6 @@ export default function UserContextComp({ children }) {
         user,
         setUser,
         loadingUser,
-        fireUser,
-        isDark,
-        setIsDark,
       }}
     >
       {children}

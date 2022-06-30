@@ -1,62 +1,30 @@
-import { useState, useEffect, useRef, Fragment, useCallback } from "react";
-import { isEmpty } from "../../helpers";
-import firebase, {
-  updateFirestore,
-  getUserByPhone,
-  deleteAuthUser,
-  mergeFirestore,
-  updateFirestoreGroup,
-  fireCloud,
-  addCredit,
-  findAddCustomer,
-  createAuthUser,
-} from "../../firebase/clientApp";
-import { useUser } from "../../context/userContext";
-import { useFirestoreQuery } from "../../hooks/useFirestoreQuery";
-import { useRouting } from "../../context/routingContext";
-import { useWindowSize } from "../../hooks/useWindowSize";
+import { useState, useEffect, useRef, useCallback } from "react";
+import firebase from "../../firebase/clientApp";
 import { FormInput } from "../Console";
-import { NotificationManager } from "react-notifications";
-import { useForm } from "../../context/formContext";
-import { Label2, Paragraph4 } from "baseui/typography";
+import { Label2 } from "baseui/typography";
 import { styled } from "baseui";
 import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
-import { Button } from "baseui/button";
-import { ButtonGroup, MODE } from "baseui/button-group";
 import { Input } from "baseui/input";
-import { Check, Delete, DeleteAlt } from "baseui/icon";
-import { DatePicker } from "baseui/datepicker";
-import { TimePicker } from "baseui/timepicker";
+import { Check, DeleteAlt } from "baseui/icon";
 import { FormControl } from "baseui/form-control";
-import { Select, TYPE } from "baseui/select";
+import { Select } from "baseui/select";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { useDispatchModalBase } from "../../context/Modal";
 import {
-  Toast,
-  KIND,
-  ToasterContainer,
+ ToasterContainer,
   toaster,
   PLACEMENT,
 } from "baseui/toast";
-import { Tag, VARIANT } from "baseui/tag";
-import SVGIcon from "../SVGIcon";
-import { Accordion, Panel } from "baseui/accordion";
 import { Textarea } from "baseui/textarea";
-//import dateFormat from "dateformat";
-import { Card, StyledBody, StyledAction } from "baseui/card";
-//import { VIPClass } from "./types";
+import { Card, StyledBody } from "baseui/card";
 import {StatefulCalendar} from 'baseui/datepicker';
 import { FileUploader } from "baseui/file-uploader";
 import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
+import { useForm } from "../../context/formContext";
 
-const unformatDate = (formattedDate: string | Date): Date => {
-  const thisYear: number = new Date().getFullYear(),
-    numericDate: number = new Date(formattedDate).setFullYear(thisYear),
-    unformattedDate: Date = new Date(numericDate);
-  return unformattedDate;
-};
+
 
 const dayOfYear = (date:any):number =>{
   const fullYear:any = new Date(date.getFullYear(), 0, 0)
@@ -142,10 +110,8 @@ const FlexContainer = styled("div", ({ $theme }) => {
 const CreateVIP = () => {
 
   const nameRef = useRef<HTMLDivElement>(null);
-  const collectionRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const { width, height } = useWindowSize();
   //const { user } = useUser();
   //const [loading, setLoading] = useState(false);
   const { form, setForm, error, setError, loading, setLoading } = useForm();
