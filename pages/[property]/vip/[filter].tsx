@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 import ConsoleLayout from "../../../components/Console/ConsoleLayout";
-import Spinner from "../../../TRASH/Buttons/Spinner";
 import { Console } from "../../../components/Console";
 import { useRouting } from "../../../context/routingContext";
 import { useEffect, useState } from "react";
 import { styled } from "baseui";
 import { useRouter } from "next/router";
+import { Spinner } from "baseui/spinner";
 
 
 const Background = styled("div", ({ $theme }) => {
