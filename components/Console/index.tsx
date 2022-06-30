@@ -285,7 +285,7 @@ export const Crumbs = ({ crumbs = [], title = null }) => {
     </div>
   );
 };
-const AppBar = styled("div", ({ $theme, $isScrolled }) => {
+const AppBar = styled("div", ({ $theme, $isScrolled }:{$theme?:any, $isScrolled:any} ) => {
   return $isScrolled
     ? {
         borderBottom: `1px solid ${$theme.borders.border600.borderColor}`,
