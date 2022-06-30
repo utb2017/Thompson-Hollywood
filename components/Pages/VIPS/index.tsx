@@ -21,6 +21,7 @@ import { Upload } from "baseui/icon";
 type INullableReactText = React.ReactText | null;
 
 const ITEMS = [{ label: "Detailed VIP" }, { label: "RH VIP" }];
+
 const VIPs: FC = (): ReactElement => {
   const {
     setTotalsField,

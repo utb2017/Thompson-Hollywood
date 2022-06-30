@@ -188,22 +188,22 @@ export const Nav = ({ links }) => {
         //alert(JSON.stringify(props));
         if (props.activeKey === `0`) {
           let href = `/[property]/vip/[filter]`;
-          let as = `/LAXTH/vip/arriving`;
+          let as = `/${router?.query?.property}/vip/arriving`;
           router.push(`${href}`, `${as}`);
         }
         if (props.activeKey === `1`) {
           let href = `/[property]/vip/[filter]`;
-          let as = `/LAXTH/vip/inhouse`;
+          let as = `/${router?.query?.property}/vip/inhouse`;
           router.push(`${href}`, `${as}`);
         }
         if (props.activeKey === `2`) {
           let href = `/[property]/vip/[filter]`;
-          let as = `/LAXTH/vip/dueout`;
+          let as = `/${router?.query?.property}/vip/dueout`;
           router.push(`${href}`, `${as}`);
         }
         if (props.activeKey === `3`) {
           let href = `/[property]/vip/[filter]`;
-          let as = `/LAXTH/vip/all`;
+          let as = `/${router?.query?.property}/vip/all`;
           router.push(`${href}`, `${as}`);
         }
       }}

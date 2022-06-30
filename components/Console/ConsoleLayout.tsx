@@ -118,7 +118,7 @@ export default function ConsoleLayout({ children }) {
                           Focus
                         </ActiveConsoleLink> */}
 
-                        <ActiveConsoleLink blackList={[]} name="shield" href={"/[property]/vip/[filter]"} as={`/${'LAXTH'}/vip/arriving`}>
+                        <ActiveConsoleLink blackList={[]} name="shield" href={"/[property]/vip/[filter]"} as={`/${router?.query?.property}/vip/arriving`}>
                           VIP's
                         </ActiveConsoleLink>
 
