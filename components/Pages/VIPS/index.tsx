@@ -270,13 +270,13 @@ const VIPs: FC = (): ReactElement => {
           </div>
       <div
         className={css({
-          paddingBottom: theme.sizing.scale600,
+          paddingBottom: theme.sizing.scale800,
           paddingRight: theme.sizing.scale800,
           paddingLeft: theme.sizing.scale800,
           paddingTop: theme.sizing.scale800,
           width: "100%",
           "@media (max-width: 450px)": {
-            paddingBottom: theme.sizing.scale600,
+            paddingBottom: theme.sizing.scale4800,
             paddingRight: theme.sizing.scale600,
             paddingLeft: theme.sizing.scale600,
             paddingTop: theme.sizing.scale600,
