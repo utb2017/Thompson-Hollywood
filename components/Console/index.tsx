@@ -10,7 +10,6 @@ import {
 import { useThrottle } from "@react-hook/throttle";
 import SVGIcon from "../SVGIcon";
 import { useRouting } from "../../context/routingContext";
-import { useMenuSettings } from "../../TRASH/menuSettingsContext";
 import { capitalize, array_move, isCurr } from "../../helpers";
 import { useStyletron } from "baseui";
 import { Navigation } from "baseui/side-navigation";
@@ -33,7 +32,6 @@ const IconSpan = styled("span", ({ $theme }) => {
     marginRight: $theme.sizing.scale400,
   };
 });
-
 const LabelSpan = styled("span", ({ $theme }) => {
   return {
     lineHeight: $theme.sizing.scale800,
@@ -79,7 +77,6 @@ export const ActiveLink = ({ children, href, style, as, index }) => {
     </Link>
   );
 };
-
 export const ActiveConsoleLink = ({
   children,
   href = "/[adminID]/orders/[filter]",
@@ -123,37 +120,6 @@ export const ActiveConsoleLink = ({
     />
   );
 };
-export const ActiveConsoleLinkX = ({
-  children,
-  href = "/[adminID]/orders/[filter]",
-  style = { cursor: "pointer" },
-  as,
-  index,
-  name = "ordersFilled",
-}) => {
-  const router = useRouter();
-  const { setNavLoading } = useRouting();
-  //const { user, fireUser } = useUser()
-  const { asPath, pathname } = router;
-
-  return (
-    <Link href={href} {...(as && { as })} scroll={false}>
-      <a
-        onClick={() => Boolean(pathname !== href) && setNavLoading(true)}
-        style={style}
-        className={`console-link${pathname === href ? ` active` : ``}`}
-        tabIndex={-1}
-        //style={{cursor: 'pointer'}}
-      >
-        <span aria-hidden="true">
-          <SVGIcon style={{ transform: "scale(0.8)" }} name={name} />
-        </span>
-        <div className="console-link-name">{children}</div>
-      </a>
-    </Link>
-  );
-};
-
 export const Nav = ({ links }) => {
   const [linkList, setLinkList] = useState([]);
   const router = useRouter();
@@ -460,7 +426,6 @@ export const Footer = ({ isShowing = true, children }) => {
     </div>
   );
 };
-
 export const Main = forwardRef(
   (
     {
@@ -693,164 +658,4 @@ export const FormSection = ({
     </div>
   );
 };
-export const SortableItem = ({ collection = "N/A", index }) => {
-  const { setSortableObject, sortableArray, setSortableArray } =
-    useMenuSettings();
 
-  const moveItemUp = useCallback(() => {
-    const arr = sortableArray;
-    const i = parseInt(index);
-    const incSortableArray = array_move(arr, i, i - 1);
-    const tempSortableObject = [];
-    if (incSortableArray.length) {
-      incSortableArray.forEach((collection, index) => {
-        tempSortableObject.push({
-          id: `item_${index}`,
-          content: capitalize(collection),
-        });
-      });
-    }
-    setSortableObject(tempSortableObject);
-    setSortableArray(incSortableArray);
-  }, [sortableArray, collection, index]);
-
-  const moveItemDown = useCallback(() => {
-    const arr = sortableArray;
-    const i = parseInt(index);
-    const incSortableArray = array_move(arr, i, i + 1);
-    const tempSortableObject = [];
-    if (incSortableArray.length) {
-      incSortableArray.forEach((collection, index) => {
-        tempSortableObject.push({
-          id: `item_${index}`,
-          content: capitalize(collection),
-        });
-      });
-    }
-    setSortableObject(tempSortableObject);
-    setSortableArray(incSortableArray);
-  }, [sortableArray, collection, index]);
-
-  const removeItem = useCallback(() => {
-    const arr = sortableArray;
-    const i = parseInt(index);
-    arr.splice(i, 1);
-    const tempSortableObject = [];
-    if (arr.length) {
-      arr.forEach((collection, index) => {
-        tempSortableObject.push({
-          id: `item_${index}`,
-          content: capitalize(collection),
-        });
-      });
-    }
-    setSortableObject(tempSortableObject);
-    setSortableArray(arr);
-  }, [sortableArray, index]);
-
-  return (
-    <li className="collection-item-container">
-      <div className="collection-item-flex">
-        <div className="collection-item-label-container">
-          <label className="collection-item-label">{`${
-            parseInt(index) + 1
-          }. ${capitalize(collection)}`}</label>
-        </div>
-        <div className="collection-item-button-container">
-          <button onClick={removeItem} className="collection-item-button">
-            <SVGIcon color={"#878787" || "#ff5252"} name={"xSmall"} />
-          </button>
-        </div>
-        <div className="collection-item-button-container">
-          <button
-            onClick={moveItemDown}
-            disabled={Boolean(sortableArray.length == parseInt(index) + 1)}
-            className="collection-item-button"
-          >
-            <SVGIcon
-              color={
-                Boolean(sortableArray.length == parseInt(index) + 1)
-                  ? "#9e9e9e"
-                  : "#8ab4f8"
-              }
-              name={"arrowDownSmall"}
-            />
-          </button>
-        </div>
-        <div className="collection-item-button-container">
-          {
-            <button
-              onClick={moveItemUp}
-              disabled={Boolean(parseInt(index) === 0)}
-              className="collection-item-button"
-            >
-              <SVGIcon
-                color={Boolean(parseInt(index) === 0) ? "#9e9e9e" : "#8ab4f8"}
-                name={"arrowUpSmall"}
-              />
-            </button>
-          }
-        </div>
-      </div>
-    </li>
-  );
-};
-export const FormProductPreview = ({
-  img,
-  price,
-  name,
-  brand,
-  genome,
-  size,
-  weight,
-  sale,
-}) => {
-  return (
-    <>
-      <div className="side-license-preview">
-        {Boolean(img) ? (
-          <img className="" src={img} alt={"license"} />
-        ) : (
-          <div className="side-license-icon">
-            <SVGIcon name="photo" />
-          </div>
-        )}
-      </div>
-      <div style={{ padding: 12 }} className="item-info">
-        <div className="item-name item-row">
-          <div style={{ display: "flex" }}>
-            <div className="item-price">
-              <span>
-                <span>{isCurr(price)}</span>
-                {/* <span className="font-size">
-                          &nbsp;{size||''}  
-                        </span>   */}
-                {` `}
-                {sale && (
-                  <span className="price-discount">{isCurr(price)}</span>
-                )}
-              </span>
-            </div>
-          </div>
-          {sale && (
-            <span className="item-discount">
-              <span>$0.50 off</span>
-            </span>
-          )}
-          <span className="full-item-name">
-            <span aria-label={name}>
-              {name}
-              {brand?.label ? ` | ` : <wbr />}
-              {`${brand?.label || ""}`}
-            </span>
-          </span>
-          <span aria-label={genome} className="item-genome">
-            {weight || size}
-            {genome?.label ? ` | ` : <wbr />}
-            {`${genome?.label || ""}`}
-          </span>
-        </div>
-      </div>
-    </>
-  );
-};

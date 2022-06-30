@@ -267,7 +267,8 @@ export default function VIPSTable() {
           dataState.map((row: VIPClass, index: number) => (
             <CellButton 
               onClick={()=>_VIPedit(row?.id)} 
-              kind={KIND.tertiary}  
+              kind={KIND.tertiary} 
+              key={`${index}-vip`}
             >
             <StyledRow key={index}>
               {<StyledBorderCell style={{ flex: 2 }}>
