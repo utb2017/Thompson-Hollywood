@@ -594,10 +594,11 @@ const CreateVIP = () => {
             label={<LabelMedium>{"Dates"}</LabelMedium>}
             stack={true}
           >
-        <FormControl error={error?.arrival}>
+        <FormControl  error={error?.arrival}>
 
         <StatefulCalendar
     //onChange={({date}) => console.log(date)}
+    
     range
     value={(form?.arrival && form?.departure)?[form.arrival, form.departure]:(form?.arrival)?[form?.arrival]:(form?.departure)?[form?.departure]:[]}
     onChange={({ date }) => {

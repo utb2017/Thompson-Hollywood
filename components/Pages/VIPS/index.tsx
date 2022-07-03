@@ -13,7 +13,7 @@ import { useRouting } from "../../../context/routingContext";
 import VIPCreate from "../../Modals/ArrivalVIPcreate";
 import firebase from "../../../firebase/clientApp";
 import { useSnackbar, DURATION } from "baseui/snackbar";
-import { Check, DeleteAlt } from "baseui/icon";
+import { Check, DeleteAlt, Plus } from "baseui/icon";
 import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 import OpenPrintDetailedVIP from "../../Modals/OpenPrintDetailedVIP";
 import { Upload } from "baseui/icon";
@@ -241,7 +241,7 @@ const VIPs: FC = (): ReactElement => {
           shape={SHAPE.circle}
           size={SIZE.large}
         >
-          <Upload size={30} />
+          <Plus size={45} />
           {/* <div
                 className={css({
                   paddingLeft: theme.sizing.scale600,
