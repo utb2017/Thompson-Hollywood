@@ -308,10 +308,10 @@ const VIPs: FC = (): ReactElement => {
             kind={themeState?.dark ? KIND.secondary : undefined}
             onClick={exportRH}
             isLoading={Boolean(loading)}
-            disabled={Boolean(loading)}
+            disabled={true}
             size={SIZE.compact}
           >
-            <div>Export RH</div>
+            <div>Export RH WIP</div>
           </Button>
         </div>
         {/* OUTLET */}
