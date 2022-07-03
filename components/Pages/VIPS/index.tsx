@@ -241,7 +241,7 @@ const VIPs: FC = (): ReactElement => {
           shape={SHAPE.circle}
           size={SIZE.large}
         >
-          <Plus size={45} />
+          <Plus size={30} />
           {/* <div
                 className={css({
                   paddingLeft: theme.sizing.scale600,
