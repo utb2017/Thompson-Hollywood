@@ -1,27 +1,26 @@
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import ConsoleLayout from "../../../components/Console/ConsoleLayout";
 import { Console } from "../../../components/Console";
 import { useRouting } from "../../../context/routingContext";
 import { useEffect, useState } from "react";
-import { styled } from "baseui";
+// import { styled } from "baseui";
 import { useRouter } from "next/router";
-import { Spinner } from "baseui/spinner";
+// import { Spinner } from "baseui/spinner";
+import StaticVIPsPage from "../../../components/Pages/VIPS"
 
 
-const Background = styled("div", ({ $theme }) => {
-  return {
-    backgroundColor: $theme.colors.backgroundOverlayLight,
-  };
-});
-
-
-const VIPsPage = dynamic(() => import("../../../components/Pages/VIPS"), {
-  loading: () => (
-    <Background className="nav-loader">
-      <Spinner />
-    </Background>
-  ),
-});
+// const Background = styled("div", ({ $theme }) => {
+//   return {
+//     backgroundColor: $theme.colors.backgroundOverlayLight,
+//   };
+// });
+// const VIPsPage = dynamic(() => import("../../../components/Pages/VIPS"), {
+//   loading: () => (
+//     <Background className="nav-loader">
+//       <Spinner />
+//     </Background>
+//   ),
+// });
 const index = () => {
   const { setNavLoading } = useRouting();
   const router = useRouter();
@@ -67,7 +66,8 @@ const index = () => {
 
   return (
     <Console id="orders-page" title={`VIP's`} links={linkList}>
-      <VIPsPage />
+      {/* <VIPsPage /> */}
+      <StaticVIPsPage />
     </Console>
   );
 };

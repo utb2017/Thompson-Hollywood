@@ -5,34 +5,26 @@ import firebase from "../../firebase/clientApp";
 //import { useRouting } from "../../context/routingContext";
 //import { useForm } from "../../context/formContext";
 import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
-import { KIND as ButtonKind } from "baseui/button";
 import { Check, Delete, DeleteAlt } from "baseui/icon";
 //import { ThemeProvider, createTheme, lightThemePrimitives } from "baseui";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { useDispatchModalBase } from "../../context/Modal";
 import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 //import {Notification, KIND} from 'baseui/notification';
-import { VIPClass } from "../../classes";
-import { styled } from "baseui";
 import Link from 'next/link'
 
 
 type INullableReactText = React.ReactText | null;
 
-const VIPOpenPrint = ({ url }:{url:string}) => {
+const VIPOpenPrint = ({ url }:{url:URL}) => {
 
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
   const { enqueue, dequeue } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
-  const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
 
-  const closeToast = () => {
-    if (toastKey) {
-      toaster.clear(toastKey);
-      setToastKey(null);
-    }
-  };
+
+
 
   const closeModal = () => {
     modalBaseDispatch({

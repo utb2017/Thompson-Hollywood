@@ -1,7 +1,8 @@
 // mapHook.js
-import { createContext, useContext, useReducer, useEffect } from "react"
+import { createContext, useContext, useReducer, useEffect, ReactElement } from "react"
 import ModalBase from '../components/Modals/ModalBase';
 import { useRouter } from "next/router";
+
 
 
 
@@ -67,3 +68,4 @@ export const ModalBaseReducer = (state, action) => {
   }
   return state
 }
+

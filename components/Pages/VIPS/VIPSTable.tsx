@@ -22,6 +22,7 @@ import VIP_Edit from "../../Modals/ArrivalVIPedit";
 import { useSnackbar } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
 import { WhereFilterOp } from '@firebase/firestore-types';
+import SVGIcon from "../../SVGIcon";
 
 
 
@@ -324,10 +325,11 @@ useEffect(() => {
               </StyledBorderCell>}
               {<StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${row?.vipStatus[0].label || `n/a`}`}</LabelSmall>
+                  {/* <LabelSmall>{`${row?.vipStatus[0].label || `n/a`}`}</LabelSmall> */}
+                  <LabelSmall>{row?.vipStatus[0].label?<SVGIcon size={'standard'} name={row?.vipStatus[0].label} />:'n/a'} </LabelSmall>
                 </CellWrapper>
               </StyledBorderCellEnd>}
-            </StyledRow>              
+            </StyledRow>                
             </CellButton>
 
           ))}
@@ -415,41 +417,6 @@ useEffect(() => {
                       marginRight: `0px`,
                     }),
                   },
-                  // ControlContainer: {
-                  //   style: ({ $theme, $disabled, $isFocused, $isPseudoFocused, $error }: any) => ({
-                  //     height: "45px",
-                  //     borderLeftColor: "transparent",
-                  //     borderRightColor: "transparent",
-                  //     borderTopColor: "transparent",
-                  //     borderBottomColor: "transparent",
-                  //     boxShadow: "none",
-                  //     backgroundColor: $disabled
-                  //       ? $theme.colors.buttonDisabledFill
-                  //       : $isFocused || $isPseudoFocused
-                  //         ? $theme.colors.buttonSecondaryHover
-                  //         : $error
-                  //           ? $theme.colors.negative50
-                  //           : $theme.colors.buttonSecondaryFill,
-                  //   }),
-                  // },
-                  // SingleValue: {
-                  //   style: ({ $theme }: any) => ({
-                  //     position: "relative",
-                  //     paddingTop: "0",
-                  //     paddingBottom: "0",
-                  //     paddingLeft: $theme.sizing.scale200,
-                  //     paddingRight: $theme.sizing.scale500,
-                  //     color: $theme.colors.buttonTertiaryText,
-                  //     ...$theme.typography.font350,
-                  //   }),
-                  // },
-                  // SelectArrow: {
-                  //   style: ({ $theme }: any) => ({
-                  //     width: "24px",
-                  //     height: "24px",
-                  //     color: $theme.colors.buttonTertiaryText,
-                  //   }),
-                  // },
                 },
               },
             },

@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import * as icons from './icons'
 
-const sizes = { small: '18px', standard: '24px', large: '36px' }
+const sizes = { small: '18px', standard: '24px', large: '36px', xLarge:'42px' }
 
 SVGIcon.propTypes = {
   color: PropTypes.string,
@@ -18,7 +18,7 @@ SVGIcon.defaultProps = {
 
 function SVGIcon({ color=undefined, name, size=undefined, ...props }) {
   const Component = icons[name]
-  return <Component aria-hidden fill={color} width={sizes[size]} height={sizes[size]} {...props} />
+  return <Component aria-hidden fill={color} height={sizes[size]} {...props} />
 }
 
 export default SVGIcon

@@ -1,87 +1,23 @@
-import { useState, useEffect, FC, ReactElement } from "react";
+import { useState, FC, ReactElement, useMemo } from "react";
 import { useDispatchModalBase } from "../../../context/Modal";
 import { Button, SHAPE, SIZE } from "baseui/button";
-import { styled, useStyletron } from "baseui";
+import { styled } from "baseui";
 import { Card } from "baseui/card";
 import VIPSTable from "./VIPSTable";
-import { useQuery } from "../../../context/Query";
 import { useScreen } from "../../../context/screenContext";
-import * as React from "react";
 import { KIND } from "baseui/button";
 import { useRouter } from "next/router";
-import { useRouting } from "../../../context/routingContext";
 import VIPCreate from "../../Modals/ArrivalVIPcreate";
 import firebase from "../../../firebase/clientApp";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { Check, DeleteAlt, Plus } from "baseui/icon";
-import { Toast, ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 import OpenPrintDetailedVIP from "../../Modals/OpenPrintDetailedVIP";
-import { Upload } from "baseui/icon";
-
-type INullableReactText = React.ReactText | null;
-
-const ITEMS = [{ label: "Detailed VIP" }, { label: "RH VIP" }];
-
 const VIPs: FC = (): ReactElement => {
-  const {
-    setTotalsField,
-    setQueryCollection,
-    setLimit,
-    setOrderBy,
-    setTotalsCollection,
-    setTotalsDoc,
-    setWhere,
-    setQueryGroupCollection,
-  } = useQuery();
-
   const { themeState } = useScreen();
   const [loading, setLoading] = useState<boolean>(false);
   const { modalBaseDispatch } = useDispatchModalBase();
-  const [css, theme] = useStyletron();
   const router = useRouter();
-  //const { user } = useUser()
-  const { setNavLoading } = useRouting();
   const { enqueue, dequeue } = useSnackbar();
-  const [toastKey, setToastKey] = useState<INullableReactText>(null);
-  const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
-
-  /* add shit to the query questions*/
-  // useEffect(() => {
-  //   setTotalsField(`${router?.query?.filter}`);
-  //   setTotalsDoc("unsettled");
-  //   setTotalsCollection("totals")
-
-  //   setQueryGroupCollection("VIPs");
-  //   setOrderBy("start");
-  //   if(router?.query?.filter){
-  //     setWhere([["progress", "in", orderProgressObject[`${router?.query?.filter}`] ], ["settled", "==", false]])
-  //   }
-  //   setLimit(5);
-  //   // return () => {
-  //   //   setTotalsField(null);
-  //   //   setTotalsDoc(null);
-  //   //   setTotalsCollection(null)
-  //   //   setQueryGroupCollection(null);
-  //   //   setQueryCollection(null);
-  //   //   setLimit(5);
-  //   //   setOrderBy(null);
-  //   //   setWhere(null)
-  //   // };
-  // }, [router]);
-
-  useEffect(() => {
-    return () => {
-      setTotalsField(null);
-      setTotalsDoc(null);
-      setTotalsCollection(null);
-      setQueryGroupCollection(null);
-      setQueryCollection(null);
-      setLimit(5);
-      setOrderBy(null);
-      setWhere(null);
-    };
-  }, []);
-
   const openModalBase = (
     component: () => ReactElement,
     hasSquareBottom: boolean
@@ -98,25 +34,11 @@ const VIPs: FC = (): ReactElement => {
       },
     });
   };
-  const closeModal = () => {
-    modalBaseDispatch({
-      type: "MODAL_UPDATE",
-      payload: {
-        modalBase: {
-          isOpen: false,
-          key: [],
-          component: null,
-          hasSquareBottom: false,
-        },
-      },
-    });
-  };
   const _VIPCreate = () => {
     const component: () => ReactElement = () => <VIPCreate />;
     openModalBase(component, true);
   };
-
-  const _VIPOpenPrint = (url) => {
+  const _VIPOpenPrint = (url: URL) => {
     const component: () => ReactElement = () => (
       <OpenPrintDetailedVIP url={url} />
     );
@@ -124,7 +46,10 @@ const VIPs: FC = (): ReactElement => {
   };
   const exportVIPs = async () => {
     setLoading(true);
-    //enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
+    enqueue(
+      { message: "Creating Detailed VIP's.", progress: true },
+      DURATION.infinite
+    );
     try {
       const rqp = router?.query?.property as "LAXTH" | "LAXTE";
       const createVIP = firebase
@@ -132,18 +57,10 @@ const VIPs: FC = (): ReactElement => {
         .httpsCallable(`exportAdobeDetailedVip_${rqp}`);
       const response = await createVIP();
       dequeue();
-
       //closeModal();
       console.log(JSON.stringify(response));
       if (response?.data?.success === true) {
-        //alert(`${response?.data?.form}`)
-        //console.log(response?.data?.form);
-        //setFireProductDefault({...response?.data?.form});
-        //setForm({...response?.data?.form});
-        //window.open(response?.data?.url, null, null);
-
         _VIPOpenPrint(response?.data?.url);
-
         enqueue(
           {
             message: "VIP Exported",
@@ -153,14 +70,8 @@ const VIPs: FC = (): ReactElement => {
         );
       }
     } catch (e) {
-      //setError(`${e?.message || e}`);
-      // setError((oldError: Errors) => ({
-      //   ...oldError,
-      //   ...{ server: `VIP not created.` },
-      // }));
       console.log(`${e?.message || e}`);
       dequeue();
-      //showToast(`${e?.message || e}`);
       enqueue(
         {
           message: `Your VIPs weren't exported`,
@@ -172,9 +83,12 @@ const VIPs: FC = (): ReactElement => {
       setLoading(false);
     }
   };
-  const exportRH = async () => {
+  const exportRH = useMemo(() => async () => {
     setLoading(true);
-    //enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
+    enqueue(
+      { message: "Creating RH VIP's.", progress: true },
+      DURATION.infinite
+    );
     try {
       const rqp = router?.query?.property as "LAXTH" | "LAXTE";
       const createRH = firebase
@@ -182,18 +96,10 @@ const VIPs: FC = (): ReactElement => {
         .httpsCallable(`exportAdobeRHVip_${rqp}`);
       const response = await createRH();
       dequeue();
-
       //closeModal();
       console.log(JSON.stringify(response));
       if (response?.data?.success === true) {
-        //alert(`${response?.data?.form}`)
-        //console.log(response?.data?.form);
-        //setFireProductDefault({...response?.data?.form});
-        //setForm({...response?.data?.form});
-        //window.open(response?.data?.url, null, null);
-
         _VIPOpenPrint(response?.data?.url);
-
         enqueue(
           {
             message: "RH Exported",
@@ -203,14 +109,8 @@ const VIPs: FC = (): ReactElement => {
         );
       }
     } catch (e) {
-      //setError(`${e?.message || e}`);
-      // setError((oldError: Errors) => ({
-      //   ...oldError,
-      //   ...{ server: `VIP not created.` },
-      // }));
       console.log(`${e?.message || e}`);
       dequeue();
-      //showToast(`${e?.message || e}`);
       enqueue(
         {
           message: `Your RH wasn't exported`,
@@ -221,104 +121,86 @@ const VIPs: FC = (): ReactElement => {
     } finally {
       setLoading(false);
     }
+  },[router]) 
+  const BottomRightFixed = styled("div", () => {
+    return {
+      position: "fixed",
+      bottom: "6%",
+      right: "22px",
+      zIndex: 10,
+    };
+  });
+  const Padding = styled("div", ({$theme}) => {
+    return {
+      paddingBottom: $theme.sizing.scale800,
+      paddingRight: $theme.sizing.scale800,
+      paddingLeft: $theme.sizing.scale800,
+      paddingTop: $theme.sizing.scale800,
+      width: "100%",
+      "@media (max-width: 450px)": {
+        paddingBottom: $theme.sizing.scale4800,
+        paddingRight: $theme.sizing.scale600,
+        paddingLeft: $theme.sizing.scale600,
+        paddingTop: $theme.sizing.scale600,
+      },
+    };
+  });
+  const CenterFlex = styled("div", ({ $theme }) => {
+    return {
+      display: "flex",
+      justifyContent: "right",
+      paddingBottom: $theme.sizing.scale600,
+    };
+  });
+  const Spacer = styled("div", () => {
+    return {
+      width: "12px",
+    };
+  });
+  const kind = themeState?.dark ? KIND.secondary : undefined;
+  const isLoading = Boolean(loading);
+  const disabled = isLoading;
+  const BottomRightButtonProps = {
+    kind,
+    onClick: _VIPCreate,
+    isLoading,
+    disabled,
+    shape: SHAPE.circle,
+    size: SIZE.large,
+    children: <Plus size={30} />,
   };
-
+  const ExportDetailedButtonProps = {
+    kind,
+    onClick: exportVIPs,
+    isLoading,
+    disabled,
+    //size: SIZE.compact,
+    children: "Export Detailed VIP",
+  };
+  const ExportRHButtonProps = {
+    kind,
+    onClick: exportRH,
+    isLoading,
+    disabled,
+    //size: SIZE.compact,
+    children: "Export RH VIP",
+  };
   return (
     <>
-      <div
-        className={css({
-          position: "fixed",
-          bottom: "6%",
-          right: "22px",
-          zIndex: 10,
-        })}
-      >
-        <Button
-          kind={themeState?.dark ? KIND.secondary : undefined}
-          onClick={_VIPCreate}
-          isLoading={Boolean(loading)}
-          disabled={Boolean(loading)}
-          shape={SHAPE.circle}
-          size={SIZE.large}
-        >
-          <Plus size={30} />
-          {/* <div
-                className={css({
-                  paddingLeft: theme.sizing.scale600,
-                  paddingRight: theme.sizing.scale600,
-                })}
-              >
-                Add VIP
-              </div> */}
-        </Button>
-      </div>
-      <div
-        className={css({
-          paddingBottom: theme.sizing.scale800,
-          paddingRight: theme.sizing.scale800,
-          paddingLeft: theme.sizing.scale800,
-          paddingTop: theme.sizing.scale800,
-          width: "100%",
-          "@media (max-width: 450px)": {
-            paddingBottom: theme.sizing.scale4800,
-            paddingRight: theme.sizing.scale600,
-            paddingLeft: theme.sizing.scale600,
-            paddingTop: theme.sizing.scale600,
-          },
-        })}
-      >
-        <div
-          className={css({
-            display: "flex",
-            justifyContent: "right",
-            paddingBottom: theme.sizing.scale600,
-          })}
-        >
-          <div style={{ width: "12px" }}></div>
-          {/* <StatefulPopover
-      //focusLock
-      placement={PLACEMENT.bottomLeft}
-      content={({close}) => (
-        <StatefulMenu
-          items={ITEMS}
-          onItemSelect={() => close()}
-          // overrides={{
-          //   List: {style: {height: '100px', width: '138px'}},
-          // }}
-        />
-      )}
-    >
-      <Button endEnhancer={() => <ChevronDown size={24} />}>
-        Open Menu
-      </Button>
-    </StatefulPopover> */}
-
-          <Button
-            kind={themeState?.dark ? KIND.secondary : undefined}
-            onClick={exportVIPs}
-            isLoading={Boolean(loading)}
-            disabled={Boolean(loading)}
-            size={SIZE.compact}
-          >
-            <div>Export Detailed</div>
-          </Button>
-
-          <div style={{ width: "12px" }}></div>
-          <Button
-            kind={themeState?.dark ? KIND.secondary : undefined}
-            onClick={exportRH}
-            isLoading={Boolean(loading)}
-            disabled={true}
-            size={SIZE.compact}
-          >
-            <div>Export RH WIP</div>
-          </Button>
-        </div>
-        {/* OUTLET */}
+      <BottomRightFixed>
+        <Button {...BottomRightButtonProps} />
+      </BottomRightFixed>
+      <Padding>
+        <CenterFlex>
+          <Spacer />
+          <Button {...ExportDetailedButtonProps} />
+          <Spacer />
+          <Button {...ExportRHButtonProps} />
+        </CenterFlex>
         <Card
           overrides={{
             Root: {
-              style: ({ $theme }) => ({
+              style: () => ({
                 position: "relative",
                 display: "block",
                 padding: 0,
@@ -327,7 +209,7 @@ const VIPs: FC = (): ReactElement => {
               }),
             },
             Contents: {
-              style: ({ $theme }) => ({
+              style: () => ({
                 marginBottom: "0px",
                 marginRight: "0px",
                 marginLeft: "0px",
@@ -339,7 +221,7 @@ const VIPs: FC = (): ReactElement => {
               }),
             },
             Body: {
-              style: ({ $theme }) => ({
+              style: () => ({
                 marginBottom: `0px`,
               }),
             },
@@ -347,9 +229,8 @@ const VIPs: FC = (): ReactElement => {
         >
           <VIPSTable />
         </Card>
-      </div>
+      </Padding>
     </>
   );
 };
-
 export default VIPs;
