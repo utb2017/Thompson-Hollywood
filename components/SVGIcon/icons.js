@@ -202,3 +202,5 @@ export { default as V8 } from './icons/V8.svg';
 export { default as MP } from './icons/MP.svg';
 export { default as GLOB } from './icons/GLOB.svg';
 export { default as LGLO } from './icons/GLOB.svg';
+export { default as thompsonLogo } from './icons/thompsonLogo.svg';
+export { default as thompsonMin } from './icons/thompsonMin.svg';

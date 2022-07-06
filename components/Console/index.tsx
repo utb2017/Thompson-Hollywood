@@ -10,7 +10,6 @@ import {
 import { useThrottle } from "@react-hook/throttle";
 import SVGIcon from "../SVGIcon";
 import { useRouting } from "../../context/routingContext";
-import { capitalize, array_move, isCurr } from "../../helpers";
 import { useStyletron } from "baseui";
 import { Navigation } from "baseui/side-navigation";
 import VIP_END_OF_DAY from "../Modals/VIP_END_OF_DAY";
