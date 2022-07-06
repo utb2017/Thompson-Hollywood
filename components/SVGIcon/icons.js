@@ -204,3 +204,4 @@ export { default as GLOB } from './icons/GLOB.svg';
 export { default as LGLO } from './icons/GLOB.svg';
 export { default as thompsonLogo } from './icons/thompsonLogo.svg';
 export { default as thompsonMin } from './icons/thompsonMin.svg';
+export { default as tommieLogo } from './icons/tommieLogo.svg';

@@ -94,7 +94,7 @@ export default function ConsoleLayout({ children }) {
               >
                 <LogoLockBox> 
                   <Link href={"/"} scroll={false}> 
-                    <HeadingMedium>{router?.query?.property === `LAXTH`?<SVGIcon size={'standard'} name={'thompsonMin'}/>:`tommie`}</HeadingMedium>
+                    <HeadingMedium>{router?.query?.property === `LAXTH`?<SVGIcon size={'standard'} name={'thompsonMin'}/>:<SVGIcon size={'standard'} name={'tommieLogo'}/>}</HeadingMedium>
                   </Link>
                 </LogoLockBox>
               </FireLogoBox>
