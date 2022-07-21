@@ -6,8 +6,6 @@ import {styled} from 'baseui';
 
 const responsive = {
   left: `0px`,
-  //position: `absolute`,
-  //marginBottom: "160px",
   zIndex:100,
   background:"transparent",
   backgroundColor:"transparent",
@@ -15,7 +13,6 @@ const responsive = {
     paddingBottom: "0px",
     marginBottom: "0px",
   },
-
   "@media (min-width: 919px)": {
     left: `256px`,
     width: `calc(100% - 256px)`,
@@ -79,8 +76,6 @@ const ModalBase = (props)  => {
     <>
       {props?.modalBase?.isOpen && props?.modalBase?.component && (
         <div >
-          {/* <BackDrop  /> */}
-
           <Modal
             onClose={() => closeModal()}
             //unstable_ModalBackdropScroll
@@ -94,27 +89,18 @@ const ModalBase = (props)  => {
               Root: {
                 style: () => responsive,
               },
-              // Backdrop: {
-              //   style: () => ({
-              //     zIndex: 30,
-              //     //position: `fixed`,
-              //     //background:"transparent",
-              //     //backgroundColor:"transparent"
-              //   }),
-              // },
               DialogContainer: {
-
                 style: () => ({
-                  zIndex: 30,
+                  zIndex: 30
                 }),
               },
               Dialog: {
-
                 style: () => ({
                   zIndex: 30,
                   marginTop:'42px',
                   marginBottom:'120px',
-                  minWidth:'60%'
+                  minWidth:'60%',
+                  overflow:'hidden'
                 }),
               },
             }}

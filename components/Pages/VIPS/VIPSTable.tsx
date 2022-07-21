@@ -18,7 +18,7 @@ import { ReactElement } from "react";
 import { KIND as _KIND } from "baseui/tag";
 import { useScreen } from "../../../context/screenContext";
 import { useRouter } from "next/router"
-import VIP_Edit from "../../Modals/ArrivalVIPedit";
+import VIP_Edit from "../../Modals/VIPedit";
 import { useSnackbar } from "baseui/snackbar";
 import { VIPClass } from "../../../classes";
 import { WhereFilterOp } from '@firebase/firestore-types';

@@ -1,58 +1,39 @@
-import { useState, useEffect, useRef, Fragment, useCallback, ReactElement } from "react";
-import { isEmpty } from "../../helpers";
-import firebase, {
-  updateFirestore,
-  getUserByPhone,
-  deleteAuthUser,
-  mergeFirestore,
-  updateFirestoreGroup,
-  fireCloud,
-  addCredit,
-  findAddCustomer,
-  createAuthUser,
-} from "../../firebase/clientApp";
-import { useUser } from "../../context/userContext";
-import { useFirestoreQuery } from "../../hooks/useFirestoreQuery";
-import { useRouting } from "../../context/routingContext";
-import { useWindowSize } from "../../hooks/useWindowSize";
+import { useState, useEffect, useRef, useCallback } from "react";
+import firebase from "../../firebase/clientApp";
 import { FormInput } from "../Console";
-import { NotificationManager } from "react-notifications";
-import { useForm } from "../../context/formContext";
-import { LabelMedium } from "baseui/typography";
 import { styled } from "baseui";
-import { ModalHeader, ModalBody, ModalFooter, ModalButton } from "baseui/modal";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalButton,
+  SIZE,
+  ROLE,
+} from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
-import { Button } from "baseui/button";
-import { ButtonGroup, MODE } from "baseui/button-group";
 import { Input } from "baseui/input";
-import { Check, Delete, DeleteAlt } from "baseui/icon";
-import { Calendar, DatePicker, StatefulCalendar } from "baseui/datepicker";
-import { TimePicker } from "baseui/timepicker";
+import { Check, DeleteAlt } from "baseui/icon";
 import { FormControl } from "baseui/form-control";
-import { Select, TYPE } from "baseui/select";
+import { Select } from "baseui/select";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { useDispatchModalBase } from "../../context/Modal";
-import {
-  Toast,
-  KIND,
-  ToasterContainer,
-  toaster,
-  PLACEMENT,
-} from "baseui/toast";
-import { Tag, VARIANT } from "baseui/tag";
-import SVGIcon from "../SVGIcon";
-import { Accordion, Panel } from "baseui/accordion";
+import { ToasterContainer, toaster, PLACEMENT } from "baseui/toast";
 import { Textarea } from "baseui/textarea";
-//import dateFormat from "dateformat";
-import { Card, StyledBody, StyledAction } from "baseui/card";
-//import { VIPClass } from "./types";
-
+import { Card, StyledBody } from "baseui/card";
+import { StatefulCalendar } from "baseui/datepicker";
 import { FileUploader } from "baseui/file-uploader";
 import { formatDate } from "../../helpers/formatDate";
 import { VIPClass } from "../../classes";
-import { Spinner } from "baseui/spinner";
-import ArrivalVIPdelete from "./ArrivalVIPdelete";
+import { useForm } from "../../context/formContext";
+import { LabelMedium } from "baseui/typography";
 import { useRouter } from "next/router";
+import { CalendarContainer } from "../Shared";
+
+const dayOfYear = (date: any): number => {
+  const fullYear: any = new Date(date.getFullYear(), 0, 0);
+  return Math.floor((date - fullYear) / 1000 / 60 / 60 / 24);
+};
 
 interface Errors {
   name?: string;
@@ -105,46 +86,13 @@ const FormSection = styled("div", ({ $theme }) => {
     },
   };
 });
-const LoadHeader = styled(ModalHeader, ({ $theme }) => {
-  return {
-    display: "flex",
-  };
-});
-const LoadBlock = styled("div", ({ $theme }) => {
-  return {
-    position: "relative",
-    height: "28px",
-    width: "auto",
-  };
-});
-const LoadBox = styled("div", ({ $theme }) => {
-  return {
-    height: "30px",
-    width: "35px",
-    display: "flex",
-    alignContent: "space-between",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-});
-const ModalButtonRed = styled(ModalButton, ({ $theme }) => {
-  return {
-    border:"solid 1px #C8102E",
-    color:"#C8102E"
-  };
-});
 
 type INullableReactText = React.ReactText | null;
 
 const isValidString = (x: any) => {
   return Boolean(x && typeof x === "string" && x.length > 0);
 };
-const isValidNumber = (x: any): boolean => {
-  return Boolean(typeof x === "number" && x > -1);
-};
-const isValidDate = (x: Date): boolean => {
-  return Boolean(x.getTime());
-};
+
 const FlexSpacer = styled("div", ({ $theme }) => {
   return {
     height: "100%",
@@ -162,32 +110,18 @@ const FlexContainer = styled("div", ({ $theme }) => {
   };
 });
 
-type Query = {
-  data: VIPClass;
-  status: string;
-  error: any;
-};
-const unformatDate = (formattedDate: string | Date): Date => {
-  const thisYear: number = new Date().getFullYear(),
-    numericDate: number = new Date(formattedDate).setFullYear(thisYear),
-    unformattedDate: Date = new Date(numericDate);
-  return unformattedDate;
-};
-const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
+const CreateVIP = () => {
   const nameRef = useRef<HTMLDivElement>(null);
-  const collectionRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const { width, height } = useWindowSize();
   //const { user } = useUser();
   //const [loading, setLoading] = useState(false);
   const { form, setForm, error, setError, loading, setLoading } = useForm();
   const { modalBaseDispatch, modalBaseState } = useDispatchModalBase();
   const { enqueue, dequeue } = useSnackbar();
   const [toastKey, setToastKey] = useState<INullableReactText>(null);
-  const [changeForm, setChangeForm] = useState<any>({});
   const showToast = (x: string) => setToastKey(toaster.negative(`${x}`, {}));
-  const router = useRouter()
+  const router = useRouter();
   const closeModal = () => {
     modalBaseDispatch({
       type: "MODAL_UPDATE",
@@ -201,26 +135,6 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       },
     });
   };
-  const openModalBase = (
-    component: () => ReactElement,
-    hasSquareBottom: boolean
-  ) => {
-    modalBaseDispatch({
-      type: "MODAL_UPDATE",
-      payload: {
-        modalBase: {
-          isOpen: true,
-          key: [],
-          component,
-          hasSquareBottom,
-        },
-      },
-    });
-  };
-  const _VIPdelete = () => {
-    const component: () => ReactElement = () => <ArrivalVIPdelete clientData={form} />;
-    openModalBase(component, true);
-  };
   const closeToast = () => {
     if (toastKey) {
       toaster.clear(toastKey);
@@ -228,22 +142,19 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     }
   };
 
+  /* form setup */
+  useEffect(() => {
+    console.log("form setup");
+    setForm({ ...defaultForm } as VIPClass);
+    return () => {
+      setForm({});
+      setError({});
+    };
+  }, [defaultForm]);
 
-
-  
-  const updateVIP = async () => {
-
-    //const clientData: VIPClass = { ...form };
-    const clientData = { ...changeForm };
-    clientData.id = form.id
+  const createVIP = async () => {
+    const clientData: VIPClass = { ...form };
     const updateData: VIPClass = {};
-
-    //alert(JSON.stringify(clientData))
-  //  return
-
-
-
-
     let x:
       | `firstName`
       | `lastName`
@@ -261,184 +172,180 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       | `reservationStatus`
       | `id`;
     //const y: string = `VIP`;
-    //alert(JSON.stringify(clientData))
 
     // firstName
     x = `firstName`;
-    if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "First Name Required" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // lastName
-    x = `lastName`;
-    if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Last Name Required" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    
- 
-    // rateCode
-    x = `rateCode`;
-    if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Rate Code Required" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // arrival
-    x = `arrival`;
-    if (clientData[x] != undefined) {
-      if (!isValidDate(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Arrival Date Required" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-      clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
-      if (!isValidString(clientData[x])) {
-        alert("Failed to convert arrival")
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Failed to convert arrival" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // departure
-    x = `departure`;
-    if (clientData[x] != undefined) {
-      if (!isValidDate(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Departure Date Required" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-      clientData[x] = formatDate((Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x]), ' EEE dd MMM');
-      if (!isValidString(clientData[x])) {
-        alert("Failed to convert departure")
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "Failed to convert departure" },
-        }));
-      } else {
-        updateData[x] = clientData[x];
-      }
-
-    }
-
-  
-    // image
-    x = `image`;
-    if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
-        updateData[
-          x
-        ] = `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`;
-        
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // fileName
-    x = `fileName`;
-    if (clientData[x] != undefined) {
-      if (!isValidString(clientData[x])) {
-        updateData[x] = `810-8105444_male-placeholder.png`;
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // vipStatus
-    x = `vipStatus`;
-    if (clientData[x] != undefined) {
-      if (!Array.isArray(clientData[x])) {
-        return setError((oldError: Errors) => ({
-          ...oldError,
-          ...{ [x]: "VIP Status Required" },
-        })); 
-      } else {
-        updateData[x] = clientData[x];
-      }
-    }
-    // roomStatus
-    x = `roomStatus`;
-    if (clientData[x] != undefined) {
-      if (Array.isArray(clientData[x])) {
-        updateData[x] = clientData[x];
-      }
-    }
-    // roomNumber
-    x = `roomNumber`;
-    if (clientData[x] != undefined) {
-      if (isValidString(clientData[x])) {
-        updateData[x] = clientData[x];
-      }
-    }
-    // notes
-    x = `notes`;
-    if (clientData[x] != undefined) {
-      if (isValidString(clientData[x])) {
-        updateData[x] = clientData[x];
-      }
-    }
-    // details
-    x = `details`;
-    if (clientData[x] != undefined) {
-      if (isValidString(clientData[x])) {
-        updateData[x] = clientData[x];
-      }
-    }
-    // stays
-    x = `stays`;
-    if (clientData[x] != undefined) {
-      if (isValidNumber(clientData[x])) {
-        updateData[x] = clientData[x];
-      }
-    }
-    // id
-    x = `id`;
     if (!isValidString(clientData[x])) {
       return setError((oldError: Errors) => ({
         ...oldError,
-        ...{ [x]: "ID Required" },
+        ...{ [x]: "First Name Required" },
       }));
-    }else{
+    } else {
       updateData[x] = clientData[x];
     }
+    // lastName
+    x = `lastName`;
+    if (!isValidString(clientData[x])) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Last Name Required" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // rateCode
+    x = `rateCode`;
+    if (!isValidString(clientData[x])) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Rate Code Required" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // roomNumber
+    x = `roomNumber`;
+    if (isValidString(clientData[x])) {
+      updateData[x] = clientData[x];
+    } else {
+      updateData[x] = `TBD`;
+    }
+    // arrival
+    x = `arrival`;
+    if (!(clientData[x] instanceof Date)) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Arrival Date Required" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    clientData[x] = formatDate(
+      Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x],
+      " EEE dd MMM"
+    );
+    if (!isValidString(clientData[x])) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Failed to convert" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // departure
+    x = `departure`;
+    if (!(clientData[x] instanceof Date)) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Departure Date Required" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    clientData[x] = formatDate(
+      Array.isArray(clientData[x]) ? clientData[x][0] : clientData[x],
+      " EEE dd MMM"
+    );
+    if (!isValidString(clientData[x])) {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "Failed to convert" },
+      }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // image
+    x = `image`;
+    if (!isValidString(clientData[x])) {
+      updateData[
+        x
+      ] = `https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1`;
+      // return setError((oldError: Errors) => ({
+      //   ...oldError,
+      //   ...{ [x]: "Image Required" },
+      // }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // fileName
+    x = `fileName`;
+    if (!isValidString(clientData[x])) {
+      updateData[x] = `810-8105444_male-placeholder.png`;
+      // return setError((oldError: Errors) => ({
+      //   ...oldError,
+      //   ...{ [x]: "Image File Name Required" },
+      // }));
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // vipStatus
+    x = `vipStatus`;
+    if (Array.isArray(clientData[x]) && clientData[x].length) {
+      updateData[x] = clientData[x];
+    } else {
+      return setError((oldError: Errors) => ({
+        ...oldError,
+        ...{ [x]: "VIP Status Required" },
+      }));
+    }
+    // roomStatus
+    x = `roomStatus`;
+    if (Array.isArray(clientData[x]) && clientData[x].length) {
+      updateData[x] = clientData[x];
+    } else {
+      updateData[x] = undefined;
+    }
+    // notes
+    x = `notes`;
+    if (!isValidString(clientData[x])) {
+      updateData[x] = `No Notes`;
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // details
+    x = `details`;
+    if (!isValidString(clientData[x])) {
+      updateData[x] = `No Location`;
+    } else {
+      updateData[x] = clientData[x];
+    }
+    // stays
+    x = `stays`;
+    updateData[x] = 0;
+    // reservationStatus
+    x = `reservationStatus`;
+    updateData[x] = null;
+    // id
+    x = `id`;
+    updateData[x] = null;
 
-    //(JSON.stringify(updateData))
-
+    const completeVIP = new VIPClass(
+      updateData.arrival, // arrival?: string,
+      updateData.departure, // departure?: string,
+      updateData.details, // details?: string,
+      updateData.fileName, // fileName?: string
+      updateData.firstName, // firstName?: string,
+      updateData.id, // id?: string,
+      updateData.image, // image?: string,
+      updateData.lastName, // lastName?: string,
+      updateData.notes, // notes?: string,
+      updateData.rateCode, // rateCode?: string,
+      updateData.reservationStatus, // reservationStatus?:'DUEIN'|'DUEOUT'|'CHECKEDIN'|'CHECKEDOUT'|'RESERVED'|'NOSHOW'|'CANCEL',
+      updateData.roomNumber, // roomNumber?: string,
+      updateData.roomStatus, // roomStatus?: [],
+      updateData.vipStatus, // vipStatus?: [],
+      updateData.stays // stays?:number,
+    );
     setLoading(true);
-    enqueue({ message: "Updating VIP", progress: true }, DURATION.infinite);
+    enqueue({ message: "Creating VIP", progress: true }, DURATION.infinite);
     try {
-      const rqp = router?.query?.property as "LAXTH" | "LAXTE"
-      const updateVIP = firebase.functions().httpsCallable(`updateVIP_${rqp}`);
-      const response = await updateVIP(updateData);
+      const rqp = router?.query?.property as "LAXTH" | "LAXTE";
+      const createVIP = firebase.functions().httpsCallable(`createVIP_${rqp}`);
+      const response = await createVIP(completeVIP);
       dequeue();
       enqueue(
         {
-          message: "VIP Updated",
+          message: "VIP Created",
           startEnhancer: ({ size }) => <Check size={size} />,
         },
         DURATION.short
@@ -454,14 +361,13 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       //setError(`${e?.message || e}`);
       setError((oldError: Errors) => ({
         ...oldError,
-        ...{ server: `VIP not updated.` },
+        ...{ server: `VIP not created.` },
       }));
       dequeue();
-      //alert(`${e?.message || e}`)
       showToast(`${e?.message || e}`);
       enqueue(
         {
-          message: `Your VIP wasn't updated`,
+          message: `Your VIP wasn't created`,
           startEnhancer: ({ size }) => <DeleteAlt size={size} />,
         },
         DURATION.short
@@ -470,70 +376,14 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
       setLoading(false);
     }
   };
-  //STATE
+
   const [data, setData] = useState(null);
   const [progress, setProgress] = useState(null);
   const [file, setFile] = useState(null);
-  //const { fireCustomer } = useUser();
+  // //const { fireCustomer } = useUser();
   const taskRef = useRef(null);
   const [photoURL, setPhotoURL] = useState(null);
-  const [query, setQuery] = useState(null);
-  //HOOKS
-  const fireStoreQuery: Query = useFirestoreQuery(query);
-  useEffect(() => {
-    if (firebase) {
-      setQuery(firebase.firestore().collection(`${router?.query?.property}_VIPs`).doc(id));
-    }
-    return () => {
-      setQuery(null);
-    };
-  }, [firebase]);
-  useEffect(() => {
-    if (fireStoreQuery.data) {
-      const {
-        arrival,
-        departure,
-        details,
-        fileName,
-        firstName,
-        image,
-        lastName,
-        notes,
-        rateCode,
-        reservationStatus,
-        roomNumber,
-        roomStatus,
-        vipStatus,
-        stays,
-      }: VIPClass = { ...fireStoreQuery.data };
-      const defaultForm = new VIPClass(
-        unformatDate(arrival),
-        unformatDate(departure),
-        details,
-        fileName,
-        firstName,
-        id,
-        image,
-        lastName,
-        notes,
-        rateCode,
-        reservationStatus,
-        roomNumber,
-        roomStatus,
-        vipStatus,
-        stays
-      );
 
-      setForm({ ...defaultForm } as VIPClass);
-    }
-
-    return () => {
-      setForm({});
-      setError({});
-      setChangeForm({});
-    };
-  }, [defaultForm, id, fireStoreQuery]);
-  //FUNCTIONS
   const handleChange = (acceptedFiles) => {
     //e.stopPropagation()
     //alert(JSON.stringify(acceptedFiles))
@@ -542,19 +392,19 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
     setError(false);
     setPhotoURL(URL.createObjectURL(acceptedFiles[0]));
   };
-  const updateProfile = async (photoURL) => {
-    setLoading(true);
-    try {
-      const fieldUpdate = { photoURL };
-      //await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
-      NotificationManager.success("License Updated");
-      closeModal();
-    } catch (e) {
-      setLoading(false);
-      setError(`${e?.message || e || "ERROR"}`);
-      NotificationManager.error(e.message);
-    }
-  };
+  // const updateProfile = async (photoURL) => {
+  //   setLoading(true);
+  //   try {
+  //     const fieldUpdate = { photoURL };
+  //     await updateFirestore("users", fireCustomer?.data?.uid, fieldUpdate);
+  //     NotificationManager.success("License Updated");
+  //     closeModal();
+  //   } catch (e) {
+  //     setLoading(false);
+  //     setError(`${e?.message || e || "ERROR"}`);
+  //     NotificationManager.error(e.message);
+  //   }
+  // };
   // const uploadImgComplete = async (filePath) => {
   //   (`${storage}/${file.name}`)
   //   try {
@@ -594,7 +444,7 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
           try {
             const photoURL =
               await taskRef.current.snapshot.ref.getDownloadURL();
-            setChangeForm((oldForm: VIPClass) => ({
+            setForm((oldForm: VIPClass) => ({
               ...oldForm,
               ...{ image: photoURL, filePath },
             }));
@@ -648,70 +498,34 @@ const VIP_Edit = ({ id, collection }: { id: string; collection: string }) => {
   };
 
   useEffect(() => {
-   // getImgURL();
+    getImgURL();
 
     //alert(formatDate(new Date(), ' EEE dd MMM'))
   }, []);
 
-
-  useEffect(() => {
-
-    console.log(`changeForm`);
-
-    console.log(changeForm);
-  }, [changeForm]);
-
-
-const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | Date[]) => {
-  //alert(JSON.stringify({arrival, departure, changeArrival, changeDeparture}))
-  const Arrival = (changeArrival || arrival);
-  const Departure = (((changeArrival && changeDeparture)?changeDeparture:((!changeArrival && departure)?departure:null)));
-  if(Departure && Arrival){
-    return [Arrival, Departure]
-  }else if(Arrival){
-    return [Arrival]
-  }else{
-    return []
-  }
-}
-  
-  console.log("render");
-  return (  
+  return (
     <>
-      <LoadHeader>
-        <div>{`Edit VIP `}</div>
-        {(fireStoreQuery.status === "loading" || loading) && (
-          <div>
-            <LoadBox>
-              <Spinner size={"18px"} color={"rgb(23,55,94)"} />
-            </LoadBox>
-          </div>
-        )}
-      </LoadHeader>
+      <ModalHeader>Create VIP</ModalHeader>
       <ModalBody>
         {/** Name */}
-        <FormSection>
+        <FormSection ref={nameRef}>
           <FormInput
             style={formStyle}
             label={<LabelMedium>{"Name"}</LabelMedium>}
             stack={true}
           >
-            <FormControl error={error?.firstName}>
+            <FormControl error={`${error?.firstName || ``}`}>
               <Input
                 required
-                disabled={fireStoreQuery.status === "loading" || loading}
+                disabled={loading}
                 onChange={(e) => {
                   const str = e?.currentTarget?.value;
-                  // setForm((oldForm: VIPClass) => ({
-                  //   ...oldForm,
-                  //   ...{ firstName: str },
-                  // }));
-                  setChangeForm((oldForm: VIPClass) => ({
+                  setForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ firstName: str },
                   }));
                 }}
-                value={changeForm?.firstName || form?.firstName}
+                value={form?.firstName || ``}
                 onFocus={() =>
                   //executeScroll(firstNameRef),
                   setError({})
@@ -731,22 +545,18 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
                 }}
               />
             </FormControl>
-            <FormControl error={error?.lastName}>
+            <FormControl error={`${error?.lastName || ``}`}>
               <Input
                 required
-                disabled={fireStoreQuery.status === "loading" || loading}
+                disabled={loading}
                 onChange={(e) => {
                   const str = e?.currentTarget?.value;
-                  // setForm((oldForm: VIPClass) => ({
-                  //   ...oldForm,
-                  //   ...{ lastName: str },
-                  // }));
-                  setChangeForm((oldForm: VIPClass) => ({
+                  setForm((oldForm: VIPClass) => ({
                     ...oldForm,
                     ...{ lastName: str },
                   }));
                 }}
-                value={changeForm?.lastName || form?.lastName}
+                value={form?.lastName || ``}
                 onFocus={() =>
                   //executeScroll(lastNameRef),
                   setError({})
@@ -770,66 +580,56 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         </FormSection>
         {/** Dates **/}
         <FormSection>
-          <FormInput
-            style={formStyle}
-            label={<LabelMedium>{"Dates"}</LabelMedium>}
-            stack={true}
-          >
-           
-            <FormControl error={error?.arrival}>
-            <Calendar
-              //onChange={({date}) => console.log(date)}
-              range
-              //value={[form?.arrival, form?.departure]}
-              value={getRange({
-                arrival:form?.arrival, 
-                departure:form?.departure, 
-                changeArrival:changeForm?.arrival, 
-                changeDeparture:changeForm?.departure
-              })}
-              // value={():Date|Date[]=>{
-              //   const d = new Date()
-              //   return d
-              // }}
-              //value={((form?.arrival && form?.departure) || (changeForm?.arrival && changeForm?.departure)) ? [(changeForm?.arrival || form.arrival), (changeForm?.departure || form.departure)]:((changeForm?.arrival || form?.arrival))?[(changeForm?.arrival || form?.arrival)]:(changeForm?.departure || form.departure)?[(changeForm?.departure || form.departure)]:[]}
-              onChange={({ date }) => {
-                const arrival = Array.isArray(date) ? date[0] : [date];
-                const departure = (Array.isArray(date) && date.length>1) ? (date[1]||null) : null;
-                //alert(JSON.stringify({arrival,departure}))
-                setChangeForm((oldForm: VIPClass) => ({
-                  ...oldForm,
-                  ...{ arrival  , departure },
-                }));
-              }}
-            
-            />
-            </FormControl>
-          </FormInput>
+          <FormControl 
+          error={`${error?.arrival || ``}`}>
+            <CalendarContainer>
+              <StatefulCalendar
+                //onChange={({date}) => console.log(date)}
+                range
+                value={
+                  form?.arrival && form?.departure
+                    ? [form.arrival, form.departure]
+                    : form?.arrival
+                    ? [form?.arrival]
+                    : form?.departure
+                    ? [form?.departure]
+                    : []
+                }
+                onChange={({ date }) => {
+                  const arrival = Array.isArray(date) ? date[0] : [date];
+                  const departure =
+                    Array.isArray(date) && date.length > 1
+                      ? date[1] || null
+                      : null;
+                  setForm((oldForm: VIPClass) => ({
+                    ...oldForm,
+                    ...{ arrival, departure },
+                  }));
+                }}
+              />
+            </CalendarContainer>
+          </FormControl>
         </FormSection>
         {/** Details */}
-        <FormSection>
+        <FormSection ref={detailsRef}>
           <FormInput
             style={formStyle}
             label={<LabelMedium>{"Details"}</LabelMedium>}
             stack={true}
           >
             <FlexContainer>
-              <FormControl caption={() => "Room"} error={error?.roomNumber}>
+              <FormControl caption={() => "Room"} error={`${error?.roomNumber || ``}`}>
                 <Input
                   //required
-                  disabled={fireStoreQuery.status === "loading" || loading}
+                  disabled={loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    // setForm((oldForm: VIPClass) => ({
-                    //   ...oldForm,
-                    //   ...{ roomNumber: str },
-                    // }));
-                    setChangeForm((oldForm: VIPClass) => ({
+                    setForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ roomNumber: str },
                     }));
                   }}
-                  value={changeForm?.roomNumber || form?.roomNumber}
+                  value={form?.roomNumber || ``}
                   onFocus={() =>
                     //executeScroll(thcRef),
                     setError({})
@@ -853,7 +653,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
 
               <FormControl
                 caption={() => "Room Status"}
-                error={error?.roomStatus}
+                error={`${error?.roomStatus || ``}`}
               >
                 <Select
                   options={[
@@ -863,16 +663,11 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
                     { label: "PICKUP", id: "PICKUP" },
                     { label: "OO", id: "OO" },
                   ]}
-                  value={changeForm?.roomStatus || form?.roomStatus}
-                  disabled={fireStoreQuery.status === "loading" || loading}
+                  value={form?.roomStatus}
                   placeholder="INSPECTED"
                   onChange={(params) => {
                     const roomStatus = params.value;
-                    // setForm((oldForm: VIPClass) => ({
-                    //   ...oldForm,
-                    //   ...{ roomStatus },
-                    // }));
-                    setChangeForm((oldForm: VIPClass) => ({
+                    setForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ roomStatus },
                     }));
@@ -892,22 +687,18 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
               </FormControl>
             </FlexContainer>
             <FlexContainer>
-              <FormControl caption={() => "Rate Code"} error={error?.rateCode}>
+              <FormControl caption={() => "Rate Code"} error={`${error?.rateCode || ``}`}>
                 <Input
                   required
-                  disabled={fireStoreQuery.status === "loading" || loading}
+                  disabled={loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
-                    // setForm((oldForm: VIPClass) => ({
-                    //   ...oldForm,
-                    //   ...{ rateCode: str },
-                    // }));
-                    setChangeForm((oldForm: VIPClass) => ({
+                    setForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ rateCode: str },
                     }));
                   }}
-                  value={changeForm?.rateCode || form?.rateCode}
+                  value={form?.rateCode || ``}
                   onFocus={() =>
                     //executeScroll(cbdRef),
                     setError({})
@@ -932,7 +723,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
 
               <FormControl
                 caption={() => "VIP Status"}
-                error={error?.vipStatus}
+                error={`${error?.vipStatus || ``}`}
               >
                 <Select
                   options={[
@@ -948,16 +739,11 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
                     { label: "V7", id: "V7" },
                     { label: "V8", id: "V8" },
                   ]}
-                  value={changeForm?.vipStatus || form?.vipStatus}
-                  disabled={fireStoreQuery.status === "loading" || loading}
+                  value={form?.vipStatus}
                   placeholder="V6"
                   onChange={(params) => {
                     const vipStatus = params.value;
-                    // setForm((oldForm: VIPClass) => ({
-                    //   ...oldForm,
-                    //   ...{ vipStatus },
-                    // }));
-                    setChangeForm((oldForm: VIPClass) => ({
+                    setForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ vipStatus },
                     }));
@@ -977,22 +763,25 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
               </FormControl>
             </FlexContainer>
             <FlexContainer>
-              <FormControl caption={() => "Location"} error={error?.rateCode}>
+              <FormControl
+                caption={() => "City, State Country"}
+                error={`${error?.rateCode || ``}`}
+              >
                 <Input
                   required
-                  disabled={fireStoreQuery.status === "loading" || loading}
+                  disabled={loading}
                   onChange={(e) => {
                     const str = e?.currentTarget?.value;
                     // setForm((oldForm: VIPClass) => ({
                     //   ...oldForm,
                     //   ...{ rateCode: str },
                     // }));
-                    setChangeForm((oldForm: VIPClass) => ({
+                    setForm((oldForm: VIPClass) => ({
                       ...oldForm,
                       ...{ details: str },
                     }));
                   }}
-                  value={changeForm?.details || form?.details}
+                  value={form?.details  || ``}
                   onFocus={() =>
                     //executeScroll(cbdRef),
                     setError({})
@@ -1012,21 +801,12 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
                   }}
                 />
               </FormControl>
-
-
-
             </FlexContainer>
-
             <Textarea
-              value={changeForm?.notes || form?.notes}
-              disabled={fireStoreQuery.status === "loading" || loading}
+              value={form?.notes || ``}
               onChange={(e) => {
                 const str = e?.currentTarget?.value;
-                // setForm((oldForm: VIPClass) => ({
-                //   ...oldForm,
-                //   ...{ notes: str },
-                // }));
-                setChangeForm((oldForm: VIPClass) => ({
+                setForm((oldForm: VIPClass) => ({
                   ...oldForm,
                   ...{ notes: str },
                 }));
@@ -1036,8 +816,9 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
             />
           </FormInput>
         </FormSection>
+
         {/** Image **/}
-        <FormSection>
+        <FormSection ref={imageRef}>
           <FormInput
             style={formStyle}
             label={<LabelMedium>{"Image"}</LabelMedium>}
@@ -1056,7 +837,7 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
                   },
                 }}
                 headerImage={
-                  (changeForm?.image && (changeForm?.image).length)?changeForm?.image:(form?.image && (form?.image).length) ? form.image : imgURL
+                  form?.image && (form?.image).length ? form.image : imgURL
                 }
                 // phoneNumber="Example card"
               >
@@ -1095,6 +876,8 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
             }
           </FormInput>
         </FormSection>
+
+        {/* <div style={{ width: "100%", height: 65 }}></div> */}
         {/* <Accordion>
           <Panel title="Form Dev">
             {
@@ -1107,20 +890,42 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
               </>
             }
           </Panel>
-        </Accordion>
-        <Accordion>
-          <Panel title="Change Form Dev">
-            {
-              <>
-                {changeForm &&
-                  Object.keys(changeForm).map(function (key, index) {
+        </Accordion> */}
+        {/* {form && JSON.stringify(form)} */}
+        {/* {fireProductDefault && JSON.stringify(fireProductDefault)} */}
+
+        {
+          <>
+            {/*   <div>Form</div>
+             {
+                // Object.entries(fireProductDefault).map(function(key, value) {
+                //     <>{`${key} : ${value}`}</>
+                // })
+                form &&
+                  Object.keys(form).map(function (key, index) {
                     //alert(fireProductDefault[key])
                     return <div>{`${key} : ${JSON.stringify(form[key])}`}</div>;
-                  })}
-              </>
-            }
-          </Panel>
-        </Accordion> */}
+                  })
+              } */}
+          </>
+        }
+        {/*    <div style={{ width: "100%", height: 65 }}></div>
+
+              {
+                  <>
+                    <div>Default</div>
+                    {
+                    // Object.entries(fireProductDefault).map(function(key, value) {
+                    //     <>{`${key} : ${value}`}</>
+                    // })  
+                    fireProductDefault && Object.keys(fireProductDefault).map(function(key, index) {
+                      //alert(fireProductDefault[key])
+                      return <div>{`${key} : ${JSON.stringify(fireProductDefault[key])}`}</div>
+                    })
+                    }                
+                  
+                  </>
+              } */}
         <>
           <ToasterContainer
             placement={PLACEMENT.topRight}
@@ -1132,23 +937,14 @@ const getRange = ({arrival, departure, changeArrival, changeDeparture}):(Date | 
         </>
       </ModalBody>
       <ModalFooter>
-        <ModalButtonRed
-          disabled={fireStoreQuery.status === "loading" || loading}
-          onClick={_VIPdelete}
-          kind={ButtonKind.tertiary}
-          
-        >
-          Remove
-        </ModalButtonRed>
-        <ModalButton
-          disabled={fireStoreQuery.status === "loading" || loading || Object.keys(changeForm).length === 0}
-          isLoading={loading}
-          onClick={updateVIP}
-        >
-          Update
+        <ModalButton onClick={closeModal} kind={ButtonKind.tertiary}>
+          Cancel
+        </ModalButton>
+        <ModalButton isLoading={loading} onClick={createVIP}>
+          Create
         </ModalButton>
       </ModalFooter>
     </>
   );
 };
-export default VIP_Edit;
+export default CreateVIP;

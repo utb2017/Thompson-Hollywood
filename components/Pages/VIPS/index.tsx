@@ -7,7 +7,7 @@ import VIPSTable from "./VIPSTable";
 import { useScreen } from "../../../context/screenContext";
 import { KIND } from "baseui/button";
 import { useRouter } from "next/router";
-import VIPCreate from "../../Modals/ArrivalVIPcreate";
+import VIPCreate from "../../Modals/VIPcreate";
 import firebase from "../../../firebase/clientApp";
 import { useSnackbar, DURATION } from "baseui/snackbar";
 import { Check, DeleteAlt, Plus } from "baseui/icon";
