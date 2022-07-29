@@ -18,42 +18,41 @@ const FireLogoBox = styled("div", ({ $theme }) => {
     borderBottom: `1px solid ${$theme.borders.border600.borderColor}`,
     boxShadow: "unset",
     height: "48px",
-    display: 'flex',
-    width: '100%',
+    display: "flex",
+    width: "100%",
     justifyContent: "center",
   };
 });
 const LockContainer = styled("div", () => {
   return {
     marginBottom: "139px",
-    borderBottom:'none'
+    borderBottom: "none",
   };
 });
 const NavHeader = styled("div", () => {
   return {
-    paddingBottom:`10px`
+    paddingBottom: `10px`,
   };
 });
 const NavList = styled("div", () => {
   return {
-    borderBottom:'none'
+    borderBottom: "none",
   };
 });
 const Nav = styled("nav", ({ $theme }) => {
   return {
-    backgroundColor: $theme.colors.backgroundPrimary
+    backgroundColor: $theme.colors.backgroundPrimary,
   };
 });
 const LogoLockBox = styled("div", ({ $theme }) => {
   return {
     padding: "0 20px",
-    alignItems: 'center',
-    display: 'flex',
-    height: '48px',
+    alignItems: "center",
+    display: "flex",
+    height: "48px",
   };
 });
 export default function ConsoleLayout({ children }) {
-
   const router = useRouter();
   const { asPath, pathname, query } = router;
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -71,12 +70,17 @@ export default function ConsoleLayout({ children }) {
     <>
       <div
         style={{ backgroundColor: theme.colors.backgroundPrimary }}
-        className={`console-home${"oid" in query || "page" in query ? ` split` : ``}`}
+        className={`console-home${
+          "oid" in query || "page" in query ? ` split` : ``
+        }`}
       >
-        
         <FireNav className="fire-navbar">
           {!isCollapsed && (
-            <Link href={`${pathname.split("?")[0]}`} as={`${asPath.split("?")[0]}`} scroll={false}>
+            <Link
+              href={`${pathname.split("?")[0]}`}
+              as={`${asPath.split("?")[0]}`}
+              scroll={false}
+            >
               <div
                 //onClick={() => setIsCollapsed(true)}
                 className="mobile-backdrop"
@@ -87,41 +91,59 @@ export default function ConsoleLayout({ children }) {
             {/* LOGO */}
             {/* LOGO href={"/[adminID]/settings/store"} as={`/${user?.uid}/settings/store`} */}
             {/* <Link href={"/[adminID]/overview"} as={`/${user?.uid}/overview`} scroll={false}> */}
-              <FireLogoBox
-                className="firebase-logo-lockup fire-router-link-host"
-                aria-label="Go to project list"
-                style={{ cursor: "pointer" }}
-              >
-                <LogoLockBox> 
-                  <Link href={"/"} scroll={false}> 
-                    <HeadingMedium>{router?.query?.property === `LAXTH`?<SVGIcon size={'standard'} name={'thompsonMin'}/>:<SVGIcon size={'standard'} name={'tommieLogo'}/>}</HeadingMedium>
-                  </Link>
-                </LogoLockBox>
-              </FireLogoBox>
+            <FireLogoBox
+              className="firebase-logo-lockup fire-router-link-host"
+              aria-label="Go to project list"
+              style={{ cursor: "pointer" }}
+            >
+              <LogoLockBox>
+                <Link href={"/"} scroll={false}>
+                  <HeadingMedium>
+                    {router?.query?.property === `LAXTH` ? (
+                      <SVGIcon size={"standard"} name={"thompsonMin"} />
+                    ) : (
+                      <SVGIcon size={"standard"} name={"tommieLogo"} />
+                    )}
+                  </HeadingMedium>
+                </Link>
+              </LogoLockBox>
+            </FireLogoBox>
             {/* </Link> */}
             {/*NAV-CONTAINER*/}
-            <LockContainer className="nav-groups-container" role="tree" tabIndex={0}>
+            <LockContainer
+              className="nav-groups-container"
+              role="tree"
+              tabIndex={0}
+            >
               {/* {fireUser?.status === "success" && fireCollections?.status === "success" ? ( */}
-                <>
-                  <NavList className="nav-group is-expanded">
-                    <div className="group-header">
-                      <NavHeader className="group-header-label">
-                        <LabelMedium>{"REPORTS"}</LabelMedium>
-                      </NavHeader>
-                      <div>
+              <>
+                <NavList className="nav-group is-expanded">
+                  <div className="group-header">
+                    <NavHeader className="group-header-label">
+                      <LabelMedium>{"REPORTS"}</LabelMedium>
+                    </NavHeader>
+                    <div>
+                      <ActiveConsoleLink
+                        blackList={[]}
+                        name="shield"
+                        href={"/[property]/vip/[filter]"}
+                        as={`/${router?.query?.property}/vip/arriving`}
+                      >
+                        VIP's
+                      </ActiveConsoleLink>
 
-
-                        <ActiveConsoleLink blackList={[]} name="shield" href={"/[property]/vip/[filter]"} as={`/${router?.query?.property}/vip/arriving`}>
-                          VIP's
-                        </ActiveConsoleLink>
-
-
-
-                      </div>
+                      <ActiveConsoleLink
+                        blackList={[]}
+                        name="search"
+                        href={"/[property]/focus"}
+                        as={`/${router?.query?.property}/focus`}
+                      >
+                        Daily Focus
+                      </ActiveConsoleLink>
                     </div>
-                  </NavList>
-
-                  </>
+                  </div>
+                </NavList>
+              </>
             </LockContainer>
             {/**/}
           </Nav>

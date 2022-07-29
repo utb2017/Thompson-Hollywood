@@ -200,6 +200,7 @@ export { default as V6 } from './icons/V6.svg';
 export { default as V7 } from './icons/V7.svg';
 export { default as V8 } from './icons/V8.svg';
 export { default as MP } from './icons/MP.svg';
+export { default as CC } from './icons/CC.svg';
 export { default as GLOB } from './icons/GLOB.svg';
 export { default as LGLO } from './icons/GLOB.svg';
 export { default as thompsonLogo } from './icons/thompsonLogo.svg';
