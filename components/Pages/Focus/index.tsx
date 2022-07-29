@@ -220,11 +220,11 @@ const DailyFocus: FC = (): ReactElement => {
   const [queryTotalVIP, setQueryTotalVIP] = useState(null);
   const fireStoreQueryVIP: QueryVIP = useFirestoreQuery(queryVIP);
 
-  const fireStoreQueryForecast = useFirestoreQuery(firebase && firebase.firestore().collection(`${router?.query?.property}_Forecast`));
-  useEffect(() => {
-    console.log('fireStoreQueryForecast');
-    console.log(fireStoreQueryForecast);
-  }, [fireStoreQueryForecast]);
+  // const fireStoreQueryForecast = useFirestoreQuery(firebase && firebase.firestore().collection(`${router?.query?.property}_Forecast`));
+  // useEffect(() => {
+  //   console.log('fireStoreQueryForecast');
+  //   console.log(fireStoreQueryForecast);
+  // }, [fireStoreQueryForecast]);
   useEffect(() => {
     if (firebase) {
       setQueryVIP(firebase.firestore().collection("VIPS"));
