@@ -3,7 +3,7 @@ import { useDispatchModalBase } from "../../../context/Modal";
 import { Button, SHAPE, SIZE } from "baseui/button";
 import { styled } from "baseui";
 import { Card } from "baseui/card";
-import VIPSTable from "./VIPSTable";
+import ReportsTable from "./ReportsTable";
 import { useScreen } from "../../../context/screenContext";
 import { KIND } from "baseui/button";
 import { useRouter } from "next/router";
@@ -14,13 +14,19 @@ import { Check, DeleteAlt, Plus } from "baseui/icon";
 import OpenPrintDetailedVIP from "../../Modals/OpenPrintDetailedVIP";
 import { formatDate } from "../../../helpers/formatDate";
 import { useEffect } from "react";
+import { downloadFolderAsZip } from "../../../helpers";
+import { useFirestoreQuery } from "../../../hooks/useFirestoreQuery";
+import { useUser } from "../../../context/Auth";
 
 
 const VIPs: FC = (): ReactElement => {
   const { themeState } = useScreen();
   const [loading, setLoading] = useState<boolean>(false);
   const { modalBaseDispatch } = useDispatchModalBase();
+  const [dateState, setDateState] = useState(false);
+  const [query, setQuery] = useState(null);
   const router = useRouter();
+  const { loadingUser } = useUser()
   const { enqueue, dequeue } = useSnackbar();
   const openModalBase = (
     component: () => ReactElement,
@@ -87,6 +93,13 @@ const VIPs: FC = (): ReactElement => {
       setLoading(false);
     }
   };
+  interface Query {
+    data: any;
+    status: string;
+    error: any;
+  }
+  
+
   const exportRH = useMemo(() => async () => {
     setLoading(true);
     enqueue(
@@ -126,6 +139,7 @@ const VIPs: FC = (): ReactElement => {
       setLoading(false);
     }
   },[router]) 
+
   const BottomRightFixed = styled("div", () => {
     return {
       position: "fixed",
@@ -162,8 +176,8 @@ const VIPs: FC = (): ReactElement => {
     };
   });
   const kind = themeState?.dark ? KIND.secondary : undefined;
-  const isLoading = Boolean(loading);
-  const disabled = isLoading;
+  const isLoading = Boolean(loading) || !dateState;
+  const disabled = isLoading || !dateState;
   const BottomRightButtonProps = {
     kind,
     onClick: _VIPCreate,
@@ -181,24 +195,40 @@ const VIPs: FC = (): ReactElement => {
     //size: SIZE.compact,
     children: "Export Detailed VIP",
   };
-  const ExportRHButtonProps = {
+  const rqp = router?.query?.property as "LAXTH" | "LAXTE";
+  const fireStoreQuery: Query = useFirestoreQuery(!loadingUser && firebase.firestore().collection('PROPERTY').doc(rqp))
+
+  // useEffect(() => {
+    
+  //   if(firebase?.apps?.length){
+  //     setQuery(firebase.firestore().collection('PROPERTY').doc(rqp))
+  //   }else{
+  //     setQuery(null)
+  //   }
+    
+  // }, [firebase, rqp]);
+  
+  useEffect(() => {
+    console.log(fireStoreQuery)
+    if(fireStoreQuery?.data?.date){
+      setDateState(fireStoreQuery.data.date)
+      console.log(rqp)
+      console.log(fireStoreQuery?.data?.date)
+    }else{
+      setDateState(false)
+    }
+  }, [fireStoreQuery, rqp]);
+  const DownloadReportsProps = {
     kind,
-    onClick: exportRH,
+    onClick: ()=>downloadFolderAsZip(`${rqp}`, `${dateState}`),
     isLoading,
     disabled,
     //size: SIZE.compact,
-    children: "Export RH VIP",
+    children: "Download Reports",
   };
-  useEffect(() => {
-      // console.log("MM.dd.yy")
-      // console.log(formatDate(new Date(), "MM.dd.yy"))
-      const fd = formatDate(new Date(), "MM.dd.yy")
-      
-      // const sfd = fd.split(".")
-      // const nfd = `${sfd[0]}.${sfd[1]}.${sfd[2].substring(2)}`
-      // console.log(nfd)
-
-  }, []);
+  // useEffect(() => {
+  //     const fd = formatDate(new Date(), "MM.dd.yy")
+  // }, []);
 
 
   
@@ -209,10 +239,10 @@ const VIPs: FC = (): ReactElement => {
       </BottomRightFixed>
       <Padding>
         <CenterFlex>
+          {/* <Spacer />
+          <Button {...ExportDetailedButtonProps} /> */}
           <Spacer />
-          <Button {...ExportDetailedButtonProps} />
-          <Spacer />
-          <Button {...ExportRHButtonProps} />
+          <Button {...DownloadReportsProps} />
         </CenterFlex>
         <Card
           overrides={{
@@ -244,7 +274,7 @@ const VIPs: FC = (): ReactElement => {
             },
           }}
         >
-          <VIPSTable />
+          <ReportsTable {...{tblDate:dateState}} />
         </Card>
       </Padding>
     </>

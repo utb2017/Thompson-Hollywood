@@ -120,7 +120,7 @@ export default function ConsoleLayout({ children }) {
                 <NavList className="nav-group is-expanded">
                   <div className="group-header">
                     <NavHeader className="group-header-label">
-                      <LabelMedium>{"REPORTS"}</LabelMedium>
+                      <LabelMedium>Audit</LabelMedium>
                     </NavHeader>
                     <div>
                       <ActiveConsoleLink
@@ -140,6 +140,16 @@ export default function ConsoleLayout({ children }) {
                       >
                         Daily Focus
                       </ActiveConsoleLink>
+
+                      <ActiveConsoleLink
+                        blackList={[]}
+                        name="folder"
+                        href={"/[property]/reports/08.02.22"}
+                        as={`/${router?.query?.property}/reports/08.02.22`}
+                      >
+                        Reports
+                      </ActiveConsoleLink>
+
                     </div>
                   </div>
                 </NavList>

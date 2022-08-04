@@ -1,3 +1,63 @@
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import firebase from 'firebase';
+
+
+const downloadUrlAsPromise = async (url) => {
+  return new Promise(function (resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.responseType = "blob";
+    xhr.onreadystatechange = function(evt) {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          resolve(xhr.response);
+        } else {
+          reject(new Error("Ajax error for " + url + ": " + xhr.status));
+        }
+      }
+    }
+      xhr.send();
+    })
+    
+}
+
+
+
+
+
+
+
+
+const downloadFolderAsZip = async (property = 'LAXTH', date = '08.02.22') => {
+  const jszip = new JSZip();
+  const storage = firebase.storage();
+  const folderRef = storage.ref(`${property}/reports/${date}`);
+  const folder = await folderRef.listAll();
+
+//gsutil cors set C:\Thompson-Hollywood\cors.json gs://thompson-hollywood.appspot.com
+//cors.json
+//C:\Thompson-Hollywood\cors.json
+  const promises = folder.items
+    .map(async (item) => {
+      const file = await item.getMetadata();
+      const fileRef = storage.ref(item.fullPath);
+      const fileBlob = await fileRef.getDownloadURL().then( async (url) => {
+        
+        console.log(url)
+        // const response = await downloadUrlAsPromise(url)
+        // console.log(response.blob())
+        // return response.blob()
+
+        return fetch(url).then((response) => response.blob());
+      });
+      jszip.file(file.name, fileBlob);
+    })
+    .reduce((acc, curr) => acc.then(() => curr), Promise.resolve());
+  await promises;
+  const blob = await jszip.generateAsync({ type: 'blob' });
+  saveAs(blob, 'download.zip');
+};
 const EFFECTS = [
   "Anxious",
   "Aroused",
@@ -395,4 +455,5 @@ export {
   isCurr,
   isNum,
   getNumberWithOrdinal,
+  downloadFolderAsZip
 }

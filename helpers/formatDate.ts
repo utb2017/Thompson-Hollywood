@@ -32,7 +32,7 @@ export const formatDate = (date:Date, patternStr?:any) => {
           MMMM = monthNames[month],
           MMM = MMMM.substring(0, 3),
           yyyy = year + "",
-          yy = yyyy.substring(2, 2)
+          yy = yyyy.substring(2)
       ;
       // checks to see if month name will be used
       patternStr = patternStr

@@ -22,12 +22,14 @@
     "d3-ease": "^2.0.0",
     "dateformat": "^5.0.3",
     "faker": "^5.5.3",
+    "file-saver": "^2.0.5",
     "firebase": "^7.19.0",
     "firebase-admin": "^10.2.0",
     "firebase-functions": "^3.22.0",
     "html-pdf": "^3.0.1",
     "inspirational-quotes": "^2.0.1",
     "intersection-observer": "^0.11.0",
+    "jszip": "^3.10.0",
     "libphonenumber-js": "^1.9.7",
     "lodash.isempty": "^4.4.0",
     "lodash.isequal": "^4.5.0",
@@ -62,6 +64,7 @@
     "weeknumber": "^1.2.1"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "@types/react": "^17.0.5",
     "eslint-plugin-baseui": "^10.1.0",
     "prettier": "2.2.0",

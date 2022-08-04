@@ -16,8 +16,8 @@ export default function UserContextComp({ children }) {
   useEffect(() => {
     // Look for Orders if logged in
     const unsubscriber = firebase.auth().onAuthStateChanged(async (user) => {
-      // console.log('user')
-      // console.log(user)
+      console.log('user')
+      console.log(user)
       try {
         if (user) {
           // User is signed in.

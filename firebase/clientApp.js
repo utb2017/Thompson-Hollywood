@@ -170,26 +170,26 @@ export const placeAnOrder = async (order) => {
 
 
 
-export const addCart_v2 = async (inputs) => {
-    const call = firebase.functions().httpsCallable("cartAdd_v2");
-    const result = await call(inputs)
-    return result
-}
-export const cartRemove_v2 = async (inputs) => {
-  const call = firebase.functions().httpsCallable("cartRemove_v2");
-  const result = await call(inputs)
-  return result
-}
-export const cartIncrement_v2 = async (inputs) => {
-  const call = firebase.functions().httpsCallable("cartIncrement_v2");
-  const result = await call(inputs)
-  return result
-}
-export const updateProduct = async (form) => {
-  const call = firebase.functions().httpsCallable("updateProduct");
-  const result = await call(form)
-  return result
-}
+// export const addCart_v2 = async (inputs) => {
+//     const call = firebase.functions().httpsCallable("cartAdd_v2");
+//     const result = await call(inputs)
+//     return result
+// }
+// export const cartRemove_v2 = async (inputs) => {
+//   const call = firebase.functions().httpsCallable("cartRemove_v2");
+//   const result = await call(inputs)
+//   return result
+// }
+// export const cartIncrement_v2 = async (inputs) => {
+//   const call = firebase.functions().httpsCallable("cartIncrement_v2");
+//   const result = await call(inputs)
+//   return result
+// }
+// export const updateProduct = async (form) => {
+//   const call = firebase.functions().httpsCallable("updateProduct");
+//   const result = await call(form)
+//   return result
+// }
 //form{
   //user:string
   //amount:number
