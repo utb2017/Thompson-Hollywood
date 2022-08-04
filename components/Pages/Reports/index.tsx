@@ -234,9 +234,9 @@ const VIPs: FC = (): ReactElement => {
   
   return (
     <>
-      <BottomRightFixed>
+      {/* <BottomRightFixed>
         <Button {...BottomRightButtonProps} />
-      </BottomRightFixed>
+      </BottomRightFixed> */}
       <Padding>
         <CenterFlex>
           {/* <Spacer />

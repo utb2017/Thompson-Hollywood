@@ -144,8 +144,8 @@ export default function ConsoleLayout({ children }) {
                       <ActiveConsoleLink
                         blackList={[]}
                         name="folder"
-                        href={"/[property]/reports/08.02.22"}
-                        as={`/${router?.query?.property}/reports/08.02.22`}
+                        href={"/[property]/reports"}
+                        as={`/${router?.query?.property}/reports`}
                       >
                         Reports
                       </ActiveConsoleLink>

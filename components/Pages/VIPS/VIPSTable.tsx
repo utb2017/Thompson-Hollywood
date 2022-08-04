@@ -146,6 +146,7 @@ export default function VIPSTable() {
     nextPage,
     prevPage,
     dataList,
+    setDataList,
     setTotalsField,
     queryLoader,
     setTotalsDoc,
@@ -157,9 +158,9 @@ export default function VIPSTable() {
   } = useQuery();
 
   React.useEffect(() => {
-    if (dataList.length && !queryLoader) {
+    if (dataList?.length && !queryLoader) {
       setDataState(dataList);
-    } else if (!dataList.length && !queryLoader) {
+    } else if (!dataList?.length && !queryLoader) {
       setDataState([]);
     }
   }, [dataList, queryLoader]);
@@ -231,26 +232,24 @@ useEffect(() => {
   setTotalsDoc(tot_doc);
   setTotalsField(tot_field);
   setQueryCollection(`${rqp}_VIPs`);
-  setOrderBy("firstName");
+  setOrderBy("id");
   setWhere(where);
   setLimit(5);
-  return () => {
-    setTotalsField(null);
-    setTotalsDoc(null);
-    setTotalsCollection(null);
-    setQueryGroupCollection(null);
-    setQueryCollection(null);
-    setLimit(5);
-    setOrderBy(null);
-    setWhere(null);
-  };
+
 }, [router]);
 
 
-
-
-
-
+useEffect(() => {
+  return () => {
+    setTotalsCollection(null);
+    setTotalsDoc(null);
+    setTotalsField(null);
+    setQueryCollection(null);
+    setOrderBy(null);
+    setWhere(null);
+    setLimit(5);
+  };
+}, []);
 
 
   useEffect(() => {
@@ -285,8 +284,8 @@ useEffect(() => {
             <ParagraphMedium>{`No results`}</ParagraphMedium>
           </Results>
         )}
-        {dataState &&
-          dataState.map((row: VIPClass, index: number) => (
+        {!queryLoader && dataState &&
+          (dataState || []).map((row: VIPClass, index: number) => (
             <CellButton 
               onClick={()=>_VIPedit(row?.id)} 
               kind={KIND.tertiary} 
@@ -295,38 +294,38 @@ useEffect(() => {
             <StyledRow key={index}>
               {<StyledBorderCell style={{ flex: 2 }}>
                 <CellWrapper>
-                  <LabelMedium>{`${row?.lastName}, ${row?.firstName}`}</LabelMedium>
+                  <LabelMedium>{`${row?.lastName||``}, ${row?.firstName||``}`}</LabelMedium>
                 </CellWrapper>
               </StyledBorderCell>}
               {<StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${row?.roomNumber}`}</LabelSmall>
+                  <LabelSmall>{`${row?.roomNumber||`N/A`}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${`${row?.arrival}`.substring(4)}`}</LabelSmall>
+                  <LabelSmall>{`${`${row?.arrival||``}`.substring(4)}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${`${row?.departure}`.substring(4)}`}</LabelSmall>
+                  <LabelSmall>{`${`${row?.departure||``}`.substring(4)}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 1 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${row?.rateCode}`}</LabelSmall>
+                  <LabelSmall>{`${row?.rateCode||`N/A`}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {!isMobile && <StyledBorderCell style={{ flex: 3 }}>
                 <CellWrapper>
-                  <LabelSmall>{`${row?.notes}`}</LabelSmall>
+                  <LabelSmall>{`${row?.notes||`No Notes`}`}</LabelSmall>
                 </CellWrapper>
               </StyledBorderCell>}
               {<StyledBorderCellEnd style={{ flex: 1 }}>
                 <CellWrapper>
-                  {/* <LabelSmall>{`${row?.vipStatus[0].label || `n/a`}`}</LabelSmall> */}
-                  <LabelSmall>{row?.vipStatus[0].label?<SVGIcon size={'standard'} name={row?.vipStatus[0].label} />:'n/a'} </LabelSmall>
+                  {/* <LabelSmall>{`${row?.vipStatus[0].label || `n/a`}`}</LabelSmall>*/}
+                  <LabelSmall>{(row?.vipStatus?.length && row?.vipStatus[0]?.label)?<SVGIcon size={'standard'} name={row?.vipStatus[0]?.label} />:'n/a'} </LabelSmall> 
                 </CellWrapper>
               </StyledBorderCellEnd>}
             </StyledRow>                

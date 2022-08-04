@@ -25,7 +25,7 @@ const index = () => {
 
 
   return (
-    <Console id="orders-page" title={`Reports`}>
+    <Console noNav id="orders-page" title={`Reports ${router?.query?.property || `...`}`}>
       {/* <VIPsPage /> */}
       <StaticReportsPage />
     </Console>
