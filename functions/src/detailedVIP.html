@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<head>
+  <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    @media print {
+      html,
+      body {
+        width: 210mm;
+        height: 297mm;
+      }
+      /* ... the rest of the rules ... */
+    }
+
+    body {
+      background: white;
+      font-family:Arial, Helvetica, sans-serif
+    }
+    page[size="A4"] {
+      background: white;
+      width: 21cm;
+      height: 29.7cm;
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 0.5cm;
+      box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+    }
+    @media print {
+      body,
+      page[size="A4"] {
+        margin: 0;
+        box-shadow: 0;
+      }
+    }
+    .vip-card{
+      width: 100%;
+      display: flex;
+      /* justify-content: center; */
+      align-content: center;
+      align-items: center;
+      /* padding-bottom: 12px; */
+      /* padding-bottom: 22px; */
+      height: 11cm;
+      flex-direction: column;
+      margin-top: 1cm;
+    }
+    .image{
+      height:200px;
+      width:200px;
+      border:solid 10px #16365c;
+      overflow:hidden;
+      border-radius: 100%;
+      margin-bottom: 12px;
+    }
+    .top-line{
+      height: 1px;
+      background-color: #16365c;
+      width:65%;
+      margin-bottom: 6px;
+    }
+    .bottom-line{
+      height: 1px;
+      background-color: #16365c;
+      width:65%;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+    .vip-label{
+      color:black;
+      text-align:center;
+      margin-bottom: 6px;
+    }
+    .vip-notes{
+      color:#16365c;
+      font-size:14px;
+      text-align:center;
+      font-style: italic;
+    }
+    .vip-details{
+      color:#16365c;
+      width:50%
+    }
+    .vip-location{
+      color:#16365c;
+      font-size:14px;
+      text-align:center;
+      font-weight: bold;
+      font-style: italic;
+    }
+    .arrival-departure{
+      font-size:12px;
+      text-align:center;
+      margin-bottom: 2px;
+    }
+    .arrival-departure{
+      font-size:12px;
+      text-align:center;
+    }
+    .vip-stays{
+      font-size:12px;
+      text-align:center;
+    }
+    .vip-room{
+      font-size:11px;
+      text-transform: uppercase;
+    }
+    .arrival-departure{
+      font-size:12px;
+      text-align:center;
+    }
+    .vip-status{
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .GLOB{
+      color: #2f75b5;
+    }
+    .LGLO{
+      color: #2f75b5;
+    }
+    .V2{
+      color: #90cb80;
+    }
+    .V3{
+      color: #ffdf7f;
+    }
+    .V6{
+      color: #588dca;
+    }
+    .MP{
+      color: #90cb80;
+    }
+    .header-page-title{
+        color:black
+    }
+    .vip-name{
+        color:black;
+        font-weight: bold;
+    }
+    .header-page-number{
+      color: white;
+      font-weight: bold;
+      background-color:#16365c;
+      height:32px;
+      width:64px;
+      display:flex;
+      justify-content:center;
+      text-align:center;
+      align-content:center;
+      align-items:center;
+      margin-right: 8px;
+      padding-left: 8px;
+    }
+    .header{
+      font-size: 22px;
+      height: 2cm;
+      width: 100%;
+      display: flex;
+      justify-content: left;
+      text-align: center;
+      align-content: center;
+      align-items: center;
+      padding-top: 24px;
+    }
+    .header-center{
+      width: 100%;
+      display: flex;
+      justify-content: left;
+      text-align: center;
+      align-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<html>
+  <body>
+    <div class="header">
+        <div class="header-center">
+            <span class="header-page-number">1</span>
+            <span class="header-page-title"> VIP Arrivals 06.23.22</span>           
+        </div>
+
+    </div>
+      <style>
+        .vip-image-1 {
+          background-image: url("https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1");
+          background-repeat:no-repeat;
+          background-position: center center;
+          background-size: cover;
+        }
+      </style>
+    <div class="vip-card">
+      <div class="image vip-image-1"></div>
+      <div class="vip-label">
+        <span class="vip-name">Tomlinson, Aaron</span>
+        <span class="name-dash"> - </span>
+        <span class="vip-status V2"> V2</span>
+      </div>  
+      <div class="top-line"></div>
+      <div class="vip-details"> 
+        <div class="vip-notes">No Notes</div>
+        <div class="vip-location">No Location</div>
+      </div>
+      <div class="bottom-line"></div>
+      <div class="arrival-departure">
+        <span class="vip-arrival">05-Feb</span>
+        <span> - </span>
+        <span class="vip-departure">07-Feb</span>
+      </div>
+      <div class="vip-stays">Stays: 10</div>
+      <div class="vip-room">RM: TBD</div>
+    </div>
+    <style>
+        .vip-image-1 {
+          background-image: url("https://firebasestorage.googleapis.com/v0/b/thompson-hollywood.appspot.com/o/810-8105444_male-placeholder.png?alt=media&token=a206d607-c609-4d46-9a9a-0fc14a8053f1");
+          background-repeat:no-repeat;
+          background-position: center center;
+          background-size: cover;
+        }
+      </style>
+    <div class="vip-card">
+      <div class="image vip-image-1"></div>
+
+      <div class="vip-label">
+        <span class="vip-name">Tomlinson, Aaron</span>
+        <span class="name-dash"> - </span>
+        <span class="vip-status GLOB"> GLOB</span>
+      </div>  
+      <div class="top-line"></div>
+      <div class="vip-details"> 
+        <div class="vip-notes">No Notes</div>
+        <div class="vip-location">No Location</div>
+      </div>
+      <div class="bottom-line"></div>
+      <div class="arrival-departure">
+        <span class="vip-arrival">05-Feb</span>
+        <span> - </span>
+        <span class="vip-departure">07-Feb</span>
+      </div>
+      <div class="vip-stays">Stays: 10</div>
+      <div class="vip-room">RM: TBD</div>
+    </div>
+
+
+</page>
+  </body>
+</html>
+

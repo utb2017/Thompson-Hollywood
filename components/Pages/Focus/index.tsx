@@ -10,7 +10,6 @@ import * as React from "react";
 import { useFirestoreQuery } from "../../../hooks/useFirestoreQuery";
 import Plus from "baseui/icon/plus";
 import { useRouter } from "next/router";
-import { useUser } from "../../../context/userContext";
 import { useRouting } from "../../../context/routingContext";
 import { styled } from "baseui";
 import ReactWeather, { useOpenWeather } from "react-open-weather";
@@ -22,11 +21,12 @@ import { StatefulMenu } from "baseui/menu";
 import { FlexGrid, FlexGridItem } from "baseui/flex-grid";
 import { BlockProps } from "baseui/block";
 import { Img } from "react-image";
-import firebase from "../../../firebase/clientApp";
+import firebase, { mergeFirestore, updateFirestore } from "../../../firebase/clientApp";
 import { VIPClass } from "../../../classes";
 import QueryVIPArrivals from "./QueryVIPArrivals";
 import QueryGroupArrivals from "./QueryGroupArrivals";
 import QueryUpcomingEvents from "./QueryUpcomingEvents";
+import { useUser } from "../../../context/Auth";
 
 const ITEMS = [
   { label: "Item One" },
@@ -194,6 +194,11 @@ const FakeVipData = [
   },
 ];
 
+interface Query {
+  data: any;
+  status: string;
+  error: any;
+}
 const DailyFocus: FC = (): ReactElement => {
   const {
     setTotalsField,
@@ -216,8 +221,10 @@ const DailyFocus: FC = (): ReactElement => {
 
   const [vips, setVips] = useState<[VIPClass]>(null);
 
+  const { loadingUser } = useUser()
   const [queryVIP, setQueryVIP] = useState(null);
   const [queryTotalVIP, setQueryTotalVIP] = useState(null);
+  const [dateState, setDateState] = useState(false);
   const fireStoreQueryVIP: QueryVIP = useFirestoreQuery(queryVIP);
 
   // const fireStoreQueryForecast = useFirestoreQuery(firebase && firebase.firestore().collection(`${router?.query?.property}_Forecast`));
@@ -244,6 +251,30 @@ const DailyFocus: FC = (): ReactElement => {
       setVips(null);
     }
   }, [fireStoreQueryVIP]);
+const rqp = router?.query?.property as "LAXTH" | "LAXTE";
+  const fireStoreQuery: Query = useFirestoreQuery(!loadingUser && firebase.firestore().collection('PROPERTY').doc(rqp))
+
+  
+  // useEffect(() => {
+    
+  //   if(firebase?.apps?.length){
+  //     setQuery(firebase.firestore().collection('PROPERTY').doc(rqp))
+  //   }else{
+  //     setQuery(null)
+  //   }
+    
+  // }, [firebase, rqp]);
+  
+  useEffect(() => {
+    console.log(fireStoreQuery)
+    if(fireStoreQuery?.data?.date){
+      setDateState(fireStoreQuery.data.date)
+      console.log(rqp)
+      console.log(fireStoreQuery?.data?.date)
+    }else{
+      setDateState(false)
+    }
+  }, [fireStoreQuery, rqp]);
 
   const openModalBase = (
     component: () => ReactElement,
@@ -540,7 +571,7 @@ const DailyFocus: FC = (): ReactElement => {
                       
                     >
                       <OutlookCell>
-                        <InputCell></InputCell>
+                        <InputCell dateState={`${dateState}`} id={'today_total_occupied_rooms'}></InputCell>
                       </OutlookCell>
                     </FlexGridItemHundred>
                     <FlexGridItemHundred width={`100%`} 
@@ -2126,16 +2157,21 @@ const OutlookCellTitle = styled("div", ({ $theme }) => {
 interface TestProps {
   textAlign?: "center" | "left";
   id?: string;
+  dateState?: string;
 }
-const InputCell = ({ textAlign = "center", id = "McGee" }: TestProps) => {
+const InputCell = ({ textAlign = "center", id = "McGee", dateState = '01.01.22' }: TestProps) => {
+  
+  const router = useRouter();
   const [value, setValue] = React.useState("");
-
+  const saveData = () => {
+    mergeFirestore(router.query.property, dateState, {[id]:`${value}`})
+  }
   const [isActive, setIsActive] = useState(false);
   return (
     <Input
       value={value}
       onFocus={() => setIsActive(true)}
-      onBlur={() => setIsActive(false)}
+      onBlur={saveData}
       onChange={(event) => setValue(event.currentTarget.value)}
       size={SIZE.mini}
       placeholder=""
